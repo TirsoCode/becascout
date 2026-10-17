@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrando… — BecasScout</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<main class="doc" style="max-width:440px">
+  <div id="estado" style="text-align:center;padding:40px 0">
+    <h1 style="font-size:30px" id="t">Entrando…</h1>
+    <p style="color:var(--ink-3);margin-top:12px" id="m">Comprobando tu sesión con Google.</p>
+  </div>
+</main>
+
+<script type="module">
+/**
+ * auth/callback.html — Receptor del token de Google.
+ *
+ * Existe por un motivo técnico concreto. Google devuelve el token en el
+ * fragmento de la URL (`#access_token=…`), y ese fragmento no se envía nunca
+ * al servidor por diseño. Si se deja que Supabase lo recoja en la página de
+ * origen, el proceso se parte en dos: la página que pide el login y la que
+ * vuelve son distintas, y la segunda no tiene el estado del formulario.
+ *
+ * Saltando aquí, se espera a que Supabase canjee el token, se registra la
+ * cuenta en nuestro servidor para poder avisar de plazos, y se vuelve a donde
+ * el usuario estaba. Si algo falla, el mensaje lo dice en vez de dejar una
+ * pantalla en blanco.
+ */
+import { iniciarSupabase, correoSupabase } from '../js/supabase.js';
+import { API } from '../js/config.js';
+
+const t = document.getElementById('t');
+const m = document.getElementById('m');
+const destino = sessionStorage.getItem('bs.destino') || '/becas.html';
+
+try {
+  if (!(await iniciarSupabase())) {
+    throw new Error('Supabase no está configurado en este entorno.');
+  }
+
+  // Supabase tarda un momento en canjear el token tras redirigir.
+  let correo = null;
+  for (let i = 0; i < 20 && !correo; i++) {
+    correo = await correoSupabase();
+    if (!correo) await new Promise((r) => setTimeout(r, 300));
+  }
+  if (!correo) throw new Error('Google no devolvió ninguna cuenta.');
+
+  m.textContent = 'Creando tu cuenta…';
+  const r = await API.post('registro-google', { correo });
+  if (!r.ok) throw new Error('No se pudo crear la cuenta.');
+
+  location.replace(destino);
+} catch (err) {
+  t.textContent = 'No hemos podido entrar';
+  m.textContent = err.message;
+  m.style.color = 'var(--rust)';
+
+  const volver = document.createElement('a');
+  volver.className = 'btn btn-brand';
+  volver.href = '/becas.html';
+  volver.textContent = 'Volver al buscador';
+  volver.style.marginTop = '18px';
+  document.getElementById('estado').appendChild(volver);
+}
+</script>
+</body>
+</html>

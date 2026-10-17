@@ -1,0 +1,23 @@
+node_modules/
+.env
+.env*
+
+# Datos del proyecto enlazado: ref, pooler-url y versiones. No es un secreto,
+# pero es de tu cuenta y no va al repositorio.
+supabase/.temp/
+
+data/usuarios.json
+data/usuarios.tmp.json
+data/sesiones.json
+data/sesiones.tmp.json
+*.log
+_t.html
+_m.html
+_e2e.html
+_u.html
+.vercel
+
+# Ficheros sueltos de depuración y capturas de trabajo.
+*.png
+/movil*.mjs
+/ancho*.mjs

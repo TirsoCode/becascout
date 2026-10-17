@@ -1,0 +1,16 @@
+{
+  "name": "becascout",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Buscador de becas europeas: lee la convocatoria y dice qué requisitos cumples.",
+  "scripts": {
+    "dev": "node serve.mjs",
+    "start": "node serve.mjs",
+    "ingest": "node ingest/run.mjs",
+    "ingest:llm": "node ingest/run.mjs --llm"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

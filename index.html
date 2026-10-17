@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BecasScout — Las becas de Europa, con los requisitos leídos</title>
+<meta name="description" content="BecasScout lee las convocatorias oficiales y te dice qué requisitos cumples y cuánto tiempo queda. Cada requisito con la cita literal del documento.">
+<meta name="theme-color" content="#12463A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M7 5.5h7l4 4v9H7z' fill='none' stroke='%23F7F4EC' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14 5.5v4h4' fill='none' stroke='%23F7F4EC' stroke-width='1.6'/%3E%3Cpath d='M9 13.8l1.7 1.7 3.8-3.8' fill='none' stroke='%23F7F4EC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Los enlaces legales están en el pie de todas las páginas y no hay forma
+       de ocultarlos: el aviso de cookies se inyecta justo debajo del pie, así
+       que quitarlos rompería el aviso. */
+    .foot-links a[href$="privacidad.html"],
+    .foot-links a[href$="cookies.html"] { font-weight: 600; color: var(--ink-2); }
+  </style>
+</head>
+<body>
+
+<header class="top">
+  <div class="shell top-in">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Becas<b>Scout</b></span>
+    </a>
+    <nav class="top-nav">
+      <a href="#como">Cómo funciona</a>
+      <a href="#metodo">Nuestro método</a>
+      <a href="#fuentes">Fuentes</a>
+    </nav>
+    <div class="top-act">
+      <a class="btn btn-quiet" href="becas.html">Buscar</a>
+      <button class="btn btn-brand" data-open-auth>Crear cuenta</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div>
+        <span class="kicker">Becas de Europa · leídas</span>
+        <h1>Hay becas que no ves porque <em>nadie las resume</em></h1>
+        <p class="hero-lede">
+          Se convocan en boletines oficiales y en el portal de cada universidad.
+          Nadie los abre. Cuando alguien los abre, encuentra 60 páginas de Bases
+          y tiene tres días para decidir.
+        </p>
+        <div class="hero-cta">
+          <button class="btn btn-brand" data-open-auth>Crear cuenta gratis</button>
+          <a class="btn btn-ghost" href="becas.html">Ver cómo se ve</a>
+        </div>
+        <p class="hero-note">Sin tarjeta. Con correo de Gmail o cualquier otra dirección.</p>
+      </div>
+
+      <!-- El panel enseña el problema, no la solución: son filas genéricas
+           con el texto tapado, no datos reales. La promesa se sostiene sin
+           enseñar una sola beca real. -->
+      <div class="panel" aria-hidden="true">
+        <div class="panel-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="panel-url">boe.es/diario_boe/txt.php?id=BOE-A-…</span>
+        </div>
+        <div class="panel-body">
+          <div class="mock-line"><span class="mock-n">01</span><span class="mock-t">Resolución de … por la que se convocan …… plazas</span><span class="mock-tag">pdf</span></div>
+          <div class="mock-line"><span class="mock-n">02</span><span class="mock-t">Bases reguladoras — capítulo III, requisitos</span><span class="mock-tag">47 pág</span></div>
+          <div class="mock-line"><span class="mock-n">03</span><span class="mock-t">Nota media exigida: ……… / 10</span><span class="mock-tag">pág. 8</span></div>
+          <div class="mock-line"><span class="mock-n">04</span><span class="mock-t">Plazo de presentación: …… días hábiles</span><span class="mock-tag">pág. 2</span></div>
+          <div class="mock-line"><span class="mock-n">05</span><span class="mock-t">Documentación a aportar — …… €</span><span class="mock-tag">pág. 9</span></div>
+        </div>
+        <div class="panel-veil">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="10.5" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+          Las becas se leen con cuenta abierta.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="como">
+    <div class="shell">
+      <div class="sec-head">
+        <h2>Tres pasos y ninguna sorpresa</h2>
+        <p>No tramitamos nada ni cobramos comisión. Solo leemos mejor que tú las 60 páginas.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div>
+          <h3>Nos dices quién eres</h3>
+          <p>Nota media, edad, nivel y país de destino. Cuatro datos, se quedan en tu navegador y no se mandan a ningún sitio.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <h3>Leemos cada convocatoria</h3>
+          <p>Del sumario oficial bajamos el documento entero y extraemos los requisitos: nota mínima, edad, idioma, plazo, importe.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <h3>Te decimos qué cumples</h3>
+          <p>Un anillo cuenta cuántos requisitos satisfaces y cuáles te faltan. Cada uno con la cita literal del párrafo original.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-2" id="metodo">
+    <div class="shell">
+      <div class="sec-head">
+        <h2>Por qué no te damos un porcentaje</h2>
+        <p>Todavía no hay ninguna app de becas que te diga «85 % de probabilidad de que te la den». Se debe a que ese número no existe.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">—</div>
+          <h3>No hay datos de admisiones</h3>
+          <p>Estas convocatorias no publican cuántos se presentan ni cuántos caen. Sin eso, un porcentaje es un número inventado con forma de estadística.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">—</div>
+          <h3>Cada dato lleva su cita</h3>
+          <p>Si decimos que piden un 7,0, enseñamos el párrafo exacto donde lo dicen y la página del boletín. Compruébalo en diez segundos.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">—</div>
+          <h3>«No lo sabemos» es respuesta</h3>
+          <p>Cuando la convocatoria no concreta un requisito, lo dejamos en gris. Preferimos un hueco visible a un dato que parece bueno y no lo es.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="fuentes">
+    <div class="shell">
+      <div class="sec-head">
+        <h2>De dónde sale cada línea</h2>
+        <p>Todo requisito que enseñamos viene de un documento oficial, y siempre hay un enlace para comprobarlo.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">ES</div>
+          <h3>Boletín Oficial del Estado</h3>
+          <p>Sumario diario en abierto y el XML de cada anuncio. La fuente primaria de las convocatorias del Estado y de las universidades.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">UE</div>
+          <h3>Erasmus+ y Eur-Lex</h3>
+          <p>Programas europeos y publicada en el Diario Oficial. Conectores propios, uno por portal.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">+</div>
+          <h3>DAAD, Campus France, Study in NL</h3>
+          <p>Los portales nacionales de beca de intercambio. Cada uno se añade con su propio conector, porque cada uno cambia solo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="shell foot-in">
+    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+        <div class="foot-links">
+      <a href="becas.html">Buscar becas</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="cookies.html">Cookies</a>
+      <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/landing.js"></script>
+<script type="module" src="js/cookies.js"></script>
+</body>
+</html>

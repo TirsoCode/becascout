@@ -1,0 +1,136 @@
+name: Ingesta
+
+# Cuándo corre sin que nadie pulse nada. **Dos pasadas al día**, y se Bajaron
+# de cuatro el 17 de octubre de 2026.
+#
+# El BOE publica dos ediciones diarias —una por la mañana y otra por la tarde—
+# y una pasada bien colocada ve las dos. Se puso una después de cada una: 10:30
+# UTC recoge la de la mañana, y 22:30 UTC la de la tarde. Cuatro pasadas no
+# daban nada que las dos no dieran, solo gastaban cuatro veces el ancho de banda
+# contra un servicio público.
+#
+# OJO, y esto no es un detalle: GitHub retrasa los cron de los planes
+# gratuitos. Hay avisos de 8 a 14 horas de retraso, e incluso días que no se
+# ejecutan. Está documentado en la conversación #156282 y #201738. Por eso
+# el resultado se COMMITE dentro del repo y no se manda a ningún sitio: si
+# una pasada se retrada o se cae, la web sigue sirviendo el último
+# becas.json bueno que haya, en vez de quedarse con datos viejos o vacíos.
+on:
+  schedule:
+    - cron: '31 10 * * *'
+    - cron: '37 22 * * *'
+  # El botón manual es lo que de verdad se usa cuando se está depurando, y
+  # la única forma de recuperar una pasada que el cron se comió.
+  workflow_dispatch:
+    inputs:
+      dias:
+        description: 'Días hacia atrás a revisar'
+        required: false
+        default: '21'
+      concurrencia:
+        description: 'Fichas procesadas a la vez (subirlo mucho hace que BDNS conteste "Acceso Denegado" en silencio)'
+        required: false
+        default: '6'
+      llm:
+        description: 'Usar el modelo de OpenRouter (más caro, más completo)'
+        type: boolean
+        required: false
+        default: false
+
+# Una sola ingesta a la vez. Sin esto, si una pasada tarda más que el
+# intervalo, la siguiente arranca encima y las dos escriben el mismo
+# fichero. Es el fallo más fácil de cometer y el más difícil de ver.
+concurrency:
+  group: ingesta
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # solo para poder commitear el resultado
+
+jobs:
+  ingesta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # ── El punto bueno de GitHub Actions ──────────────────────────────
+      # El runner de ubuntu-latest YA TRAE Google Chrome instalado y
+      # actualizado. No hace falta `npx playwright install`, que tarda
+      # varios minutos y además se descarga un Chromium aparte que no es
+      # el del sistema. Para lo que necesitamos —saltarse WAFs con un
+      # navegador de verdad— el Chrome preinstalado sirve y es más rápido.
+      - name: Comprobar Chrome
+        run: |
+          google-chrome --version
+          echo "HOME=$HOME"
+
+      - name: Ingesta
+        env:
+          # Sin secreto se ejecuta por reglas. Si el repositorio tiene la
+          # clave de OpenRouter configurada, la ingesta la usa sola.
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BECAS_MODEL: ${{ vars.BECAS_MODEL || 'google/gemini-2.5-flash-lite' }}
+        run: |
+          # `--dias 21` mira hacia atrás tres semanas: la ventana que
+          # cubre desde la última pasada con margen para una que se haya
+          # retrasado, que es el fallo conocido de este sistema.
+          #
+          # `--concurrencia` son las fichas que se procesan a la vez. Seis es
+          # lo que cabe de sobra en el `timeout-minutes` de este job; subirlo
+          # mucho tiene un precio que no se ve, porque BDNS contesta
+          # «Acceso Denegado» sin error y la ficha se queda sin presupuesto sin
+          # que nada falle. Ver la nota larga en ingest/run.mjs.
+          node ingest/run.mjs --dias "${{ inputs.dias || 21 }}" \
+            --concurrencia "${{ inputs.concurrencia || 6 }}" \
+            ${{ inputs.llm && '--llm' || '' }} \
+            2>&1 | tee ingesta.log
+
+      - name: Resumen
+        if: always()
+        run: |
+          echo "### Convocatorias en la base" >> $GITHUB_STEP_SUMMARY
+          if [ -f data/becas.json ]; then
+            node -e "
+              const d = require('./data/becas.json');
+              const b = d.becas;
+              const req = b.filter(x => x.requisitos.length).length;
+              const citas = b.reduce((n, x) => n + x.requisitos.length, 0);
+              console.log('| Métrica | Valor |');
+              console.log('| --- | --- |');
+              console.log('| Convocatorias | ' + b.length + ' |');
+              console.log('| Con requisitos | ' + req + ' |');
+              console.log('| Requisitos con cita | ' + citas + ' |');
+              console.log('| Rango | ' + d.rango.desde + ' → ' + d.rango.hasta + ' |');
+            " >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No se generó data/becas.json — la ingesta falló." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # El log completo, porque cuando algo va mal el motivo suele estar
+      # dos líneas más abajo del error que se ve en la web.
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-ingesta
+          path: ingesta.log
+          retention-days: 14
+
+      - name: Commit
+        run: |
+          git config user.name  'becascout-bot'
+          git config user.email 'bot@becascout.com'
+          git add data/becas.json data/usuarios.json 2>/dev/null || true
+          git add -A data/
+          if git diff --staged --quiet; then
+            echo "Sin cambios: la base ya estaba al día."
+            exit 0
+          fi
+          git commit -m "data: ${GITHUB_RUN_NUMBER} ⋅ $(date -u +%Y-%m-%d %H:%M) UTC"
+          git push

@@ -1,0 +1,24 @@
+# Lo que se sube a Vercel es también lo que se sirve como web estática: todo
+# lo que no esté excluido aquí acaba en https://becascout.vercel.app/… con su
+# código fuente a la vista. Sin esto, `AGENTS.md` y los conectores de la
+# ingesta se leían desde el navegador.
+#
+# `lib/` NO va aquí a propósito: `api/[...ruta].js` importa `../lib/store.js`,
+# y si el fichero no sube, el build de la función falla con «Cannot find
+# module». Sigue being publicable en `/lib/store.js`, que no es un secreto
+# —solo lee `process.env`—, pero es lo que hay.
+
+AGENTS.md
+SPEC.md
+serve.mjs
+ingest/
+supabase/
+.github/
+.vercel/
+node_modules/
+
+# La contraseña de la base de datos y las claves viven aquí. Vercel no las
+# sube nunca: se meten con `vercel env add`. Este fichero es la razón por la
+# que esa línea está puesta, porque `.gitignore` solo protege del git.
+.env*
+!.env.example
