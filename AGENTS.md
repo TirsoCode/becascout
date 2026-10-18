@@ -59,7 +59,6 @@ js/
   auth.js             Google OAuth y sesión
 js/
   config.js           URL de la API y configuración pública
-  cookies.js          pantalla de consentimiento
   supabase.js         inicio de sesión con Google vía Supabase
   supabase-client.js  cliente de Supabase desde CDN, sin build
 api/
@@ -316,15 +315,19 @@ Supabase, y en la base solo hay lo que alguien se ha registrado de verdad.
 
 ### 6. `SPEC.md` y `AGENTS.md` estaban desfasados
 
-- La sección de cookies de `SPEC.md` dice que la pantalla de consentimiento va
-  primero; ahora va al final del pie.
+- La sección de cookies de `SPEC.md` decía que la pantalla de consentimiento
+  iba primero y luego pasó al final del pie. El aviso ya no existe: se quitó el
+  18 de octubre de 2026. La web usa una sola cookie —la de sesión—, su política
+  está enlazada en el pie y no hay consentimiento que pedir
+  (`cookies.html`, art. 22.2.c del RGPD).
 - El árbol de `AGENTS.md` ya incluye `api/`, `lib/`, `auth/`, `test/` y
   `supabase/migrations/`. **Resuelto el 17 de octubre de 2026.**
 
 ### 7. Encuesta de llegada — hecho el 18 de octubre de 2026
 
 Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar: de
-dónde nos ha conocido (ChatGPT, Claude, Instagram, TikTok, YouTube, un amigo). La
+dónde nos ha conocido (ChatGPT, Claude, Instagram, TikTok, YouTube, Reddit, un
+amigo), cada una con el logotipo de la plataforma a color. La
 respuesta vive en `cuentas.origen` y no en el navegador: lo que se quiere saber
 es por dónde llega la gente, y eso en `localStorage` no se puede contar. Se
 pregunta una vez, se conteste o se pase, y a quien vuelve a entrar no se le

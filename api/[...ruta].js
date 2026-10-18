@@ -438,7 +438,7 @@ async function yo(req, res) {
  * La encuesta de llegada: de dónde ha conocido la web quien acaba de
  * registrarse.
  *
- * Hay lista cerrada de respuestas, y aunque la web solo ofrezca esas seis, el
+ * Hay lista cerrada de respuestas, y aunque la web solo ofrezca esas siete, el
  * filtro está aquí: el navegador nunca es una fuente de confianza —por esta
  * misma ruta, sin filtro, un `curl` podría escribir cualquier cosa en la fila
  * de su cuenta, y esa columna es la que luego se lee para decidir cosas del
@@ -447,7 +447,7 @@ async function yo(req, res) {
  *
  * Se contesta una vez y se puede pasar; no hay respuesta obligatoria.
  */
-const ORIGENES = new Set(['chatgpt', 'claude', 'instagram', 'tiktok', 'youtube', 'amigo']);
+const ORIGENES = new Set(['chatgpt', 'claude', 'instagram', 'tiktok', 'youtube', 'reddit', 'amigo']);
 
 async function anotarOrigen(req, res) {
   const usuario = await porToken(leerCookie(req.headers.cookie));

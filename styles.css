@@ -268,27 +268,6 @@ img, svg { display: block; max-width: 100%; }
 .toc a { font-size: 14.5px; }
 .toc ol { margin: 4px 0 0 18px; }
 
-/* ── Aviso de cookies ────────────────────────────────────────── */
-/* Va al final del documento, después del pie. Flotante tapaba contenido y
-   además estaba siempre ahí, que es justo lo que hace que un aviso se
-   vuelva invisible: en cuanto algo está presente en cada página, deja de
-   leerse. Al final, se lee una vez. */
-.cookies {
-  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
-  background: var(--paper-2); border-top: 1px solid var(--rule);
-  padding: 16px 40px; font-size: 13px; line-height: 1.55; color: var(--ink-3);
-}
-.cookies p { margin: 0; flex: 1 1 320px; min-width: 0; }
-.cookies a { color: var(--brand); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
-.cookies a:hover { color: var(--ink); }
-.cookies-ok {
-  flex: none; padding: 8px 18px; border-radius: var(--r-pill);
-  background: var(--brand); color: #F7F4EC; font-size: 13px; font-weight: 600;
-  transition: background .16s;
-}
-.cookies-ok:hover { background: var(--g900); }
-@media (max-width: 680px) { .cookies { padding: 14px 20px; } }
-
 /* ── Pie ───────────────────────────────────────────────────── */
 .foot { border-top: 1px solid var(--rule); padding: 34px 0; margin-top: 40px; }
 .foot-in { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -638,7 +617,9 @@ body.con-cartel { padding-bottom: 104px; }
 /* Se pregunta una vez, justo después de crear cuenta, y se puede pasar. Reusa
    el modal entero; lo propio son las respuestas, que van como una columna de
    filetes —el mismo gesto que la lista de becas— y no como botones con sombra.
-   La flecha de cada fila es el único movimiento. */
+   La flecha de cada fila es el único movimiento.
+   Cada fila abre con el logotipo de la plataforma a color: la fila se
+   reconoce antes de leerse, que es lo que se pide a una lista de marcas. */
 .modal.encuesta { max-height: calc(100dvh - 32px); overflow-y: auto; }
 /* El foco de apertura va al propio diálogo, y el anillo alrededor de la caja
    no dice nada: los `Tab` siguientes ya marcan su opción. */
@@ -646,13 +627,15 @@ body.con-cartel { padding-bottom: 104px; }
 .enc-sub { font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 18px; }
 .enc-opts { border-top: 1px solid var(--rule); }
 .enc-opts button {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: 100%; padding: 13px 2px;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 12px 2px;
   border-bottom: 1px solid var(--rule);
   font-size: 15px; font-weight: 500; text-align: left;
   transition: color .16s var(--ease);
 }
-.enc-opts button::after { content: '→'; color: var(--ink-5); transition: color .16s, transform .16s var(--ease); }
+.enc-ico { width: 19px; height: 19px; flex: none; }
+.enc-ico svg { width: 100%; height: 100%; }
+.enc-opts button::after { content: '→'; margin-left: auto; color: var(--ink-5); transition: color .16s, transform .16s var(--ease); }
 .enc-opts button:hover { color: var(--brand); }
 .enc-opts button:hover::after { color: var(--brand); transform: translateX(3px); }
 .enc-skip { text-align: center; margin-top: 18px; }
