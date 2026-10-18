@@ -7,7 +7,7 @@
  * texto tapado— sin ningún dato real.
  */
 
-import { sesion, pedirAcceso } from './auth.js';
+import { sesion, pedirAcceso, revisarEncuesta } from './auth.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
 async function pintarCabecera() {
@@ -61,3 +61,7 @@ function conectarBotones() {
    otro: `pintarCabecera()` es para páginas que no lo tienen escrito a mano. */
 pintarCabecera();
 conectarBotones();
+
+// Si se aterriza aquí después de crear cuenta con Google, toca la pregunta de
+// llegada. La bandera la dejó /auth/callback (ver js/auth.js).
+revisarEncuesta();

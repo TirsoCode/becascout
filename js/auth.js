@@ -28,6 +28,15 @@
  * llama a la API de perfil de Google, se lee el correo, y el token se tira.
  * Guardarlo en localStorage sería dejar una credencial con una hora de vida
  * escrita en el disco del usuario.
+ *
+ * ── La encuesta de llegada ───────────────────────────────────────────────
+ *
+ * Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar:
+ * de dónde nos ha conocido. La respuesta se guarda en la cuenta, en el
+ * servidor, porque es un dato del proyecto y no del navegador; aquí se decide
+ * cuándo se enseña. Google con Supabase obliga a saltar a `/auth/callback`, y
+ * de ahí sí vuelve la bandera (`bs.encuesta` en `sessionStorage`) para que la
+ * página de aterrizaje lance la pregunta una vez. Ver `revisarEncuesta()`.
  */
 
 import { iniciarSupabase, entrarConGoogle, salirSupabase } from './supabase.js';
@@ -35,6 +44,13 @@ import { iniciarSupabase, entrarConGoogle, salirSupabase } from './supabase.js';
 const API = '/api';
 const GOOGLE_CLIENT_ID = '436706781551-o1nquf0ib9lp1p1vs1st0g08bs2a4k8m.apps.googleusercontent.com';
 const PERFIL = 'becascout.perfil';
+
+// La encuesta de llegada: `ORIGEN` recuerda en el navegador que ya se
+// preguntó (conteste o no) y `ENCUESTA` es la bandera que deja el callback de
+// Google para saber que la cuenta es recién creada. La respuesta de verdad va
+// a la cuenta, en el servidor.
+const ORIGEN = 'becascout.origen';
+const ENCUESTA = 'bs.encuesta';
 
 let modo = 'servidor';   // 'servidor' | 'local'
 let pendiente = null;
@@ -108,7 +124,13 @@ async function api(camino, datos) {
   });
   let cuerpo = {};
   try { cuerpo = await res.json(); } catch { /* respuesta sin cuerpo */ }
-  return { ok: res.ok, status: res.status, error: cuerpo.error, correo: cuerpo.correo };
+  return {
+    ok: res.ok,
+    status: res.status,
+    error: cuerpo.error,
+    correo: cuerpo.correo,
+    nuevo: cuerpo.nuevo,   // solo lo manda registro-google: la cuenta acaba de nacer
+  };
 }
 
 export async function salir() {
@@ -135,39 +157,66 @@ function abrirModal() {
   scrim.className = 'scrim';
   scrim.id = 'scrim';
   scrim.innerHTML = `
-    <div class="modal-wrap modal" role="dialog" aria-modal="true" aria-labelledby="modal-t">
-      <button class="modal-x" aria-label="Cerrar">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <h3 id="modal-t">Desbloquea las becas</h3>
-      <p>Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.</p>
-      <div class="modal-msg"></div>
+    <div class="modal modal-wrap auth" role="dialog" aria-modal="true" aria-labelledby="modal-t">
+      <aside class="auth-side">
+        <span class="brand auth-brand">
+          <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="brand-name">Becas<b>Scout</b></span>
+        </span>
 
-      <button class="gbtn" id="btn-google">${GOOGLE_SVG} Continuar con Google</button>
+        <div class="auth-pitch">
+          <h2>Cada requisito, con la cita del boletín del que sale.</h2>
+          <p>Nada se enseña sin el fragmento literal que lo sostiene, y no
+             inventamos probabilidades: lo que la convocatoria no dice, no lo
+             sabemos.</p>
+        </div>
 
-      <div class="modal-sep">o con tu correo</div>
+        <dl class="auth-stats">
+          <div><dt>100 %</dt><dd>requisitos con cita</dd></div>
+          <div><dt>0</dt><dd>analítica y publicidad</dd></div>
+        </dl>
+      </aside>
 
-      <div class="tabs" role="tablist">
-        <button class="tab on" data-modo="registro" role="tab">Crear cuenta</button>
-        <button class="tab" data-modo="login" role="tab">Iniciar sesión</button>
+      <div class="auth-main">
+        <button class="modal-x" aria-label="Cerrar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <h3 id="modal-t">Crea tu cuenta</h3>
+        <p id="modal-sub">Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.</p>
+        <div class="modal-msg"></div>
+
+        <button class="gbtn" id="btn-google">${GOOGLE_SVG} Continuar con Google</button>
+
+        <div class="modal-sep">o con tu correo</div>
+
+        <form id="form">
+          <label class="flab" for="f-correo">Correo</label>
+          <input id="f-correo" type="email" required autocomplete="email" placeholder="tu@correo.com">
+          <label class="flab" for="f-pass">Contraseña</label>
+          <input id="f-pass" type="password" required minlength="10" autocomplete="new-password"
+                 placeholder="Mínimo 10 caracteres">
+          <p class="fhint" id="f-hint">Al menos 10 caracteres.</p>
+          <button class="btn btn-brand" type="submit" id="f-enviar">Crear cuenta</button>
+        </form>
+
+        <p class="auth-alt" id="modal-alt"></p>
+
+        <p class="modal-fine">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="5" y="10.5" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.9"/>
+            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.9"/>
+          </svg>
+          Tu nota media, tu edad y tu destino se quedan en tu navegador y no se
+          envían a ningún sitio.
+        </p>
       </div>
-
-      <form id="form">
-        <label class="flab" for="f-correo">Correo</label>
-        <input id="f-correo" type="email" required autocomplete="email" placeholder="tu@correo.com">
-        <label class="flab" for="f-pass">Contraseña</label>
-        <input id="f-pass" type="password" required minlength="10" autocomplete="new-password"
-               placeholder="Mínimo 10 caracteres">
-        <p class="fhint" id="f-hint">Al menos 10 caracteres.</p>
-        <button class="btn btn-brand" type="submit" id="f-enviar" style="width:100%;margin-top:14px">Crear cuenta</button>
-      </form>
-
-      <p class="modal-fine">
-        Tu nota media, tu edad y tu destino se quedan en tu navegador y no se
-        envían a ningún sitio. Cada beca que ves enlaza a su convocatoria oficial.
-      </p>
     </div>`;
 
   document.body.appendChild(scrim);
@@ -186,34 +235,43 @@ function abrirModal() {
     if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(null); }
   });
 
-  // ── Pestañas: crear / entrar ───────────────────────────────────────────
+  // ── Crear / entrar, con un enlace al pie ───────────────────────────────
+  // Antes eran dos pestañas. El formulario es el mismo y lo único que cambia
+  // es a quién se llama y qué se le pide a la contraseña, así que va como
+  // enlace, que además no parte el modal en dos mitades antes de enseñar nada.
   let accion = 'registro';
   const form = scrim.querySelector('#form');
   const pass = scrim.querySelector('#f-pass');
   const enviar = scrim.querySelector('#f-enviar');
   const hint = scrim.querySelector('#f-hint');
+  const alt = scrim.querySelector('#modal-alt');
 
-  scrim.querySelectorAll('.tab').forEach((t) => {
-    t.onclick = () => {
-      accion = t.dataset.modo;
-      scrim.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
-      enviar.textContent = accion === 'registro' ? 'Crear cuenta' : 'Iniciar sesión';
-      pass.minLength = accion === 'registro' ? 10 : 1;
-      pass.autocomplete = accion === 'registro' ? 'new-password' : 'current-password';
-      hint.textContent = accion === 'registro' ? 'Mínimo 10 caracteres.' : '';
-      hint.style.display = accion === 'registro' ? '' : 'none';
-      scrim.querySelector('.modal-msg').innerHTML = '';
-      // El encabezado sigue a la pestaña. Poner «Desbloquea las becas»
-      // encima de un formulario de iniciar sesión confunde: quien ya tiene
-      // cuenta no viene a desbloquear nada, viene a entrar.
-      document.getElementById('modal-t').textContent =
-        accion === 'registro' ? 'Desbloquea las becas' : 'Iniciar sesión';
-      document.querySelector('.modal > p').textContent =
-        accion === 'registro'
-          ? 'Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.'
-          : 'Escribe tu correo y tu contraseña para volver a entrar.';
-    };
-  });
+  const pintarModo = (modo) => {
+    accion = modo;
+    enviar.textContent = accion === 'registro' ? 'Crear cuenta' : 'Iniciar sesión';
+    pass.minLength = accion === 'registro' ? 10 : 1;
+    pass.autocomplete = accion === 'registro' ? 'new-password' : 'current-password';
+    pass.placeholder = accion === 'registro' ? 'Mínimo 10 caracteres' : 'Tu contraseña';
+    hint.textContent = accion === 'registro' ? 'Al menos 10 caracteres.' : '';
+    hint.style.display = accion === 'registro' ? '' : 'none';
+    scrim.querySelector('.modal-msg').innerHTML = '';
+    // El encabezado sigue al modo. Poner «Crea tu cuenta» encima de un
+    // formulario de iniciar sesión confunde: quien ya tiene cuenta no viene a
+    // crearse nada, viene a entrar.
+    document.getElementById('modal-t').textContent =
+      accion === 'registro' ? 'Crea tu cuenta' : 'Inicia sesión';
+    document.getElementById('modal-sub').textContent =
+      accion === 'registro'
+        ? 'Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.'
+        : 'Escribe tu correo y tu contraseña para volver a entrar.';
+    alt.innerHTML = accion === 'registro'
+      ? '¿Ya tienes cuenta? <button type="button" id="modal-cambia">Inicia sesión</button>'
+      : '¿No tienes cuenta? <button type="button" id="modal-cambia">Crea una</button>';
+    alt.querySelector('#modal-cambia').onclick =
+      () => pintarModo(accion === 'registro' ? 'login' : 'registro');
+  };
+
+  pintarModo('registro');
 
   form.onsubmit = async (e) => {
     e.preventDefault();
@@ -231,6 +289,9 @@ function abrirModal() {
     if (r.ok) {
       cache = { email: correo };
       cerrar(cache);
+      // Solo al crear cuenta. A quien entra con una que ya tenía no se le
+      // pregunta de dónde nos conoció: ya lo contestó —o lo pasó— el primer día.
+      if (accion === 'registro') encuestaDeAlta();
       return;
     }
 
@@ -273,6 +334,128 @@ function abrirModal() {
 function msgDelModal(scrim, texto) {
   const c = scrim.querySelector('.modal-msg');
   if (c) c.innerHTML = `<div class="modal-err">${esc(texto)}</div>`;
+}
+
+/* ── Encuesta de llegada ────────────────────────────────────────────────── */
+
+/**
+ * ¿Toca preguntar, en esta carga de página, de dónde nos han conocido?
+ *
+ * El flujo de Google con Supabase termina en `/auth/callback`, que es otra
+ * página: ahí no hay dónde preguntar. Por eso el callback deja la bandera en
+ * `sessionStorage` y la página en la que se aterriza llama aquí. La bandera se
+ * gasta al leerla —aunque la respuesta se pierda, la pregunta ya se hizo—.
+ */
+export function revisarEncuesta() {
+  let viene = false;
+  try {
+    viene = sessionStorage.getItem(ENCUESTA) === '1';
+    sessionStorage.removeItem(ENCUESTA);
+  } catch { return; }
+  if (viene) encuestaDeAlta();
+}
+
+/** Pregunta, salvo que este navegador ya la haya visto. */
+function encuestaDeAlta() {
+  // En modo privado, leer puede lanzar. En ese caso se pregunta igual: es
+  // preferible molestar una vez a fingir que la memoria funciona —el mismo
+  // criterio que el aviso de cookies—.
+  try { if (localStorage.getItem(ORIGEN)) return; } catch { /* se pregunta */ }
+  abrirEncuesta();
+}
+
+// Las respuestas de la lista, con el valor que se guarda y lo que se lee. El
+// valor está también en `ORIGENES` de api/[...ruta].js: aquí se elige, allí se
+// comprueba. Añadir una opción son dos líneas, una en cada sitio.
+const ORIGENES = [
+  ['chatgpt', 'ChatGPT'],
+  ['claude', 'Claude'],
+  ['instagram', 'Instagram'],
+  ['tiktok', 'TikTok'],
+  ['youtube', 'YouTube'],
+  ['amigo', 'Un amigo'],
+];
+
+/**
+ * La pregunta, una sola vez, justo después de crear la cuenta.
+ *
+ * Se puede pasar de tres maneras —el aspa, el enlace del pie y `Escape`— y
+ * ninguna pide explicación. La respuesta es lo que decide cosas del producto
+ * —dónde merece la pena escribir— así que una respuesta forzada valdría menos
+ * que ninguna: quien pasa, pasa.
+ *
+ * No es una puerta: no comprueba nada ni desbloquea nada. Por eso el envío se
+ * hace sin esperar respuesta. Si el `POST` falla, se pierde una respuesta de
+ * cortesía y nada más; dejar el modal abierto esperando a la red sí sería un
+ * problema.
+ */
+function abrirEncuesta() {
+  if (document.getElementById('scrim')) return;
+
+  const scrim = document.createElement('div');
+  scrim.className = 'scrim';
+  scrim.id = 'scrim';
+  scrim.innerHTML = `
+    <div class="modal modal-wrap encuesta" role="dialog" aria-modal="true" aria-labelledby="enc-t" tabindex="-1">
+      <button class="modal-x" aria-label="Pasar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <h3 id="enc-t">¿Cómo nos has conocido?</h3>
+      <p class="enc-sub">Sirve para saber por dónde llega la gente. Si no quieres
+         contestar, pasa sin más.</p>
+
+      <div class="enc-opts">
+        ${ORIGENES.map(([v, t]) => `<button type="button" data-origen="${v}">${t}</button>`).join('')}
+      </div>
+
+      <p class="enc-skip"><button type="button">Prefiero no contestar</button></p>
+    </div>`;
+
+  document.body.appendChild(scrim);
+  document.body.style.overflow = 'hidden';
+
+  let cerrado = false;
+  function cerrar(respuesta) {
+    if (cerrado) return;
+    cerrado = true;
+    document.removeEventListener('keydown', alEscape);
+    // Que la pregunta no vuelva, conteste o no: se recuerda en el navegador
+    // porque la cuenta ya lleva la respuesta de verdad.
+    try { localStorage.setItem(ORIGEN, respuesta); } catch { /* modo privado */ }
+    scrim.remove();
+    document.body.style.overflow = '';
+  }
+  function alEscape(e) {
+    if (e.key === 'Escape') cerrar('pasar');
+  }
+
+  scrim.querySelector('.modal-x').onclick = () => cerrar('pasar');
+  scrim.querySelector('.enc-skip button').onclick = () => cerrar('pasar');
+  scrim.addEventListener('click', (e) => { if (e.target === scrim) cerrar('pasar'); });
+  document.addEventListener('keydown', alEscape);
+
+  // El foco va al propio diálogo y no a la primera respuesta: enfocando
+  // «ChatGPT» el anillo verde la señala como si estuviera elegida, y aquí no
+  // hay nada elegido de antemano. Con el foco en el diálogo, `Tab` entra por
+  // la primera opción igual.
+  scrim.querySelector('.encuesta').focus();
+
+  scrim.querySelectorAll('[data-origen]').forEach((b) => {
+    b.onclick = () => {
+      const v = b.dataset.origen;
+      api('origen', { origen: v }).catch(() => {});
+
+      // Un acuse breve antes de cerrar. Sin él, un clic que cierra en el acto
+      // no se distingue de un clic que no hizo nada.
+      scrim.querySelector('.encuesta').innerHTML = `
+        <h3>Anotado</h3>
+        <p class="enc-sub">Gracias: con esto sabemos por dónde llega la gente.</p>`;
+      setTimeout(() => cerrar(v), 850);
+    };
+  });
 }
 
 /* ── Google ─────────────────────────────────────────────────────────────── */
@@ -322,6 +505,9 @@ function lanzar(scrim, cerrar, msg) {
           if (!res.ok) throw new Error(res.error ?? 'No se pudo crear la cuenta.');
           cache = { email: res.correo };
           cerrar(cache);
+          // `nuevo` lo dice el servidor al escribir la cuenta: si ya existía
+          // —lo normal al volver a entrar con Google— no hay pregunta.
+          if (res.nuevo) encuestaDeAlta();
         } catch (err) {
           msg.innerHTML = `<div class="modal-err">${esc(err.message)}</div>`;
         }

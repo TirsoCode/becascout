@@ -354,9 +354,17 @@ img, svg { display: block; max-width: 100%; }
   border-radius: var(--r-lg);
   padding: 20px 22px;
   display: grid; grid-template-columns: 1fr auto; gap: 20px;
-  transition: border-color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+  transition: border-color .22s var(--ease), transform .32s var(--ease), box-shadow .32s var(--ease);
 }
-.beca:hover { border-color: var(--rule-2); transform: translateY(-2px); box-shadow: var(--shadow-2); }
+/* Al pasar el ratón la tarjeta se levanta: sube cuatro píxeles y proyecta una
+   sombra larga y suave. Es el único gesto de la lista, así que se nota sin
+   resultar un salto. Los navegadores que respetan `prefers-reduced-motion` lo
+   desactivan solos (regla al final de este fichero). */
+.beca:hover {
+  border-color: var(--rule-2);
+  transform: translateY(-4px);
+  box-shadow: 0 22px 44px -20px rgba(22,25,27,.30), 0 2px 6px -2px rgba(22,25,27,.06);
+}
 .beca.out { opacity: .5; }
 
 .beca-org {
@@ -448,30 +456,52 @@ img, svg { display: block; max-width: 100%; }
   opacity: .5;
 }
 
-/* Cartel de acceso: barra fija en el borde inferior, siempre visible mientras
-   el velo esté puesto.
+/* Cartel de acceso: barra flotante en el borde inferior, siempre visible
+   mientras el velo esté puesto.
 
    Aquí hubo una puerta con cartel, candado y aviso ámbar, y se quitó entera el
    17 de octubre de 2026. Volvió el 18, pero de otra forma: ni candado ni
-   «bloqueado» dentro de la lista, sino una sola barra **fuera del contenido**
-   que dice para qué hace falta la cuenta. Fija, para que siga ahí cuando el
-   estudiante lleve media lista leída, que es cuando decide. Ver
-   `cartelAcceso()` en js/becas.js. */
-.cartel-acceso {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 150;
-  display: flex; align-items: center; justify-content: center;
-  flex-wrap: wrap; gap: 10px 16px;
-  padding: 11px 16px calc(11px + env(safe-area-inset-bottom, 0px));
-  background: var(--paper);
-  border-top: 1px solid var(--rule-2);
-  box-shadow: 0 -12px 30px -20px rgba(22,25,27,.45);
-}
-.cartel-acceso p { margin: 0; font-size: 14px; color: var(--ink-2); }
-.cartel-acceso .btn { flex: none; }
+   «bloqueado» dentro de la lista, sino una sola barra —fuera del contenido—
+   que dice para qué hace falta la cuenta.
 
-/* La barra va por encima del final de la página: se le reserva su alto para
-   que la última tarjeta no quede detrás de ella. */
-body.con-cartel { padding-bottom: 78px; }
+   Va flotando y despegada del borde, en el verde de la marca y con el botón
+   en blanco: es el patrón de la referencia y lee como una invitación, no como
+   un error del navegador. Fija, para que siga ahí cuando el estudiante lleve
+   media lista leída, que es cuando decide. Ver `cartelAcceso()` en
+   js/becas.js. */
+.cartel-acceso {
+  position: fixed; z-index: 150;
+  left: 50%; transform: translateX(-50%);
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: min(720px, calc(100% - 32px));
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px 18px;
+  padding: 11px 11px 11px 22px;
+  border-radius: var(--r-pill);
+  background: var(--brand);
+  box-shadow: 0 20px 44px -18px rgba(18,70,58,.55), var(--shadow-2);
+}
+.cartel-acceso p { margin: 0; font-size: 14.5px; font-weight: 450; color: #F7F4EC; }
+.cartel-acceso .btn { flex: none; }
+.cartel-btn { background: var(--paper); color: var(--brand); }
+.cartel-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0,0,0,.5); }
+.cartel-btn:active { transform: translateY(0); }
+
+/* La barra va por encima del final de la página: se le reserva su alto más el
+   margen de abajo para que la última tarjeta no quede detrás de ella. */
+body.con-cartel { padding-bottom: 104px; }
+
+/* En un móvil el texto y el botón no caben en la misma línea. En vez de dejar
+   que el botón caiga donde pueda, se apilan: texto centrado y botón de lado a
+   lado, que es donde llega el pulgar. */
+@media (max-width: 620px) {
+  .cartel-acceso {
+    flex-direction: column; align-items: stretch; text-align: center;
+    gap: 12px; padding: 16px; border-radius: var(--r-lg);
+  }
+  .cartel-acceso .btn { width: 100%; }
+  body.con-cartel { padding-bottom: 156px; }
+}
 
 /* ── Modal de acceso ───────────────────────────────────────── */
 .scrim {
@@ -491,7 +521,58 @@ body.con-cartel { padding-bottom: 78px; }
   animation: rise .26s var(--ease);
 }
 .modal h3 { font-family: var(--display); font-size: 26px; font-weight: 400; letter-spacing: -.018em; margin-bottom: 8px; }
-.modal > p { font-size: 14px; color: var(--ink-3); margin-bottom: 22px; }
+#modal-sub { font-size: 14px; color: var(--ink-3); margin-bottom: 22px; }
+
+/* El modal de acceso va en dos columnas: a la izquierda el verde de la marca
+   con el argumento, a la derecha el formulario. El panel izquierdo no es
+   adorno: contesta la pregunta que se hace quien llega hasta aquí —para qué
+   quiero yo una cuenta— justo antes de pedirle el correo. */
+.modal.auth {
+  max-width: 900px; padding: 0;
+  display: grid; grid-template-columns: 440px 1fr;
+  overflow: hidden;
+}
+.auth-side {
+  display: flex; flex-direction: column;
+  background: var(--brand); color: #F7F4EC;
+  padding: 32px 34px 28px;
+}
+.auth-brand { color: #F7F4EC; }
+/* El icono de la marca está en verde por defecto, que sobre este fondo es
+   invisible: aquí hereda el color del panel. */
+.auth-brand .brand-mark { color: currentColor; }
+.auth-pitch { margin-top: auto; }
+.auth-pitch h2 {
+  font-family: var(--display); font-weight: 400;
+  font-size: 30px; line-height: 1.14; letter-spacing: -.022em;
+  margin-bottom: 14px;
+}
+.auth-pitch p { font-size: 13.5px; line-height: 1.6; color: rgba(247,244,236,.68); }
+/* El `margin-top: auto` reparte el hueco libre: mitad sobre el argumento, mitad
+   entre el argumento y las cifras. Sin él, todo el aire se junta al final y el
+   panel parece roto por la mitad. */
+.auth-stats { display: flex; gap: 36px; margin-top: auto; padding-top: 40px; }
+.auth-stats dt { font-family: var(--display); font-size: 26px; line-height: 1; }
+.auth-stats dd {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(247,244,236,.55); margin-top: 7px;
+}
+.auth-main { padding: 32px 34px 26px; }
+.auth-alt { text-align: center; font-size: 13.5px; color: var(--ink-3); margin-top: 16px; }
+.auth-alt button { font-size: 13.5px; font-weight: 600; color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.auth-alt button:hover { color: var(--brand-lit); }
+#f-enviar { width: 100%; margin-top: 14px; }
+
+/* En pantalla estrecha el panel verde estorba: se queda el formulario, que es
+   a lo que se viene. */
+@media (max-width: 860px) {
+  .modal.auth {
+    grid-template-columns: 1fr;
+    max-height: calc(100dvh - 32px); overflow-y: auto;
+  }
+  .auth-side { display: none; }
+  .auth-main { padding: 28px 22px 22px; }
+}
 .modal-x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-4); }
 .modal-x:hover { background: var(--paper-2); color: var(--ink); }
 .modal-wrap { position: relative; }
@@ -507,6 +588,9 @@ body.con-cartel { padding-bottom: 78px; }
 .modal-sep { display: flex; align-items: center; gap: 12px; margin: 18px 0; font-size: 12px; color: var(--ink-4); }
 .modal-sep::before, .modal-sep::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
 .modal-fine { font-size: 11.5px; color: var(--ink-5); line-height: 1.55; margin-top: 16px; text-align: center; }
+/* La regla global pone `display: block` a los `svg`; el candado va en línea
+   con el texto, no encima. */
+.modal-fine svg { display: inline-block; vertical-align: -2px; margin-right: 4px; }
 .modal-err { font-size: 13px; color: var(--rust); background: var(--rust-wash); border: 1px solid var(--rust-line); border-radius: var(--r-sm); padding: 9px 12px; margin-bottom: 16px; }
 .modal-ok { font-size: 13.5px; color: var(--brand); background: var(--brand-wash); border: 1px solid var(--brand-line); border-radius: var(--r-sm); padding: 9px 12px; margin-bottom: 16px; }
 .modal-msg:empty { display: none; }
@@ -521,19 +605,6 @@ body.con-cartel { padding-bottom: 78px; }
   font-size: 13px; font-weight: 600; color: var(--amber);
 }
 .modal-msg.amber button:hover { background: #fff; }
-
-/* Pestañas de crear / entrar */
-.tabs {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
-  background: var(--paper-2); border: 1px solid var(--rule);
-  border-radius: var(--r-sm); padding: 4px; margin-bottom: 16px;
-}
-.tab {
-  padding: 8px; border-radius: 5px; font-size: 13.5px; font-weight: 550;
-  color: var(--ink-3); transition: background .16s, color .16s;
-}
-.tab:hover { color: var(--ink); }
-.tab.on { background: var(--paper); color: var(--brand); box-shadow: var(--shadow-1); }
 
 .flab {
   display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
@@ -562,6 +633,31 @@ body.con-cartel { padding-bottom: 78px; }
 }
 .session button { font-size: 13px; color: var(--ink-4); padding: 5px 9px; border-radius: var(--r-pill); }
 .session button:hover { color: var(--rust); background: var(--rust-wash); }
+
+/* ── Encuesta de llegada ───────────────────────────────────── */
+/* Se pregunta una vez, justo después de crear cuenta, y se puede pasar. Reusa
+   el modal entero; lo propio son las respuestas, que van como una columna de
+   filetes —el mismo gesto que la lista de becas— y no como botones con sombra.
+   La flecha de cada fila es el único movimiento. */
+.modal.encuesta { max-height: calc(100dvh - 32px); overflow-y: auto; }
+/* El foco de apertura va al propio diálogo, y el anillo alrededor de la caja
+   no dice nada: los `Tab` siguientes ya marcan su opción. */
+.modal.encuesta:focus { outline: none; }
+.enc-sub { font-size: 14px; color: var(--ink-3); line-height: 1.55; margin-bottom: 18px; }
+.enc-opts { border-top: 1px solid var(--rule); }
+.enc-opts button {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; padding: 13px 2px;
+  border-bottom: 1px solid var(--rule);
+  font-size: 15px; font-weight: 500; text-align: left;
+  transition: color .16s var(--ease);
+}
+.enc-opts button::after { content: '→'; color: var(--ink-5); transition: color .16s, transform .16s var(--ease); }
+.enc-opts button:hover { color: var(--brand); }
+.enc-opts button:hover::after { color: var(--brand); transform: translateX(3px); }
+.enc-skip { text-align: center; margin-top: 18px; }
+.enc-skip button { font-size: 13px; color: var(--ink-4); text-decoration: underline; text-underline-offset: 2px; }
+.enc-skip button:hover { color: var(--ink-2); }
 
 /* ── Estados ───────────────────────────────────────────────── */
 .empty { text-align: center; padding: 70px 24px; color: var(--ink-3); }

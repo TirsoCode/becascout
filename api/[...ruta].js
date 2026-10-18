@@ -21,7 +21,7 @@
  *
  * ── Sobre el nombre del fichero ────────────────────────────────────────────
  *
- * `[...ruta].js` es lo que hace que las seis rutas (`/api/registro`,
+ * `[...ruta].js` es lo que hace que las siete rutas (`/api/registro`,
  * `/api/login`, `/api/yo`…) lleguen al mismo handler. Vercel mapea cada
  * fichero de `api/` a su propia ruta, así que un `api/auth.js` solo
  * respondería en `/api/auth` y lo demás caería en un 404. Con el comodín,
@@ -63,7 +63,7 @@
 
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
-import { crear, buscar, guardarToken, porToken, quitarToken } from '../lib/store.js';
+import { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken } from '../lib/store.js';
 
 const scryptAsync = promisify(scrypt);
 
@@ -199,6 +199,7 @@ export default async function handler(req, res) {
     if (ruta === 'login' && req.method === 'POST') return await login(req, res);
     if (ruta === 'salir' && req.method === 'POST') return await salir(req, res);
     if (ruta === 'yo' && req.method === 'GET') return await yo(req, res);
+    if (ruta === 'origen' && req.method === 'POST') return await anotarOrigen(req, res);
     if (ruta === 'config' && req.method === 'GET') return await config(req, res);
 
     json(res, 404, { error: 'ruta desconocida' });
@@ -247,16 +248,22 @@ async function registroGoogle(req, res) {
   }
 
   let usuario = await buscar(correo);
+  let nuevo = false;
   if (!usuario) {
     const salt = randomBytes(16).toString('base64');
     const hashPass = await hash(randomBytes(32).toString('base64'), salt);
     usuario = await crear(correo, hashPass, salt);
+    // `crear` devuelve null si otra petición dio de alta el mismo correo en
+    // paralelo; en ese caso la cuenta ya existía y tampoco es un alta nueva.
+    nuevo = Boolean(usuario);
   }
 
   const tokenSesion = randomBytes(32).toString('base64url');
   await guardarToken(usuario.correo, tokenSesion);
 
-  json(res, 200, { ok: true, correo: usuario.correo }, {
+  // `nuevo` es lo que decide si la web enseña la encuesta de llegada: se
+  // pregunta al crear la cuenta, no cada vez que alguien entra con Google.
+  json(res, 200, { ok: true, correo: usuario.correo, nuevo }, {
     'Set-Cookie': cookie(tokenSesion, DIAS * 24 * 60 * 60),
   });
 }
@@ -425,4 +432,33 @@ async function yo(req, res) {
   const usuario = await porToken(token);
   if (!usuario) return json(res, 401, { error: 'sin sesión' });
   json(res, 200, { correo: usuario.correo });
+}
+
+/**
+ * La encuesta de llegada: de dónde ha conocido la web quien acaba de
+ * registrarse.
+ *
+ * Hay lista cerrada de respuestas, y aunque la web solo ofrezca esas seis, el
+ * filtro está aquí: el navegador nunca es una fuente de confianza —por esta
+ * misma ruta, sin filtro, un `curl` podría escribir cualquier cosa en la fila
+ * de su cuenta, y esa columna es la que luego se lee para decidir cosas del
+ * producto—. Si mañana se añade una opción, se añade en `ORIGENES` y en la
+ * web, y nada más.
+ *
+ * Se contesta una vez y se puede pasar; no hay respuesta obligatoria.
+ */
+const ORIGENES = new Set(['chatgpt', 'claude', 'instagram', 'tiktok', 'youtube', 'amigo']);
+
+async function anotarOrigen(req, res) {
+  const usuario = await porToken(leerCookie(req.headers.cookie));
+  if (!usuario) return json(res, 401, { error: 'sin sesión' });
+
+  const { origen: respuesta } = await cuerpo(req);
+  const o = normaliza(respuesta);
+  if (!ORIGENES.has(o)) {
+    return json(res, 400, { error: 'Esa respuesta no está en la lista.' });
+  }
+
+  await guardarOrigen(usuario.correo, o);
+  json(res, 200, { ok: true });
 }

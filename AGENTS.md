@@ -81,7 +81,7 @@ data/becas.json       salida de la ingesta
 
 ### Dos cosas de `api/` que no son obvias
 
-**`api/[...ruta].js` es un comodín a propósito.** Un solo fichero maneja las seis
+**`api/[...ruta].js` es un comodín a propósito.** Un solo fichero maneja las siete
 rutas (`/api/registro`, `/api/login`, `/api/salir`, `/api/yo`, `/api/config`).
 Vercel mapea cada fichero de `api/` a su propia ruta, así que un `api/auth.js`
 solo respondería en `/api/auth` y lo demás sería un 404 — que en el navegador se
@@ -320,3 +320,27 @@ Supabase, y en la base solo hay lo que alguien se ha registrado de verdad.
   primero; ahora va al final del pie.
 - El árbol de `AGENTS.md` ya incluye `api/`, `lib/`, `auth/`, `test/` y
   `supabase/migrations/`. **Resuelto el 17 de octubre de 2026.**
+
+### 7. Encuesta de llegada — hecho el 18 de octubre de 2026
+
+Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar: de
+dónde nos ha conocido (ChatGPT, Claude, Instagram, TikTok, YouTube, un amigo). La
+respuesta vive en `cuentas.origen` y no en el navegador: lo que se quiere saber
+es por dónde llega la gente, y eso en `localStorage` no se puede contar. Se
+pregunta una vez, se conteste o se pase, y a quien vuelve a entrar no se le
+pregunta.
+
+Dos cosas que no son obvias y conviene no deshacer:
+
+- **`registro-google` responde `nuevo`**, y con eso decide la web si pregunta.
+  El callback de Google (`auth/callback.html`) deja la bandera en
+  `sessionStorage` porque la página que crea la cuenta no es la que aterriza.
+- **La lista de respuestas está en dos sitios**: `ORIGENES` en `js/auth.js` (lo
+  que se enseña) y `ORIGENES` en `api/[...ruta].js` (lo que se acepta). El
+  filtro del servidor no es paranoia: la columna es un texto que el navegador
+  manda, y sin lista cerrada entraría lo que a alguien le apeteciera escribir.
+
+**Falta aplicar la migración `supabase/migrations/0002_origen.sql`** en el
+proyecto de Supabase (`supabase db push`, o pegarla en el SQL Editor). Hasta
+entonces la pregunta se enseña igual, pero la respuesta se pierde en silencio
+al no existir la columna.

@@ -17,7 +17,7 @@
  * los mismos tengas cuenta o no.
  */
 
-import { sesion, haySesion, pedirAcceso, perfil, salir } from './auth.js';
+import { sesion, haySesion, pedirAcceso, perfil, salir, revisarEncuesta } from './auth.js';
 
 const R = 34;                  // radio del anillo
 const CIRC = 2 * Math.PI * R;
@@ -278,8 +278,8 @@ function cartelAcceso(abierta) {
   txt.textContent = 'Inicia sesión para ver las becas';
 
   const b = document.createElement('button');
-  b.className = 'btn btn-brand';
-  b.textContent = 'Inicia sesión';
+  b.className = 'btn cartel-btn';
+  b.textContent = 'Crear cuenta gratis';
   b.onclick = () => pedirAcceso().then((s) => s && pintar());
 
   barra.append(txt, b);
@@ -453,3 +453,8 @@ $('#nivel').addEventListener('change', () => $('#buscar').click());
 
 pintarCabecera();
 cargar();
+
+// Si se acaba de crear la cuenta en otro sitio —el callback de Google— la
+// página de aterrizaje es esta: la pregunta de llegada sale aquí. Ver
+// `revisarEncuesta()` en js/auth.js.
+revisarEncuesta();

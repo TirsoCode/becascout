@@ -65,10 +65,16 @@ try {
 
   m.textContent = 'Creando tu cuenta…';
   const r = await API.post('registro-google', { token });
+  const datos = await r.json().catch(() => ({}));
   if (!r.ok) {
-    const detalle = await r.json().catch(() => ({}));
-    throw new Error(detalle.error || 'No se pudo crear la cuenta.');
+    throw new Error(datos.error || 'No se pudo crear la cuenta.');
   }
+
+  // Si la cuenta acaba de nacer, la página de destino enseña la encuesta de
+  // llegada antes de seguir. La bandera va en `sessionStorage` y no en la
+  // URL: un enlace con `?nuevo=1` se reenvía, se guarda en favoritos y acaba
+  // preguntando a quien no le toca.
+  if (datos.nuevo) sessionStorage.setItem('bs.encuesta', '1');
 
   location.replace(destino);
 } catch (err) {

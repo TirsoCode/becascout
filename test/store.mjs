@@ -10,14 +10,14 @@
  * solo se veía mirando los logs de la función.
  *
  * Así que aquí se levanta un servidor que imita lo justo de la API REST de
- * Supabase —`GET` con filtro `eq.`, `POST`, `DELETE`, y el 409 por violar la
- * clave única— y se comprueba que el almacén hace las peticiones correctas y
- * devuelve lo que debe. No es un test de red: no sale de aquí, corre sin
- * conexión y sin claves.
+ * Supabase —`GET` con filtro `eq.`, `POST`, `PATCH`, `DELETE`, y el 409 por
+ * violar la clave única— y se comprueba que el almacén hace las peticiones
+ * correctas y devuelve lo que debe. No es un test de red: no sale de aquí,
+ * corre sin conexión y sin claves.
  *
  * Lo que NO comprueba, y conviene no confundir: que el SQL de
- * `supabase/migrations/0001_cuentas.sql` sea el que Supabase espera. Eso solo
- * se verifica en el SQL Editor, con el proyecto delante.
+ * `supabase/migrations/` sea el que Supabase espera. Eso solo se verifica en
+ * el SQL Editor, con el proyecto delante.
  *
  *   node test/store.mjs
  */
@@ -33,7 +33,7 @@ import assert from 'node:assert/strict';
  * para poder afirmar sobre *cómo* se llaman, no solo sobre qué devuelven.
  */
 const tablas = {
-  cuentas: new Map(),   // correo → { correo, hash, salt, creado }
+  cuentas: new Map(),   // correo → { correo, hash, salt, creado, origen?, origen_en? }
   sesiones: new Map(),  // token → { token, correo, expira, creado }
 };
 const log = [];
@@ -137,6 +137,20 @@ const servidor = createServer(async (req, res) => {
     return responde(201, [fila]);
   }
 
+  if (req.method === 'PATCH') {
+    const d = await cuerpo(req);
+    const filas = filtrar(tabla, consulta);
+    // PostgREST contesta 404 cuando se pide `return=representation` y el
+    // filtro no toca ninguna fila. Es lo que el almacén lee como «esa cuenta
+    // no está», así que el simulador tiene que hacer lo mismo o `guardarOrigen`
+    // parecería funcionar con correos que no existen.
+    if (!filas.length) return responde(404, { message: 'no rows found' });
+    // `filtrar` devuelve las filas del Map por referencia: actualizarlas en
+    // sitio es exactamente lo que hace un `update` de verdad.
+    for (const fila of filas) Object.assign(fila, d);
+    return responde(200, filas);
+  }
+
   if (req.method === 'DELETE') {
     const q = new URLSearchParams(consulta);
     for (const [k, v] of q) {
@@ -157,7 +171,8 @@ const PUERTO = await new Promise((r) => servidor.listen(0, () => r(servidor.addr
 process.env.SUPABASE_URL = `http://127.0.0.1:${PUERTO}`;
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'clave-de-prueba';
 
-const { crear, buscar, guardarToken, porToken, quitarToken } = await import('../lib/store.js');
+const { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken } =
+  await import('../lib/store.js');
 
 /* ── Comprobaciones ───────────────────────────────────────────────────────── */
 
@@ -242,6 +257,24 @@ await prueba('un correo con punto se encuentra igual', async () => {
   await crear('nombre.apellido@ejemplo.com', 'hash', 'sal');
   assert.equal((await buscar('nombre.apellido@ejemplo.com')).hash, 'hash');
   assert.equal(await buscar('nombre@ejemplo.com'), null, 'otro correo no debe colarse');
+});
+
+await prueba('guardarOrigen anota la respuesta en la cuenta, sin tocar el resto', async () => {
+  await crear('o@ejemplo.com', 'hash', 'sal');
+  assert.equal(await guardarOrigen('O@Ejemplo.com', 'chatgpt'), true);
+
+  const u = await buscar('o@ejemplo.com');
+  assert.equal(u.origen, 'chatgpt');
+  assert.ok(u.origen_en, 'debe quedar la fecha en que se contestó');
+  assert.equal(u.hash, 'hash', 'el PATCH no debe pisar las otras columnas');
+  assert.ok(
+    log.some((l) => l.metodo === 'PATCH' && l.tabla === 'cuentas'),
+    'debe actualizar la fila, no crear una nueva',
+  );
+});
+
+await prueba('guardarOrigen devuelve false si esa cuenta no existe', async () => {
+  assert.equal(await guardarOrigen('nadie@ejemplo.com', 'claude'), false);
 });
 
 await prueba('las consultas filtran por eq. y por gt.', async () => {
