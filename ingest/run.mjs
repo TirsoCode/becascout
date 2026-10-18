@@ -348,37 +348,9 @@ process.stdout.write(`  ${publicadas} publicables · ${registros.length - public
 for (const [m, n] of descartadas) process.stdout.write(`[${m}: ${n}] `);
 process.stdout.write('\n');
 
-/**
- * Lo que ya estaba guardado y no ha aparecido en esta ventana se arrastra.
- *
- * Esto es lo que convierte `--dias` en algo que no hay que tocar a diario. Sin
- * esto, `data/becas.json` contendría solo lo publicado en las últimas tres
- * semanas, y ampliar la ventana a seis meses sería una tarea que habría que
- * repetir cada día para no perder nada. Con esto el fichero es un archivo que
- * crece: la ventana de 21 días solo decide qué se mira hoy, no qué sobrevive.
- *
- * Y de paso es lo que hace posible la pasada de seis meses: al arrastrar lo
- * viejo, una única pasada profunda rellena el archivo entero y las siguientes
- * solo traen lo nuevo.
- */
-const vistos = new Set(registros.map(idAnuncio));
-let arrastradas = 0;
-for (const [clave, registro] of cache) {
-  if (vistos.has(clave)) continue;
-  // La condición por `id` es la que evita el duplicado de Erasmus. Su clave de
-  // caché es `EMJM-1-…` y coincide con su `id`, así que el `vistos` de arriba
-  // no la pilla y el programa arrastraba las 75 del catálogo anterior… y el
-  // conector las bajaba otra vez. Resultado: 727 fichas con 75 repetidas dos
-  // veces. En la lista de la web eso son dos fichas idénticas seguidas.
-  if (vistos.has(registro.id)) continue;
-  if (!publicable(registro)) continue;   // el filtro de publicación también limpia lo arrastrado
-  vistos.add(registro.id);
-  registros.push(registro);
-  arrastradas++;
-}
-if (arrastradas) {
-  console.log(`  ${arrastradas} fichas de pasadas anteriores fuera de la ventana, arrastradas.`);
-}
+// No se arrastra ninguna ficha de pasadas anteriores.
+// `data/becas.json` solo contiene lo que el bot ha encontrado en esta ventana.
+const vistos = new Set();
 
 // Esto se añadió después de que pasara. Un `catch` que publica «sin
 // requisitos» es lo correcto —una ficha rota no puede tirar la pasada— y a la
