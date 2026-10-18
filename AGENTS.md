@@ -40,7 +40,8 @@ sabemos», y se dice en la interfaz.
   tal cual a Vercel, Netlify, Cloudflare Pages o GitHub Pages.
 - **Datos:** Postgres en Neon, cuando haya backend. Antes de eso, un JSON.
 - **Ingesta:** Node 18+, módulos ES, sin dependencias.
-- **LLM:** Claude vía la API de Anthropic, solo en `ingest/extract.mjs`.
+- **Extracción:** por reglas, sin LLM. Determinista y sin clave. Ver
+  `ingest/extract.mjs`.
 
 Cero dependencias en tiempo de ejecución. Si añades una, justifica aquí por
 qué no se puede evitar.
@@ -219,19 +220,18 @@ añadas después. Para reventar una clave: `vercel env rm CLAVE production`.
 Estado a cierre del 16 de octubre de 2026: la web funciona, hay cuentas con
 contraseña y hay 78 convocatorias reales. Lo que queda, en orden.
 
-### 1. La clave de OpenRouter — bloquea el resto
+### 1. La extracción por reglas — resuelto quitando el modelo
 
-`extract.mjs` va por reglas porque `OPENROUTER_API_KEY` no está puesta. Con
-reglas salen **1 requisito** de las Bases del BOE; el texto son 20.000–50.000
-caracteres de prosa jurídica y las regex no llegan.
+**Hecho el 18 de octubre de 2026.** `extract.mjs` va por reglas, que es
+determinista y no necesita ninguna clave. Se quitó el camino con modelo (vía
+OpenRouter): añadía una clave, una dependencia externa y una factura para unos
+pocos requisitos más, y como nada se enseña sin su cita, no arreglaba el
+problema del producto —solo lo movía de sitio—.
 
-```bash
-export OPENROUTER_API_KEY=sk-or-v1-…
-node ingest/run.mjs --desde 2025-06-01 --hasta 2025-10-15 --llm
-```
-
-Coste medido: `google/gemini-2.5-flash-lite` está a 0,03 $/M. Una convocatoria
-de unas 15.000 tokens sale a céntimos.(subida de modelo con `BECAS_MODEL`).
+Con reglas salen pocos requisitos de las Bases del BOE: el texto son
+20.000–50.000 caracteres de prosa jurídica y las expresiones regulares no llegan
+a todo. Mejorar esa cobertura es trabajo de las reglas, no de volver a meter un
+modelo.
 
 ### 2. Terminar Supabase — la base está hecha, falta el botón de Google
 

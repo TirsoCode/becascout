@@ -114,7 +114,7 @@ producto no tiene nada que ofrecer frente a un buscador normal.
 sumario BOE (JSON, gratis)
    → filtro por título + sección        [barato, descarta el 97 %]
    → descarga del XML del anuncio       [caro, solo los que pasan]
-   → extracción de requisitos           [LLM si hay clave, reglas si no]
+   → extracción de requisitos           [por reglas, con cita]
    → data/becas.json
 ```
 
@@ -123,15 +123,16 @@ que se publica en el BOE cada día es absurdo. Se filtra antes de pagar.
 
 ### 5.1 Extracción
 
-Con `ANTHROPIC_API_KEY`, Claude lee el texto y devuelve requisitos tipados
-con su cita. Sin clave, reglas de expresión regular, que son deterministas
-y gratuitas pero se pierden en los casos raros.
+Por reglas de expresión regular: deterministas, gratuitas y sin clave. Cada
+requisito guarda el fragmento literal del que se sacó, y uno sin cita no se
+guarda.
 
 Medición real (BOE, 8–30 sept 2025): 56 becas detectadas en 3 semanas,
 ~970/año en temporada alta. De 40 fichas, el camino por reglas sacó
-**9 requisitos**. El rendimiento por reglas es bajo, y por eso el camino con
-LLM es el que interesa; el de reglas está para que el pipeline nunca se
-quede sin datos por falta de una tarjeta.
+**9 requisitos**. El rendimiento es bajo —las Bases son prosa jurídica de
+20.000 a 50.000 caracteres— y mejorarlo es trabajo de las reglas. Hubo un
+camino con modelo que se quitó el 18 de octubre de 2026: los requisitos que
+añadía tampoco se podían enseñar sin cita, así que no resolvía el problema.
 
 ## 6. Matching
 

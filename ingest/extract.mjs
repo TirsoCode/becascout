@@ -1,42 +1,27 @@
 /**
  * extract.mjs — De un anuncio del BOE a requisitos estructurados.
  *
- * Hay dos caminos y la elección NO depende de la calidad, sino de si hay
- * presupuesto para el modelo:
- *
- *   - Con OPENROUTER_API_KEY: un modelo lee el texto y devuelve requisitos
- *     tipados. Es el camino bueno, porque las Bases están escritas para
- *     leerse por personas y las frases que importan («no tener titulación
- *     previa», «edad máxima 30 años») no se dejan cazar con una expresión
- *     regular sin producir basura.
- *   - Sin clave: reglas. Más lento de escribir, se pierde en los casos raros,
- *     pero es determinista y gratis, así que el pipeline nunca se queda sin
- *     datos por falta de una tarjeta.
+ * Un solo camino: reglas. Determinista, gratis y sin dependencias, así que la
+ * ingesta nunca se queda a medias por falta de clave ni de tarjeta. Las Bases
+ * están escritas para leerse por personas, y las frases que importan («no tener
+ * titulación previa», «edad máxima 30 años») no siempre se dejan cazar con una
+ * expresión regular; pero lo que sale lleva su cita y lo que no sale se queda
+ * en blanco. Un requisito de menos es mejor que uno inventado.
  *
  * Regla que no se rompe nunca: **cada requisito guarda el fragmento literal
- * del que se sacó**. Sin cita, el requisito no se guarda. Si el modelo se
+ * del que se sacó**. Sin cita, el requisito no se guarda. Si una regla se
  * equivoca, al menos se equivoca con la fuente a la vista y el estudiante
- * puede comprobarla; si además se equivoca sin cita, no hay forma de
- * detectar el error y el producto pierde lo único que lo hace creíble.
+ * puede comprobarla; si además se equivoca sin cita, no hay forma de detectar
+ * el error y el producto pierde lo único que lo hace creíble.
  *
- * ── Por qué OpenRouter ────────────────────────────────────────────────────
- *
- * Porque el modelo que hace bien este trabajo se puede cambiar desde una
- * variable de entorno. La tarea es extraer campos de un texto jurídico, y hay
- * modelos de 0,03 $/M que la hacen casi tan bien como los caros: a quince mil
- * tokens por convocatoria, la diferencia entre el más barato y Claude Haiku
- * sale a céntimos al año. La clave única de OpenRouter además evita repartir
- * credenciales por proyecto.
- *
- * El modelo por defecto es deliberadamente barato. Si algún día hay que subir
- * de gama, es `--model anthropic/claude-haiku-5.5`, sin tocar código.
+ * El 18 de octubre de 2026 se quitó el camino con modelo (vía OpenRouter).
+ * Añadía una clave, una dependencia externa y una factura a cambio de unos
+ * pocos requisitos que las reglas no alcanzaban; y como el texto sin cita no
+ * se puede enseñar, el modelo no resolvía el problema del producto, solo lo
+ * movía de sitio.
  */
 
 import { readFile } from 'node:fs/promises';
-
-const MODELO = process.env.BECAS_MODEL || 'google/gemini-2.5-flash-lite';
-const API = 'https://openrouter.ai/api/v1/chat/completions';
-const MAX_INTENTOS = 3;
 
 /* ── Vocabulario de requisitos ────────────────────────────────────────────
  * Claves que usa el motor de matching. Cada una tiene sus sinónimos: el
@@ -327,9 +312,8 @@ export function extraePorReglas(parrafos) {
   anota('edad_max', 'Edad máxima', edad?.edad, edad);
 
   // Aquí se anota siempre como `importe`, y el tipo se corrige después, en
-  // `verifica` → `reclasificaImporte`. Esa es la puerta por la que pasan los
-  // dos caminos, reglas y modelo, y es el único sitio donde hace falta: si se
-  // clasificara aquí, un importe que devuelve el modelo pasaría sin revisar.
+  // `verifica` → `reclasificaImporte`: esa es la puerta por la que pasa todo
+  // lo que salen las reglas, y el único sitio donde hace falta.
   const importe = buscaImporte(parrafos);
   anota('importe', 'Importe', importe?.euros, importe);
 
@@ -337,143 +321,6 @@ export function extraePorReglas(parrafos) {
   anota('fecha_limite', 'Plazo de solicitud', plazo?.fecha, plazo);
 
   return requisitos;
-}
-
-/**
- * Camino con modelo. Devuelve null si no hay clave, para que el llamante caiga
- * al camino por reglas sin tener que preguntar.
- *
- * Reintenta ante errores de red y 5xx, porque la ingesta va por tandas y un
- * parpadeo del proveedor no debería dejar la base a medias. Un 4xx no se
- * reintenta: si la clave está mal, reintentar tres veces solo tarda más.
- */
-export async function extraeConLLM(parrafos, { apiKey, model } = {}) {
-  if (!apiKey) return null;
-
-  const cuerpo = parrafos.slice(0, 240).map((p) => p.texto).join('\n\n');
-  if (cuerpo.length < 200) return null;
-
-  const system = [
-    'Extraes requisitos de admisión de convocatorias de becas y ayudas de estudio.',
-    'Reglas:',
-    '- Solo devuelves requisitos que estén EXPLÍCITOS en el texto.',
-    '- Cada requisito incluye "cita": el fragmento literal del texto que lo sustenta, copiado sin cambiar ni una palabra.',
-    '- Si no estás seguro, el requisito no va. Es preferible devolver [] que inventar.',
-    '- "obligatorio" es true salvo que el texto diga "recomendado" u "opcional".',
-    '- Tipos válidos: nota_minima, edad_max, edad_min, idioma, titulacion, destino, ingresos, justificacion, importe, fecha_limite.',
-    '- El valor va ya normalizado: nota sobre 10, edad en años enteros, importe en euros (sin símbolo ni separador de miles).',
-    '- "fecha_limite" en formato AAAA-MM-DD.',
-    '- Si el importe es el presupuesto total de la convocatoria, una línea presupuestaria o una cotización, NO es el importe de la beca: en ese caso no lo incluyas.',
-  ].join('\n');
-
-  const payload = {
-    model: model || MODELO,
-    temperature: 0,
-    max_tokens: 4096,
-    // JSON mode: OpenRouter lo traduce al modo estructurado del modelo que
-    // toque. Es lo que evita la mitad de las respuestas que empiezan con
-    // «Aquí tienes los requisitos:» y rompen el parseo.
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: system },
-      {
-        role: 'user',
-        content: `<convocatoria>\n${cuerpo}\n</convocatoria>\n\nDevuelve solo JSON con la forma {"requisitos": [...]}, sin texto alrededor.`,
-      },
-    ],
-  };
-
-  let ultimoError;
-  for (let intento = 1; intento <= MAX_INTENTOS; intento++) {
-    try {
-      const res = await fetch(API, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${apiKey}`,
-          // Cabeceras de atribución que OpenRouter pide para el panel del
-          // usuario. No son obligatorias, pero sin ellas la petición sale
-          // sin nombre y no se distingue de cualquier otra.
-          'http-referer': 'https://becascout.com',
-          'x-title': 'BecasScout ingest',
-        },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(120_000),
-      });
-
-      if (!res.ok) {
-        const detalle = (await res.text()).slice(0, 200);
-        // 429 y 5xx son transitorios: vale la pena reintentar.
-        if (res.status === 429 || res.status >= 500) {
-          ultimoError = new Error(`${res.status}: ${detalle}`);
-          await espera(1000 * intento);
-          continue;
-        }
-        throw new Error(`${res.status}: ${detalle}`);
-      }
-
-      const json = await res.json();
-      const contenido = json?.choices?.[0]?.message?.content;
-      if (!contenido) throw new Error('respuesta vacía');
-
-      const datos = parsea(contenido);
-      return limpia(datos?.requisitos);
-    } catch (err) {
-      ultimoError = err;
-      if (intento < MAX_INTENTOS) await espera(1000 * intento);
-    }
-  }
-  throw ultimoError ?? new Error('fallo desconocido');
-}
-
-/** Espera exponencial simple entre reintentos. */
-function espera(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-/**
- * El contenido debería ser JSON puro por el JSON mode, pero un modelo puede
- * devolverlo envuelto en ```json … ``` o con un comentario delante. Se quita
- * la valla en vez de confiar, porque un parseo que falla tira la convocatoria
- * entera.
- */
-function parsea(texto) {
-  try {
-    return JSON.parse(texto);
-  } catch { /* sigue con la limpieza */ }
-
-  const valla = texto.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if (valla) {
-    try {
-      return JSON.parse(valla[1]);
-    } catch { /* sigue */ }
-  }
-
-  const primero = texto.indexOf('{');
-  const ultimo = texto.lastIndexOf('}');
-  if (primero > -1 && ultimo > primero) {
-    return JSON.parse(texto.slice(primero, ultimo + 1));
-  }
-  throw new Error('la respuesta no es JSON');
-}
-
-/**
- * Normaliza lo que devuelve el modelo. La cita es obligatoria: un requisito
- * sin cita se descarta aquí mismo, antes de que llegue a la base, y no se
- * intenta arreglar inventando una cita.
- */
-function limpia(requisitos) {
-  if (!Array.isArray(requisitos)) return [];
-  return requisitos
-    .filter((r) => r && r.tipo && r.etiqueta && r.cita && String(r.cita).length > 8)
-    .map((r) => ({
-      tipo: String(r.tipo).slice(0, 30),
-      etiqueta: String(r.etiqueta).slice(0, 80),
-      valor: r.valor ?? null,
-      obligatorio: r.obligatorio !== false,
-      cita: String(r.cita).slice(0, 400),
-      extractor: 'llm',
-    }));
 }
 
 /**
@@ -729,17 +576,16 @@ export function verifica(requisitos) {
  * extraordinarios en Ceuta está en su cita, y sale con `verificado: true` y
  * con la etiqueta «Importe» en la ficha de un estudiante que nunca va a verlo.
  *
- * Aquí se lee la frase: si el dinero es de un beneficiario, el requisito se
+ * Aquí se revisa la cita: si el dinero es de un beneficiario, el requisito se
  * queda como `importe`; si es de toda la convocatoria, pasa a llamarse
  * `presupuesto` y se enseña como lo que es; y si no se entiende de quién es,
  * se descarta. **Se descarta, no se enseña a medias.** Un `importe` dudoso
  * es peor que ningún `importe`: uno se comprueba y el otro hace que el
  * estudiante piense que le van a dar 40 millones.
  *
- * Se aplica a los dos caminos por igual, reglas y modelo, porque el modelo
- * también se equivoca en esto —de hecho el prompt ya le pedía cuidado— y
- * porque la promesa del producto es que **nada se enseña sin cita que lo
- * sostenga**, y aquí la cita existe pero no sostiene lo que dice la etiqueta.
+ * Pasa por aquí todo lo que extraen las reglas, porque la promesa del producto
+ * es que **nada se enseña sin una cita que lo sostenga**, y aquí la cita existe
+ * pero no sostiene lo que dice la etiqueta.
  */
 function reclasificaImporte(r) {
   if (r.tipo !== 'importe') return r;
@@ -757,17 +603,14 @@ function reclasificaImporte(r) {
 }
 
 /**
- * Elige camino y devuelve siempre un array ya verificado.
+ * Extrae por reglas y devuelve siempre un array ya verificado.
  *
- * El orden importa: primero se extrae (LLM o reglas), después se verifica
- * que cada cita sostenga su valor. La verificación va siempre, también en el
- * camino con LLM, porque un modelo también puede citar mal.
+ * Las dos cosas van juntas a propósito: primero se extrae, después se comprueba
+ * que cada cita sostenga su valor. Un requisito sin cita —o con una cita que no
+ * contiene el dato— no sale de aquí.
  */
-export async function extrae(parrafos, opciones = {}) {
-  const crudo = await extraeConLLM(parrafos, opciones)
-    .catch(() => null)
-    ?? extraePorReglas(parrafos);
-  return verifica(crudo);
+export async function extrae(parrafos) {
+  return verifica(extraePorReglas(parrafos));
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -776,9 +619,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.error('uso: node extract.mjs <ficha.txt>');
     process.exit(1);
   }
-  const r = await extrae(parrafosConOrigen(txt), {
-    apiKey: process.env.OPENROUTER_API_KEY,
-    model: process.env.BECAS_MODEL,
-  });
-  console.log(JSON.stringify(r, null, 2));
+  console.log(JSON.stringify(await extrae(parrafosConOrigen(txt)), null, 2));
 }

@@ -31,11 +31,6 @@ on:
         description: 'Fichas procesadas a la vez (subirlo mucho hace que BDNS conteste "Acceso Denegado" en silencio)'
         required: false
         default: '6'
-      llm:
-        description: 'Usar el modelo de OpenRouter (más caro, más completo)'
-        type: boolean
-        required: false
-        default: false
 
 # Una sola ingesta a la vez. Sin esto, si una pasada tarda más que el
 # intervalo, la siguiente arranca encima y las dos escriben el mismo
@@ -72,11 +67,6 @@ jobs:
           echo "HOME=$HOME"
 
       - name: Ingesta
-        env:
-          # Sin secreto se ejecuta por reglas. Si el repositorio tiene la
-          # clave de OpenRouter configurada, la ingesta la usa sola.
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          BECAS_MODEL: ${{ vars.BECAS_MODEL || 'google/gemini-2.5-flash-lite' }}
         run: |
           # `--dias 21` mira hacia atrás tres semanas: la ventana que
           # cubre desde la última pasada con margen para una que se haya
@@ -89,7 +79,6 @@ jobs:
           # que nada falle. Ver la nota larga en ingest/run.mjs.
           node ingest/run.mjs --dias "${{ inputs.dias || 21 }}" \
             --concurrencia "${{ inputs.concurrencia || 6 }}" \
-            ${{ inputs.llm && '--llm' || '' }} \
             2>&1 | tee ingesta.log
 
       - name: Resumen

@@ -7,8 +7,7 @@
   "scripts": {
     "dev": "node serve.mjs",
     "start": "node serve.mjs",
-    "ingest": "node ingest/run.mjs",
-    "ingest:llm": "node ingest/run.mjs --llm"
+    "ingest": "node ingest/run.mjs"
   },
   "engines": {
     "node": ">=18"

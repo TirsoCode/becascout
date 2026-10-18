@@ -2,11 +2,8 @@
  * run.mjs — Orquestador de la ingesta.
  *
  *   node ingest/run.mjs --desde 2025-09-01 --hasta 2025-09-30
- *   node ingest/run.mjs --desde 2025-09-01 --hasta 2025-09-30 --llm
- *   BECAS_MODEL=anthropic/claude-haiku-5.5 node ingest/run.mjs --llm …
  *
- * El modelo va en BECAS_MODEL porque la tarea no necesita un modelo concreto:
- * cualquiera que devuelva JSON sirve, y el precio va de 0,03 $/M a 1 $/M.
+ * Los requisitos salen por reglas, no por un modelo: ver `ingest/extract.mjs`.
  *
  * Escribe data/becas.json. El formato es JSON plano y no una base de datos
  * a propósito: el frontend tiene que poder abrirlo con un `fetch` desde
@@ -69,12 +66,9 @@ function aRegistro(ficha, requisitos) {
 
 const desde = arg('desde', diasAtras(arg('dias', 21)));
 const hasta = arg('hasta', fechaPorDefecto(0));
-const usarLLM = process.argv.includes('--llm');
 // BDNS necesita un Chrome. En local y en los runners de GitHub Actions ya
 // lo hay, pero si no, la ingesta sigue con BOE solo en vez de romperse.
 const usarBdns = !process.argv.includes('--sin-bdns');
-const modelo = process.env.BECAS_MODEL || arg('model', null);
-const apiKey = process.env.OPENROUTER_API_KEY;
 
 /** Fecha de hace N días, para el modo `--dias 21` que usa el cron. */
 function diasAtras(n) {
@@ -135,7 +129,7 @@ function fechaPorDefecto(deltaDias) {
 }
 
 console.log(`BecasScout · ingesta ${desde} → ${hasta}`);
-console.log(`Extractor: ${usarLLM && apiKey ? `OpenRouter (${modelo ?? 'por defecto'})` : 'reglas (sin OPENROUTER_API_KEY)'}`);
+console.log('Extractor: reglas (determinista, sin modelo)');
 console.log(`Fuentes:   BOE${usarBdns ? ' + BDNS (Chrome) + Bases' : ''} + Erasmus Mundus`);
 
 /**
@@ -144,7 +138,7 @@ console.log(`Fuentes:   BOE${usarBdns ? ' + BDNS (Chrome) + Bases' : ''} + Erasm
  * ── Por qué hay pool y no un `for` con `await` ───────────────────────────
  *
  * Antes cada ficha se procesaba sola: página de BDNS con Chrome (unos 2
- * segundos), luego el XML de las Bases, y a veces el modelo. Con doscientas
+ * segundos) y luego el XML de las Bases. Con doscientas
  * fichas eso son siete minutos de reloj en los que solo hay una cosa
  * esperando. El trabajo es independiente ficha a ficha —no comparten nada—,
  * así que no hay motivo para no hacerlo a la vez.
@@ -262,18 +256,14 @@ async function procesar(f) {
 
         if (bases?.texto?.length > 300) {
           registro = { ...registro, texto_bases_len: bases.texto.length };
-          requisitos = await extrae(parrafosConOrigen(bases.texto), {
-            apiKey: usarLLM ? apiKey : null, model: modelo,
-          });
+          requisitos = await extrae(parrafosConOrigen(bases.texto));
         }
       }
     }
   }
 
   if (!requisitos.length) {
-    requisitos = await extrae(parrafosConOrigen(f.texto), {
-      apiKey: usarLLM ? apiKey : null, model: modelo,
-    });
+    requisitos = await extrae(parrafosConOrigen(f.texto));
   }
   registro.requisitos = requisitos;
 
