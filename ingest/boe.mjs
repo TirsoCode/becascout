@@ -33,15 +33,38 @@ const MATERIAS_EDUCACION = [
   'exchanges', 'erasmus', 'juventud',
 ];
 
-/** Palabras que delatan una convocatoria de becas en el título. */
+/**
+ * Palabras que delatan una convocatoria de ayudas en el título.
+ *
+ * Están en minúsculas y se buscan con `includes` sobre el título en minúsculas,
+ * no como expresión regular: el BOE escribe «BECAS», «Becas» y «becas» en el
+ * mismo día, y escapar cada variante en un patrón es una fuente de fallos
+ * silenciosos que no vale la pena.
+ */
 const PALABRAS_BECA = [
-  'beca', 'becas', 'becario', 'becaria', 'bolsa', 'bolsas de estudio',
-  'ayuda al estudio', 'ayudas al estudio', 'ayudas para estudiar',
-  'movilidad', 'intercambio', 'erasmus', 'estancias', 'practical',
-  'prácticas', 'proyectos de cooperación', 'becas de investigación',
+  'beca', 'becas', 'becario', 'becaria', 'bolsa de', 'bolsas de estudio',
+  'ayuda al estudio', 'ayudas al estudio', 'ayudas para estudiar', 'ayudas',
+  'subvenci', 'dotaci', 'premio', 'estancia', 'movilidad', 'intercambio',
+  'erasmus', 'practical', 'prácticas', 'proyectos de cooperación',
+  'becas de investigación', 'beneficiari',
 ];
 
-/** Departamento que casi nunca trae becas: se salta antes de bajar el texto. */
+/**
+ * Epígrafes con los que el propio BOE clasifica una convocatoria de dinero.
+ *
+ * ── Por qué se usa la clasificación del BOE y no la nuestra ───────────────
+ *
+ * El sumario agrupa cada anuncio bajo un `epigrafe` que pone el propio
+ * boletín: «Becas», «Ayudas», «Subvenciones», «Premios». Eso es un dato de la
+ * fuente, no una interpretación nuestra, así que un anuncio bajo «Becas» es
+ * una beca por definición del boletín, y ahí no hay manera de equivocarse.
+ *
+ * El epígrafe se pierde hoy en `aplanar()`, que no arrastra el contexto del
+ * departamento y del epígrafe hasta el anuncio. Se arrastra a propósito: es la
+ * señal más fiable que da el sumario y la única que no depende de interpretar
+ * un título.
+ */
+const EPIGRAFES_CONVOCATORIA = /^(becas?|ayudas?|subvenciones?|premios?|dotaciones?|estancias?|movilidad|pr[aá]cticas?)\b/i;
 
 async function pedir(url, { timeout = 30_000 } = {}) {
   const ctrl = new AbortController();
@@ -80,11 +103,19 @@ export function diasRango(desde, hasta) {
  * departamento puede traer varios epígrafes, un epígrafe varios items, y a
  * veces `epigrafe` es un string suelto cuando no hay jerarquía), así que se
  * recoge todo de forma recursiva en vez de suponer una forma fija.
+ *
+ * `ctx` arrastra el nombre del departamento y del epígrafe que envuelven al
+ * anuncio. No es decorativo: el epígrafe es la clasificación que hace el
+ * propio BOE («Becas», «Ayudas», «Subvenciones» frente a «Nombramientos»,
+ * «Destinos», «Subvenciones»), y `textoCompleto` no la puede reconstruir
+ * después porque el XML del documento no la trae. Si se pierde aquí, se
+ * pierde para siempre y solo queda el título, que es lo que metía las
+ * noticias como si fueran becas.
  */
-function aplanar(nodo, acc = []) {
+function aplanar(nodo, ctx = {}, acc = []) {
   if (nodo == null) return acc;
   if (Array.isArray(nodo)) {
-    nodo.forEach((x) => aplanar(x, acc));
+    nodo.forEach((x) => aplanar(x, ctx, acc));
     return acc;
   }
   if (typeof nodo !== 'object') return acc;
@@ -103,10 +134,29 @@ function aplanar(nodo, acc = []) {
       urlXml: urlXml ?? `${TEXTO}?id=${nodo.identificador}`,
       urlHtml: nodo.url_html ?? '',
       seccion: nodo.seccion ?? '',
+      epigrafe: ctx.epigrafe ?? null,
+      departamento: ctx.departamento ?? null,
     });
     return acc;
   }
-  for (const v of Object.values(nodo)) aplanar(v, acc);
+
+  for (const [clave, v] of Object.entries(nodo)) {
+    if (clave === 'epigrafe') {
+      const eps = Array.isArray(v) ? v : [v];
+      for (const e of eps) {
+        if (typeof e === 'string') continue;   // epígrafe suelto, sin items
+        aplanar(e, { ...ctx, epigrafe: e.nombre ?? ctx.epigrafe }, acc);
+      }
+    } else if (clave === 'departamento') {
+      const deps = Array.isArray(v) ? v : [v];
+      for (const d of deps) {
+        if (typeof d === 'string') continue;
+        aplanar(d, { ...ctx, departamento: d.nombre ?? ctx.departamento, epigrafe: null }, acc);
+      }
+    } else {
+      aplanar(v, ctx, acc);
+    }
+  }
   return acc;
 }
 
@@ -122,53 +172,97 @@ export async function sumario(dia) {
 }
 
 /**
- * Ruido que parece beca y no lo es.
+ * Lo que el BOE publica con el mismo formato que una convocatoria y no lo es.
  *
- * El BOE publica con el mismo formato las oposiciones, los ceses y los
- * acuerdos entre instituciones, y el título tiene la misma forma que el de
- * una beca. Medido en una ventana de tres semanas: de 20 candidatos, tres
- * eran oposiciones («proceso selectivo para ingreso, como personal laboral
- * fijo», «se nombra Directora General»).
+ * ── El bug que arregla esta lista ────────────────────────────────────────
  *
- * Son ruido puro. No se descartan por la palabra «beca», sino por lo que
- * piden: si el título habla de cubrir un puesto, no es una beca por mucho que
- * la palabra aparezca en algún punto de la línea.
+ * Hasta el 18 de octubre de 2026 la ingesta publicaba TODO lo que traía el
+ * sumario: de 2.626 fichas, 209 tenían requisitos y 19 enlazaban con una ficha
+ * de BDNS. El resto eran noticias administrativas —jubilaciones, nombramientos,
+ * ceses, destinos, concursos para proveer plazas, subastas de Hacienda,
+ * información pública de confederaciones hidrográficas, planes de estudios— que
+ * salían en la web como si fueran becas. El caso que lo enseñó: «Anuncio del
+ * Servicio de Títulos, Becas y Ayudas al Estudiante … sobre extravío de
+ * título», donde «Becas» está en el nombre de la oficina y no en lo que el
+ * documento hace.
+ *
+ * El error no fue dejar de filtrar por la palabra «beca», fue dejar de filtrar
+ * del todo. Estas expresiones no buscan becas: descartan documentos que
+ * **dan fe de algo ya ocurrido** (un nombramiento, una adjudicación) o que
+ * **regulan** (un reglamento, un plan de estudios), y ninguno de esos convoca
+ * a nadie a pedir dinero. Es un filtro por lo que el documento *es*, no por lo
+ * que dice su título sobre becas.
+ *
+ * Se aplica ANTES de bajar el texto, que es una petición por anuncio: descartar
+ * aquí es lo que hace que una pasada de seis meses quepa en el job.
  */
-const RUIDO_CONVENIO = [
-  /se publica el [Cc]onvenio/i,
-  /publicaci[óo]n del [Cc]onvenio/i,
-  /celebraci[óo]n de [Cc]onvenio/i,
-  /se publica el acuerdo/i,
-  /se publica la [Cc]onvenci[óo]n/i,
+const RUIDO = [
+  // Personal y carrera: el documento da fe de un nombramiento, un cese o un
+  // destino, no convoca a nadie.
+  /jubilaci[óo]n/i,
+  /\bceses?\b|se dispone el cese/i,
+  /se nombra|nombramientos?/i,
+  /se destina|otorga destino|\bdestinos\b|adscripci[óo]n/i,
+  /provisi[óo]n de (puesto|plaza)|a proveer|para proveer|libre designaci[óo]n/i,
+  /proceso selectiv|oposici[óo]n|concurso-oposici|pruebas? (selectiv|de acceso|de aptitud)|concurso de (traslados?|m[eé]ritos|acceso)|concurso (general|espec[ií]fico)/i,
+  /personal (funcionario|laboral|estatutario|docente)|cuerpos? de|escala de|carrera (judicial|profesional)/i,
+  /tribunal|jurado|admitid|excluid|aspirantes|calificacion/i,
+  /excedencia|reingreso|retribucion|escalaf[oó]n|servicios m[ií]nimos/i,
+
+  // Anuncios y avisos que no convocan: notificaciones, licitaciones, subastas,
+  // información pública, expropiaciones.
+  /notificaci|emplazamiento|citaci[óo]n|requerimiento|subsanaci|edicto|extrav[ií]o/i,
+  /subasta|licitaci|formalizaci[óo]n|adjudicaci[óo]n (del contrato|definitiva)|contrato de|concesi[óo]n (administrativa|de obra|dem)/i,
+  /informaci[óo]n p[uú]blica|declaraci[óo]n de (impacto|utilidad|inter[eé]s)|expropiaci[óo]n/i,
+
+  // Normas, acuerdos y estructura: regulan, no convocan.
+  /convenio|acuerdo|protocolo|encomienda|delegaci[óo]n de competencias/i,
+  /correcci[óo]n de errores/i,
+  /plan de estudios|reglamento|estatutos|calendario|horario|normas? de/i,
+  /condecoraci|t[ií]tulos nobiliarios|indulto|gran cruz|collar de la orden/i,
+  /inconstitucionalidad|conflicto (positivo|de competencia)|fiscalizaci[óo]n/i,
+  /carta de servicios|delegaci[óo]n de firmas|estructura org[aá]nica/i,
 ];
 
 /**
- * ¿Vale la pena bajar el texto de este anuncio?
+ * ¿Es este anuncio una convocatoria de becas, ayudas o subvenciones?
  *
- * Este filtro ya NO descarta por la palabra «beca», y es un cambio de
- * criterio que conviene explicar. Se quitó porque suprime entradas según el
- * título, y el título de una convocatoria de ayuda no siempre dice «beca»:
- * dice «subvención», «ayuda», «premio», «convocatoria de plazas» o directamente
- * el nombre del programa. Quien busca una beca de investigación concreta se
- * queda sin ella porque el título decía otra cosa, y no hay forma de que se
- * entere de que se la hemos quitado. Un filtro que se equivoca es invisible.
+ * ── Por qué allowlist y no solo blocklist ────────────────────────────────
  *
- * Lo único que se descarta aquí es lo que no puede ser una convocatoria
- * individual: los acuerdos ya firmados y los ceses. Ese filtro es seguro
- * porque no se apoya en palabras de beca, sino en que el documento no convoca
- * a nadie.
+ * Una blocklist sola deja pasar todo lo que no se le ocurrió a quien la
+ * escribió, y el BOE publica cientos de formas distintas de decir «esto no es
+ * una beca». Por eso el filtro pide una **señal positiva** para publicar, y
+ * usa el departamento y el epígrafe del sumario además del título. La parte de
+ * blocklist sigue ahí, delante, porque hay títulos que dan la señal positiva
+ * de rebote: el extravío de títulos de un «Servicio de Becas» la da, y no es
+ * una beca.
  *
- * El coste de aflojarlo es descargar más XML: unos cientos de anuncios al día,
- * todos de texto plano. Es asumible.
+ * ── Lo que este filtro NO decide ─────────────────────────────────────────
+ *
+ * No decide si la ayuda es para un estudiante o para una empresa: eso está en
+ * el texto y se enseña con su cita. Aquí solo se separa lo que convoca de lo
+ * que no. Quien busca una subvención para su asociación también es bienvenido.
+ *
+ * ── El riesgo, dicho claro ───────────────────────────────────────────────
+ *
+ * Un filtro que se equivoca es invisible: si se cae una beca real, quien la
+ * buscaba no ve el hueco. Por eso el epígrafe (que lo pone el BOE, no
+ * nosotros) va primero, la lista de palabras positivas es ancha, y el
+ * orquestador **cuenta y enseña lo descartado por motivo** en cada pasada. Un
+ * descarte con volumen raro se ve en el log y se revisa; un descarte mudo, no.
  */
 export function esBeca(anuncio) {
-  const t = anuncio.titulo.toLowerCase();
+  const t = String(anuncio?.titulo ?? '').toLowerCase();
+  const ep = String(anuncio?.epigrafe ?? '');
 
-  // Convenios publicados y ceses: el documento da fe de un acuerdo ya
-  // firmado o de una baja. No convoca a nadie, luego no hay nada que buscar.
-  if (RUIDO_CONVENIO.some((r) => r.test(t))) return false;
-  if (/se dispone del cese/i.test(t)) return false;
-  return true;
+  // El BOE ya lo clasificó como convocatoria de dinero: manda su criterio.
+  if (EPIGRAFES_CONVOCATORIA.test(ep)) return true;
+
+  // Documentos que dan fe de algo ya ocurrido o que regulan: nunca convocan.
+  if (RUIDO.some((r) => r.test(t))) return false;
+
+  // Señal positiva en el título: convoca a pedir algo.
+  return PALABRAS_BECA.some((p) => t.includes(p));
 }
 
 /**

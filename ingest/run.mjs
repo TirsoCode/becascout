@@ -302,6 +302,53 @@ for (let i = 0; i < fichas.length; i += CONCURRENCIA) {
 process.stdout.write('\n');
 
 /**
+ * Filtra qué registros se publican y cuántas fichas se descartan por motivo,
+ * para que el descarte no sea invisible.
+ *
+ * ── Por qué aquí y no al recolectar ───────────────────────────────────────
+ *
+ * `esBeca()` descarta por el título y el epígrafe del sumario, pero hay
+ * anuncios que pasan ese filtro y no son becas: el epígrafe es solo una pista
+ * y el título de un extracto de BDNS no siempre dice «beca» («ayudas»,
+ * «subvención» del Servicio de Títulos…). La certeza última es el texto
+ * descargado: si extraer requisitos no saca nada y no hay ficha de BDNS ni
+ * Bases localizadas, el documento no convoca a nadie a pedir dinero y no se
+ * publica.
+ *
+ * ── Qué se publica ────────────────────────────────────────────────────────
+ *
+ * Solo se publica lo que tiene requisitos con cita, o ficha de BDNS, o
+ * presupuesto, o Bases localizadas. El resto se descarta del fichero:
+ * es un anuncio del BOE revisado y descartado, no una beca que enseñar.
+ */
+function motivoDescartado(r) {
+  const t = String(r?.titulo ?? '').toLowerCase();
+  if (!r.esEducacion) return 'no es materia de educacion';
+  if (/jubilaci|nombramiento|\bcese\b|proceso selectiv|oposici|provisi[oó]n de puesto|subasta|informaci[oó]n p[uú]blica|convenio|correcci[oó]n de errores/i.test(t)) return 'no es convocatoria';
+  return 'sin requisitos ni ficha';
+}
+
+function publicable(r) {
+  if (r.requisitos.length > 0) return true;
+  if (r.boeIdBases) return true;      // las Bases estan en el BOE, se pueden leer
+  if (String(r.id).startsWith('BDNS')) return true;   // hay ficha oficial de BDNS
+  if (r.presupuesto != null) return true;   // BDNS relleno el presupuesto
+  return false;
+}
+
+let publicadas = 0;
+const descartadas = new Map();
+for (const r of registros) {
+  if (publicable(r)) { publicadas++; continue; }
+  const m = motivoDescartado(r);
+  descartadas.set(m, (descartadas.get(m) || 0) + 1);
+}
+
+process.stdout.write(`  ${publicadas} publicables · ${registros.length - publicadas} descartadas   `);
+for (const [m, n] of descartadas) process.stdout.write(`[${m}: ${n}] `);
+process.stdout.write('\n');
+
+/**
  * Lo que ya estaba guardado y no ha aparecido en esta ventana se arrastra.
  *
  * Esto es lo que convierte `--dias` en algo que no hay que tocar a diario. Sin
@@ -324,6 +371,7 @@ for (const [clave, registro] of cache) {
   // conector las bajaba otra vez. Resultado: 727 fichas con 75 repetidas dos
   // veces. En la lista de la web eso son dos fichas idénticas seguidas.
   if (vistos.has(registro.id)) continue;
+  if (!publicable(registro)) continue;   // el filtro de publicación también limpia lo arrastrado
   vistos.add(registro.id);
   registros.push(registro);
   arrastradas++;
@@ -385,8 +433,6 @@ if (!process.argv.includes('--sin-erasmus')) {
 // Lo que sí se mantiene es la etiqueta. Cada registro dice de dónde viene y
 // qué se ha podido sacar, para que nadie confunde una convocatoria completa con
 // una de la que solo tenemos el título.
-// La deduplicación va AQUÍ, y no donde estaba.
-//
 // Estaba en el arrastre, y no podía funcionar: Erasmus se suma después de
 // arrastrar, así que cuando se comprobaba si un identificador ya estaba visto
 // todavía no se sabía nada de los 75 de Erasmus. El resultado eran 727 fichas
@@ -418,8 +464,7 @@ const conReq = publicables.filter((r) => r.requisitos.length > 0).length;
 const totalReq = publicables.reduce((n, r) => n + r.requisitos.length, 0);
 const conCita = publicables.every((r) => r.requisitos.every((x) => Boolean(x.cita)));
 
-console.log(`\n  ${registros.length} publicadas · ninguna descartada`);
-console.log(`  ${publicables.length} publicadas`);
+console.log(`\n  ${publicables.length} publicadas · ${registros.length - publicables.length} descartadas`);
 console.log(`  ${conReq} con requisitos · ${totalReq} requisitos en total`);
 console.log(`  ${publicables.filter((r) => r.boeIdBases).length} con Bases localizadas en el BOE`);
 console.log(`  ${reutilizadas} reutilizadas de la pasada anterior`);
