@@ -80,7 +80,6 @@ function colapsar(nodo) {
   const salida = {};
   for (const hijo of nodo.children) {
     const nombre = hijo.tag;
-    const limpio = nombre.replace(/^.*:/, '');
     const valor = hijo.children.length > 0 ? colapsar(hijo) : hijo.text;
 
     if (nombre in salida) {

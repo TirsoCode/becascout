@@ -60,15 +60,41 @@ export async function sesion() {
   return cache;
 }
 
+/**
+ * ¿Hay una cuenta de verdad? La sesión de juguete del modo local **no** cuenta.
+ *
+ * `sesion()` también devuelve la sesión de prueba, porque hace falta para
+ * pintarla en la cabecera con su aviso. Pero esa no puede abrir el velo: el
+ * modo local existe para ver la web sin servidor, no para dejar pasar el
+ * contenido. Con `Boolean(await sesion())` la lista se desbloqueaba sola en
+ * cuanto fallaba la API —el 17 de octubre de 2026, FUNCTION_INVOCATION_FAILED
+ * en todas las rutas—, que es justo el momento en que menos se puede prometer.
+ */
 export async function haySesion() {
-  return Boolean(await sesion());
+  const s = await sesion();
+  return Boolean(s) && !s.local;
 }
 
-export async function pedirAcceso() {
-  return new Promise((resolve) => {
-    pendiente = resolve;
+/**
+ * Además del propio formulario del modal, los dos botones fijos de la portada
+ * abren `pedirAcceso`. Un doble disparo sobre el mismo botón —onclick y
+ * addEventListener conviviendo un tiempo— resolvía `pendiente` al segundo
+ * clic y dejaba la primera promesa colgada para siempre: quien llamaba con
+ * `.then()` no volvía a saber de ella. Si el modal ya está abierto, la promesa
+ * en curso es la respuesta, no una segunda.
+ */
+let accesoEnCurso = null;
+
+export function pedirAcceso() {
+  if (accesoEnCurso) return accesoEnCurso;
+  accesoEnCurso = new Promise((resolve) => {
+    pendiente = (r) => {
+      accesoEnCurso = null;
+      resolve(r);
+    };
     abrirModal();
   });
+  return accesoEnCurso;
 }
 
 /* ── API ────────────────────────────────────────────────────────────────── */
@@ -280,13 +306,21 @@ function lanzar(scrim, cerrar, msg) {
       client_id: GOOGLE_CLIENT_ID,
       scope: 'email',
       callback: async (r) => {
-        if (r.error) { msg.innerHTML = `<div class="modal-err">Google devolvió un error: ${r.error}</div>`; return; }
+        if (r.error) { msg.innerHTML = `<div class="modal-err">Google devolvió un error: ${esc(r.error)}</div>`; return; }
         try {
-          const info = await perfilGoogle(r.access_token);
-          // Se registra en el servidor para que la cuenta exista de verdad y
-          // el aviso de plazos tenga a quién escribirle. No se guarda el token.
-          await api('registro-google', { correo: info.email, nombre: info.name ?? '' });
-          cache = { email: info.email };
+          // Se manda el **access token**, no el correo que devuelve el perfil.
+          // El servidor no puede fiarse de lo que dice esta página: si aceptara
+          // un correo, cualquiera podría escribir el de otra persona y entrar
+          // como ella. Con el token, el servidor pregunta a Google quién es y
+          // solo entonces existe la cuenta.
+          //
+          // El correo que se pinta en la sesión es el que devuelve el servidor,
+          // que es el único que ha comprobado algo. Antes se leía del perfil de
+          // Google y se metía en `cache` sin contrastar: dos verdades, y la que
+          // se enseñaba era justo la que nadie había verificado.
+          const res = await api('registro-google', { token: r.access_token });
+          if (!res.ok) throw new Error(res.error ?? 'No se pudo crear la cuenta.');
+          cache = { email: res.correo };
           cerrar(cache);
         } catch (err) {
           msg.innerHTML = `<div class="modal-err">${esc(err.message)}</div>`;
@@ -300,18 +334,20 @@ function lanzar(scrim, cerrar, msg) {
   }
 }
 
-async function perfilGoogle(accessToken) {
-  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-    headers: { authorization: `Bearer ${accessToken}` },
-  });
-  if (!res.ok) throw new Error('No se pudo leer tu perfil de Google.');
-  const info = await res.json();
-  if (!info.email) throw new Error('Google no devolvió el correo.');
-  return info;
-}
-
 /* ── Modo local ─────────────────────────────────────────────────────────── */
 
+/**
+ * Sesión de juguete: existe para poder ver la web sin servidor, y se marca
+ * siempre con `local: true` para que la cabecera avise.
+ *
+ * Lo que NO hace es desbloquear contenido. Antes ponía un `cache` con valor
+ * truthy y el buscador lo leía como «hay sesión», así que `velar()` no se
+ * llamaba y las fichas se veían enteras sin cuenta. Lo grave: ocurría justo
+ * cuando la API estaba rota —el 17 de octubre de 2026, FUNCTION_INVOCATION_FAILED
+ * en todas las rutas—, que es cuando menos tiene sentido regalar la puerta.
+ * El velo es el producto; un modo de emergencia que lo levanta miente en la
+ * única parte que hay que sustentar.
+ */
 function sesionJuguete(correo) {
   modo = 'local';
   cache = { email: correo, local: true };
@@ -332,10 +368,4 @@ export const perfil = {
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-}
-
-export function pintarSesion(zona, recargar) {
-  const cont = typeof zona === 'string' ? document.querySelector(zona) : zona;
-  if (!cont) return;
-  return cache !== false && cache ? sesion() : null;
 }

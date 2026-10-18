@@ -83,3 +83,18 @@ export async function correoSupabase() {
   const { data } = await cliente.auth.getUser();
   return data?.user?.email ?? null;
 }
+
+/**
+ * El JWT de sesión de Supabase, o null.
+ *
+ * Lo necesita `/auth/callback.html` para que el servidor sepa quién es. Se
+ * manda el token y no el correo a propósito: el correo que dice el navegador
+ * no prueba nada —cualquiera puede escribir el que quiera en una petición— y
+ * el servidor solo lo acepta si Supabase confirma que el token es bueno. Por
+ * eso esta función devuelve el token y no el correo.
+ */
+export async function tokenSupabase() {
+  if (!activo) return null;
+  const { data } = await cliente.auth.getSession();
+  return data?.session?.access_token ?? null;
+}

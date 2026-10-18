@@ -32,8 +32,18 @@
  * cuenta en nuestro servidor para poder avisar de plazos, y se vuelve a donde
  * el usuario estaba. Si algo falla, el mensaje lo dice en vez de dejar una
  * pantalla en blanco.
+ *
+ * ── Por qué se manda el token y no el correo ─────────────────────────────
+ *
+ * Antes esta página hacía `POST /api/registro-google` con `{ correo }`, y eso
+ * era un agujero: el servidor se fiaba del correo que escribiera quien llama,
+ * y basta un `curl` con el correo de otra persona para recibir su sesión.
+ *
+ * Ahora se manda el JWT de sesión y el servidor lo pasa por `auth/v1/user` de
+ * Supabase; si Supabase no lo reconoce, no hay cuenta. El correo sale de la
+ * respuesta de Supabase, no de esta página.
  */
-import { iniciarSupabase, correoSupabase } from '../js/supabase.js';
+import { iniciarSupabase, tokenSupabase } from '../js/supabase.js';
 import { API } from '../js/config.js';
 
 const t = document.getElementById('t');
@@ -46,16 +56,19 @@ try {
   }
 
   // Supabase tarda un momento en canjear el token tras redirigir.
-  let correo = null;
-  for (let i = 0; i < 20 && !correo; i++) {
-    correo = await correoSupabase();
-    if (!correo) await new Promise((r) => setTimeout(r, 300));
+  let token = null;
+  for (let i = 0; i < 20 && !token; i++) {
+    token = await tokenSupabase();
+    if (!token) await new Promise((r) => setTimeout(r, 300));
   }
-  if (!correo) throw new Error('Google no devolvió ninguna cuenta.');
+  if (!token) throw new Error('Google no devolvió ninguna cuenta.');
 
   m.textContent = 'Creando tu cuenta…';
-  const r = await API.post('registro-google', { correo });
-  if (!r.ok) throw new Error('No se pudo crear la cuenta.');
+  const r = await API.post('registro-google', { token });
+  if (!r.ok) {
+    const detalle = await r.json().catch(() => ({}));
+    throw new Error(detalle.error || 'No se pudo crear la cuenta.');
+  }
 
   location.replace(destino);
 } catch (err) {

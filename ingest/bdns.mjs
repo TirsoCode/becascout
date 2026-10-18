@@ -3,7 +3,7 @@
  *
  * ── El problema ──────────────────────────────────────────────────────────
  *
- * BDNS es LA fuente de las becas españolas: todas las.dimero del Estado, de
+ * BDNS es LA fuente de las becas españolas: todas las administraciones del Estado, de
  * las comunidades y de los ministerios, con presupuesto, plazos y requisitos.
  * El problema es que `www.infosubvenciones.es` va detrás de un WAF del
  * Ministerio de Hacienda que rechaza cualquier `fetch`. Ni con cabeceras de
@@ -26,7 +26,7 @@
  *
  * Un proceso de Chrome cuesta ~2 s y unos 150 MB. Para 400 fichas son
  * unos 15 minutos y, si se lanzan en paralelo, mucho menos. Es asumible en
- * un cron diario, y no lo es si se fizeran miles al día. Por eso el
+ * un cron diario, y no lo es si se lanzaran miles al día. Por eso el
  * conector se limita a un rango de fechas y no barre el histórico entero.
  */
 
@@ -101,8 +101,8 @@ export async function hayChrome() {
  *
  * Se eliminan `<script>` y `<style>` enteros y no solo sus etiquetas: una
  * SPA de Angular deja el estado serializado dentro de un `<script>`, y si
- * no se quita, sus números se cuelan en el texto y.ends contaminando los
- * importes que se leen después.
+ * no se quita, sus números se cuelan en el texto y contaminan los importes
+ * que se leen después.
  */
 export function textoDe(html) {
   return html
@@ -160,6 +160,18 @@ export function aRegistro(html, id) {
   const indefinido = /¿Se puede solicitar indefinidamente\?\s*SI/i.test(texto);
   const fin = tras(texto, 'Fecha de finalización del periodo de solicitud', '·');
 
+  // La fecha llega como «10/07/2026» y el corte por «·» se lleva a veces
+  // texto de más detrás, así que se extrae con un patrón y no se parsea la
+  // cadena entera. Si la convocatoria se puede solicitar indefinidamente, o
+  // no trae fecha, se queda en null: la interfaz enseña «Plazo no extraído»,
+  // que es mejor que una fecha calculada por nuestra cuenta.
+  const corte = /\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/.exec(fin ?? '');
+  const dia = Number(corte?.[1]);
+  const mes = Number(corte?.[2]);
+  const cierra = !indefinido && corte && dia >= 1 && dia <= 31 && mes >= 1 && mes <= 12
+    ? `${corte[3]}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`
+    : null;
+
   return {
     id: `BDNS-${id}`,
     titulo: titulo ?? `Convocatoria BDNS ${id}`,
@@ -170,10 +182,11 @@ export function aRegistro(html, id) {
     boeId,
     sede,
     url: `${BASE}/convocatoria/${id}`,
-    // Sin fecha exacta: BDNS da «15 días hábiles tras la publicación del
-    // extracto», que es una regla, no una fecha. Preferimos null a calcular
-    // una fecha que podría ser falsa; el interfaz lo dirá.
-    cierra: indefinido ? null : null,
+    // La fecha de fin del periodo la publica la propia BDNS y se enseña tal
+    // cual. Antes esta línea era `cierra: indefinido ? null : null` —los dos
+    // brazos iguales— y el dato de `fin` se tiraba: las 652 fichas salían sin
+    // plazo, y sin plazo no hay aviso ni estados ámbar/óxido.
+    cierra,
     requisitos: [],
     texto_len: texto.length,
   };

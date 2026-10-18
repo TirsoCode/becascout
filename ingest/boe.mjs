@@ -42,7 +42,6 @@ const PALABRAS_BECA = [
 ];
 
 /** Departamento que casi nunca trae becas: se salta antes de bajar el texto. */
-const DEPARTAMENTOS_RUIDO = /banco de españa|cnmv|agencia tributaria|seguridad social|mutualidades/i;
 
 async function pedir(url, { timeout = 30_000 } = {}) {
   const ctrl = new AbortController();
@@ -90,10 +89,18 @@ function aplanar(nodo, acc = []) {
   }
   if (typeof nodo !== 'object') return acc;
   if (nodo.identificador && nodo.titulo) {
+    // `url_xml` llega como cadena, pero algunas respuestas lo anidan en un
+    // objeto `{texto: «…»}`. Con `nodo.url_xml ?? nodo.url_xml?.texto` el `??`
+    // nunca llegaba al segundo término —el primero ya era truthy— y a `fetch`
+    // se le pasaba el objeto, que lo convierte en «[object Object]»: el
+    // anuncio se perdía en silencio y, con la caché puesta, no volvía nunca.
+    const urlXml = typeof nodo.url_xml === 'object' && nodo.url_xml !== null
+      ? nodo.url_xml.texto
+      : nodo.url_xml;
     acc.push({
       id: nodo.identificador,
       titulo: String(nodo.titulo).replace(/\s+/g, ' ').trim(),
-      urlXml: nodo.url_xml ?? nodo.url_xml?.texto ?? `${TEXTO}?id=${nodo.identificador}`,
+      urlXml: urlXml ?? `${TEXTO}?id=${nodo.identificador}`,
       urlHtml: nodo.url_html ?? '',
       seccion: nodo.seccion ?? '',
     });
@@ -135,23 +142,6 @@ const RUIDO_CONVENIO = [
   /se publica la [Cc]onvenci[óo]n/i,
 ];
 
-/** Puestos de trabajo público, ceses y nombramientos: nunca son becas. */
-const RUIDO_PERSONAL = [
-  /proceso selectiv/i,
-  /personal laboral/i,
-  /funcionari[ao]s? de carrera/i,
-  /cuerpo de maestros/i,
-  /cuerpos? de (profesores|maestros)/i,
-  /se dispone del cese/i,
-  /se nombra [Dd]irector/i,
-  /nombramientos?/i,
-  /expediente de personal/i,
-  /concurso de traslados/i,
-  /oposici[óo]n/i,
-  /provisi[óo]n de puesto/i,
-  /retribuci[óo]n/i,
-];
-
 /**
  * ¿Vale la pena bajar el texto de este anuncio?
  *
@@ -179,11 +169,6 @@ export function esBeca(anuncio) {
   if (RUIDO_CONVENIO.some((r) => r.test(t))) return false;
   if (/se dispone del cese/i.test(t)) return false;
   return true;
-}
-
-/** Filtro por departamento emisor: fuera de educación casi no hay becas. */
-export function departamentoPlausible(dep) {
-  return !DEPARTAMENTOS_RUIDO.test(dep ?? '');
 }
 
 /**

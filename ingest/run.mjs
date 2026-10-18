@@ -42,6 +42,10 @@ function aRegistro(ficha, requisitos) {
 
   return {
     id: ficha.id,
+    // El id del anuncio se conserva aparte porque, al enriquecer con BDNS, el
+    // registro se renombra a `BDNS-…` y la caché necesita saber qué anuncio ya
+    // está guardado. Ver `idAnuncio`.
+    boeIdAnuncio: ficha.id,
     titulo: ficha.titulo,
     organizador: ficha.departamento || 'Sin especificar',
     ambito: /junta|consejería|diputación|ayuntamiento|mancomunidad|provincia|cabildo|ayuntamiento/i
@@ -80,27 +84,43 @@ function diasAtras(n) {
 }
 
 /**
+ * El id del anuncio del BOE del que salió un registro guardado.
+ *
+ * Las fichas nuevas lo traen en `boeIdAnuncio`. Las antiguas solo lo tienen
+ * dentro de `url` (`…txt.php?id=BOE-B-2026-…`), porque al enriquecer con BDNS
+ * el `id` del registro se renombró a `BDNS-…` y el id del anuncio dejó de
+ * estar suelto. Sin las dos vías la caché no acierta con nada de lo ya
+ * publicado: `boeIdBases` es el id del documento de **Bases** (BOE-A-…), que
+ * no es el anuncio que recorre el sumario (BOE-B-…).
+ */
+function idAnuncio(b) {
+  return b.boeIdAnuncio
+    ?? /boe\.es\/diario_boe\/txt\.php\?id=([^&\s]+)/.exec(b.url ?? '')?.[1]
+    ?? b.id;
+}
+
+/**
  * Caché de lo ya bajado, por identificador del anuncio del BOE.
  *
  * El BOE es inmutable: una convocatoria publicada en septiembre no cambia en
  * diciembre. Así que una vez bajada y extraída, esa ficha no hay que volver a
  * tocarla nunca.
  *
- * ── Por qué la clave es `boeIdBases` y no `id` ────────────────────────────
+ * ── Por qué la clave es el id del anuncio ────────────────────────────────
  *
- * Cuando el anuncio se enriquece con BDNS, el registro pasa a llamarse
- * `BDNS-910610` aunque venga del anuncio `BOE-A-2026-8122`. La versión
- * anterior guardaba la caché por `id`, así que para esas fichas la clave no
- * coincidía nunca y la caché no acertaba jamás: se volvía a descargar el texto
- * y a volver a pedirlo al modelo una convocatoria que ya estaba guardada dos
- * líneas más abajo en el mismo fichero. De 577 fichas, 0 reutilizadas.
+ * `recolectar` y `procesar` preguntan por el id del anuncio que trae el
+ * sumario (`BOE-B-2026-…`), así que esa es la clave con la que hay que
+ * guardar: cualquier otra no coincide nunca. La versión anterior indexaba por
+ * `b.boeIdBases ?? b.id` y de 577 fichas se reutilizaron 0 — se volvía a
+ * bajar el texto y a pedirle la extracción a convocatorias que ya estaban
+ * guardadas dos líneas más abajo.
  */
 async function cachePrevia() {
   try {
     const previa = JSON.parse(await readFile(new URL('../data/becas.json', import.meta.url), 'utf8'));
     const mapa = new Map();
     for (const b of previa.becas) {
-      mapa.set(b.boeIdBases ?? b.id, b);
+      mapa.set(idAnuncio(b), b);
     }
     return mapa;
   } catch {
@@ -117,6 +137,37 @@ function fechaPorDefecto(deltaDias) {
 console.log(`BecasScout · ingesta ${desde} → ${hasta}`);
 console.log(`Extractor: ${usarLLM && apiKey ? `OpenRouter (${modelo ?? 'por defecto'})` : 'reglas (sin OPENROUTER_API_KEY)'}`);
 console.log(`Fuentes:   BOE${usarBdns ? ' + BDNS (Chrome) + Bases' : ''} + Erasmus Mundus`);
+
+/**
+ * Cuántas descargas se solapan.
+ *
+ * ── Por qué hay pool y no un `for` con `await` ───────────────────────────
+ *
+ * Antes cada ficha se procesaba sola: página de BDNS con Chrome (unos 2
+ * segundos), luego el XML de las Bases, y a veces el modelo. Con doscientas
+ * fichas eso son siete minutos de reloj en los que solo hay una cosa
+ * esperando. El trabajo es independiente ficha a ficha —no comparten nada—,
+ * así que no hay motivo para no hacerlo a la vez.
+ *
+ * Y no es solo que vaya más rápido, que es lo de menos. El job de GitHub tiene
+ * `timeout-minutes: 45`: si la pasada no cabe, el cron se la come entera y ese
+ * día la base no se actualiza. Ir en paralelo es lo que hace que la pasada
+ * quepa de sobra, y de eso va la estabilidad de los datos.
+ *
+ * ── El número ───────────────────────────────────────────────────────────
+ *
+ * Seis. No por prudencia, sino por cómo falla el otro extremo: BDNS va
+ * detrás de un WAF y cuando te corta **no lo dice**. Responde con una página
+ * de «Acceso Denegado» y el programa la trata como «esta ficha no trae nada»,
+ * así que la beca se queda sin presupuesto ni plazo sin que nada se caiga ni
+ * salte un error. Ese fallo es invisible, y por eso el número va en una
+ * bandera y no escrito en el código.
+ *
+ * Con `--concurrencia N` se cambia sin tocar nada, y vale para los dos pools:
+ * el de descarga del BOE —que antes llevaba un 5 fijo y la bandera no lo
+ * tocaba— y el de fichas.
+ */
+const CONCURRENCIA = Math.max(1, Number(arg('concurrencia', 6)) || 6);
 
 /**
  * La caché se carga ANTES de `recolectar`, al revés de antes, y no es un
@@ -140,7 +191,7 @@ console.log(`Caché:     ${cache.size} fichas ya bajadas de una pasada anterior`
 let reutilizadas = 0;
 
 const { fichas } = await recolectar(desde, hasta, {
-  concurrencia: 5,
+  concurrencia: CONCURRENCIA,
   omitir: new Set(cache.keys()),
   alProgresar: ({ fase, avance, total, dia, saltados: s }) => {
     if (fase === 'indice') process.stdout.write(`\r  ${dia}  `);
@@ -153,29 +204,9 @@ process.stdout.write('\n');
 /**
  * ── Por qué esto va en pool y no en un `for` con `await` ─────────────────
  *
- * Antes cada ficha se procesaba sola: página de BDNS con Chrome (unos 2
- * segundos), luego el XML de las Bases, y a veces el modelo. Con doscientas
- * fichas eso son siete minutos de reloj en los que solo hay una cosa
- * esperando. El trabajo es independiente ficha a ficha —no comparten nada—,
- * así que no hay motivo para no hacerlo a la vez.
- *
- * Y no es solo que vaya más rápido, que es lo de menos. El job de GitHub tiene
- * `timeout-minutes: 45`: si la pasada no cabe, el cron se la come entera y ese
- * día la base no se actualiza. Ir en paralelo es lo que hace que la pasada
- * quepa de sobra, y de eso va la estabilidad de los datos.
- *
- * ── El número ───────────────────────────────────────────────────────────
- *
- * Seis. No por prudencia, sino por cómo falla el otro extremo: BDNS va
- * detrás de un WAF y cuando te corta **no lo dice**. Responde con una página
- * de «Acceso Denegado» y el programa la trata como «esta ficha no trae nada»,
- * así que la beca se queda sin presupuesto ni plazo sin que nada se caiga ni
- * salte un error. Ese fallo es invisible, y por eso el número va en una
- * bandera y no escrito en el código.
- *
- * Con `--concurrencia N` se cambia sin tocar nada.
+ * El número y el porqué están en `CONCURRENCIA`, arriba del todo, porque
+ * gobierna tanto la descarga como el procesado.
  */
-const CONCURRENCIA = Math.max(1, Number(arg('concurrencia', 6)) || 6);
 
 /** Una ficha, de principio a fin. Devuelve su registro. */
 async function procesar(f) {
@@ -212,6 +243,10 @@ async function procesar(f) {
         ...registro,
         id: `BDNS-${bdnsId}`,
         presupuesto: ficha.presupuesto ?? registro.presupuesto,
+        // La fecha de fin del periodo no está en el extracto del BOE: viene
+        // de la ficha de BDNS. Sin este `??` el dato se quedaba en el camino
+        // y todas las fichas salían sin plazo.
+        cierra: ficha.cierra ?? registro.cierra,
         sede: ficha.sede ?? registro.sede,
         boeIdBases: ficha.boeId,
         titulo: ficha.titulo ?? registro.titulo,
@@ -241,6 +276,15 @@ async function procesar(f) {
     });
   }
   registro.requisitos = requisitos;
+
+  // El plazo puede venir de la ficha de BDNS (fecha explícita), de un
+  // requisito extraído de las Bases, o de ningún sitio. Si no viene, se queda
+  // en null y la interfaz dice «Plazo no extraído»: un «15 días hábiles desde
+  // la publicación» no es una fecha y no se calcula.
+  registro.cierra = registro.cierra
+    ?? requisitos.find((r) => r.tipo === 'fecha_limite')?.valor
+    ?? null;
+  registro.cerrada = registro.cierra ? new Date(registro.cierra) < new Date() : false;
   return registro;
 }
 
@@ -280,7 +324,7 @@ process.stdout.write('\n');
  * viejo, una única pasada profunda rellena el archivo entero y las siguientes
  * solo traen lo nuevo.
  */
-const vistos = new Set(registros.map((r) => r.boeIdBases ?? r.id));
+const vistos = new Set(registros.map(idAnuncio));
 let arrastradas = 0;
 for (const [clave, registro] of cache) {
   if (vistos.has(clave)) continue;

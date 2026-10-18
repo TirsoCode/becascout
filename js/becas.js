@@ -17,7 +17,7 @@
  * los mismos tengas cuenta o no.
  */
 
-import { sesion, pedirAcceso, perfil, salir } from './auth.js';
+import { sesion, haySesion, pedirAcceso, perfil, salir } from './auth.js';
 
 const R = 34;                  // radio del anillo
 const CIRC = 2 * Math.PI * R;
@@ -31,6 +31,7 @@ const ETIQUETA = {
   ingresos: 'Ingresos',
   justificacion: 'Documentación',
   importe: 'Importe',
+  presupuesto: 'Presupuesto de la convocatoria',
   fecha_limite: 'Plazo',
   duracion_max: 'Duración máxima',
   ects: 'ECTS',
@@ -78,12 +79,26 @@ async function pintarCabecera() {
   if (s) {
     const d = document.createElement('div');
     d.className = 'session';
-    d.innerHTML = `<span class="session-av">${(s.email[0] ?? '?').toUpperCase()}</span>
-                   <span><b>${esc(s.email.split('@')[0])}</b>${s.local ? ' (local)' : ''}</span>`;
+
+    // El avatar se pinta con `textContent` porque el correo lo elige quien se
+    // registra. Interpolado en la plantilla, bastaba un correo que empezara por
+    // `<` o por `"` para inyectar HTML. Una sola letra en pantalla no
+    // justifica el riesgo.
+    const av = document.createElement('span');
+    av.className = 'session-av';
+    av.textContent = (s.email?.[0] ?? '?').toUpperCase();
+
+    const nombre = document.createElement('span');
+    const b = document.createElement('b');
+    b.textContent = String(s.email ?? '').split('@')[0];
+    nombre.appendChild(b);
+    if (s.local) nombre.appendChild(document.createTextNode(' (local)'));
+
     const x = document.createElement('button');
     x.textContent = 'Salir';
     x.onclick = salir;
-    d.appendChild(x);
+
+    d.append(av, nombre, x);
     zona.appendChild(d);
   } else {
     const b = document.createElement('button');
@@ -101,7 +116,7 @@ async function pintarCabecera() {
  *
  * `null` no es un fallo del código, es un estado del producto. Un requisito
  * del que la convocatoria no concreta el límite no se puede comprobar, y decir
- * «cumples» o «no cumples»Mentira en ambos casos. El anillo lo cuenta aparte
+ * «cumples» o «no cumples» es mentira en ambos casos. El anillo lo cuenta aparte
  * y el interfaz lo pinta en gris.
  */
 /**
@@ -148,12 +163,21 @@ function motivo(r, ok) {
 /* ── Render ─────────────────────────────────────────────────────────────── */
 
 async function pintar() {
-  // Ojo con cómo se comprueba. `sesion()` devuelve `false` cuando no hay
-  // sesión, y `false != null` es `true` en JavaScript —la comparación laxa con
-  // `null` solo iguala a `undefined`—. Con esa forma, `abierta` salía siempre
-  // cierta, `ponerPuertas()` no se llamaba nunca y las becas se veían todas
-  // desbloqueadas sin cuenta: la puerta no era una puerta, era decorado.
-  const abierta = Boolean(await sesion());
+  // Ojo con cómo se comprueba, que aquí ha fallado dos veces.
+  //
+  // Primero, con `s != null`: `sesion()` devuelve `false` cuando no hay
+  // sesión, y `false != null` es `true` en JavaScript —la comparación laxa
+  // con `null` solo iguala a `undefined`—, así que `abierta` salía siempre
+  // cierta y el velo no se ponía nunca.
+  //
+  // Después, con `Boolean(await sesion())`: la sesión de juguete del modo
+  // local vale `{ email, local: true }`, que también es truthy, así que
+  // pasaba por una cuenta. Justo cuando la API está caída —el 17 de octubre
+  // de 2026 devolvía FUNCTION_INVOCATION_FAILED en todas las rutas— la lista
+  // se veía entera sin cuenta. `haySesion()` es la que distingue una cuenta
+  // de la sesión de prueba; el modo local existe para ver la web sin
+  // servidor, no para regalar lo único que el producto reserva.
+  const abierta = await haySesion();
 
   // El orden importa más de lo que parece. Ordenando solo por fecha, las
   // fichas de Erasmus Mundus —que sí traen requisitos— caen al
@@ -218,7 +242,7 @@ async function pintar() {
  *
  * Aquí no hay cartel, ni candado, ni «bloqueado», ni el aviso ámbar de arriba.
  * Se quitó a propósito el 17 de octubre de 2026: cualquier marca de «aquí hay
- * una puerta» convierte la lista en un cartel que dice «c，面向 esto», y quien
+ * una puerta» convierte la lista en un cartel que dice «esto está aquí», y quien
  * no tiene cuenta lo lee como una traba puesta para que se dé de alta. Las 85
  * fichas se ven igual que si fueran suyas: mismo sitio, mismo orden, mismo
  * número. Solo que no se leen.
@@ -240,9 +264,31 @@ function tarjeta(b) {
   const p = perfil.leer();
   const conPerfil = p.nota !== '' || p.edad !== '';
 
-  // El importe y el plazo son datos, no condiciones: no cuentan en el anillo.
-  const cond = b.requisitos.filter((r) => r.tipo !== 'importe' && r.tipo !== 'fecha_limite');
-  const ok = cond.filter((r) => cumple(r) === true).length;
+  // El importe, el presupuesto y el plazo son datos, no condiciones: no
+  // cuentan en el anillo.
+  const cond = b.requisitos.filter(
+    (r) => r.tipo !== 'importe' && r.tipo !== 'presupuesto' && r.tipo !== 'fecha_limite',
+  );
+
+  // Y solo cuentan los que el perfil puede decidir de verdad.
+  //
+  // `cumple` devuelve tres cosas: `true`, `false` y `null`, que es «no lo
+  // sabemos». Antes el denominador era `cond.length` y el numerador contaba
+  // solo los `true`, así que un requisito que no se sabe valorarse acababa
+  // igual que uno incumplido: en las fichas de Erasmus Mundus salía «0 de 3
+  // requisitos cumplidos» y el anillo marcaba 0% a un estudiante que sí
+  // cumplía. Y con los datos de hoy ningún registro del fichero tiene
+  // `nota_minima` ni `edad_max`, que son los dos únicos tipos que `cumple`
+  // sabe valorar: el anillo, que es el argumento de venta del producto, no
+  // tenía nada que enseñar y se presentaba como un suspenso.
+  //
+  // Decir «no cumples» cuando lo que hay es «no lo sabemos» es la peor forma
+  // de equivocarse aquí, porque el estudiante se queda sin solicitarla y no
+  // vuelve. Los unknown ahora se cuentan como unknown, que es lo que ya hacía
+  // cada fila suelta con su icono.
+  const sabibles = cond.filter((r) => cumple(r) !== null);
+  const ok = sabibles.filter((r) => cumple(r) === true).length;
+  const total = sabibles.length;
 
   return `<article class="beca ${b.cerrada ? 'out' : ''}">
     <div>
@@ -272,13 +318,17 @@ function tarjeta(b) {
       </div>
     </div>
 
-    ${anillo(ok, cond.length, conPerfil)}
+    ${anillo(ok, total, conPerfil)}
 
     <div class="beca-foot">
-      <span class="pill ${cond.length && conPerfil ? 'brand' : ''}">
-        ${cond.length
-          ? (conPerfil ? `<b>${ok}</b> de ${cond.length} requisitos cumplidos` : 'Añade tu nota para comprobar')
-          : 'Sin requisitos extraídos'}
+      <span class="pill ${total && conPerfil ? 'brand' : ''}">
+        ${!cond.length
+          ? 'Sin requisitos extraídos'
+          : !total
+            ? `${cond.length} requisitos, ninguno comprobable todavía`
+            : conPerfil
+              ? `<b>${ok}</b> de ${total} requisitos comprobados`
+              : 'Añade tu nota para comprobar'}
       </span>
       <a class="src" href="${b.url}" target="_blank" rel="noopener">
         ${b.id.startsWith('BDNS') ? 'Ver convocatoria' : 'Ver en el BOE'}
@@ -299,8 +349,13 @@ function fila(r) {
   const ok = cumple(r);
   const clase = ok === true ? 'ok' : ok === false ? 'no' : 'unk';
 
+  // La unidad **no** se inventa. Antes ponía `/ mes` detrás de cualquier
+  // `importe`, y en las fichas del BOE esa cifra es el presupuesto total de la
+  // convocatoria, no lo que cobra un beneficiario: se veía «40.670.000 € / mes».
+  // La cifra viene con su cita debajo, que es donde se lee de qué va.
+  // La cantidad se enseña tal cual y la unidad la deja la cita de al lado.
   const valor = r.valor != null && r.tipo !== 'fecha_limite'
-    ? ` <span class="req-v">${esc(r.tipo === 'importe' ? `${euros(r.valor)} / mes` : r.valor)}</span>` : '';
+    ? ` <span class="req-v">${esc(r.tipo === 'importe' || r.tipo === 'presupuesto' ? euros(r.valor) : r.valor)}</span>` : '';
 
   return `<div class="req ${clase}">
     <svg class="req-ico" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">${ICONO[clase]}</svg>

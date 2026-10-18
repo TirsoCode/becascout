@@ -47,10 +47,22 @@ const log = [];
  * que nada falle de forma visible —la consulta responde 200 con `[]`—. El
  * almacén sí que lo hace bien, porque codifica con `encodeURIComponent`; el
  * simulador es el que tenía que aprender a hacerlo igual.
+ *
+ * Y desde que el almacén entrecomilla (ver `valor` en lib/store.js), el
+ * simulador tiene que quitárselas: el `%40` del `@` se resuelve al leer la
+ * query, pero las comillas delimitadoras llegan tal cual, y una fila esa
+ * buscada como `"persona@ejemplo.com"` —con comillas— no existe. Otra vez
+ * 200 con `[]` y ni un solo error a la vista.
  */
 function partir(v) {
   const punto = v.indexOf('.');
-  return punto === -1 ? [v, ''] : [v.slice(0, punto), v.slice(punto + 1)];
+  if (punto === -1) return ['', ''];
+  const op = v.slice(0, punto);
+  let valor = v.slice(punto + 1);
+  if (valor.startsWith('"') && valor.endsWith('"') && valor.length > 1) {
+    valor = valor.slice(1, -1);
+  }
+  return [op, valor];
 }
 
 function filtrar(tabla, params) {
@@ -133,7 +145,6 @@ const servidor = createServer(async (req, res) => {
     }
     return responde(204);
   }
-
   responde(405);
 });
 
@@ -239,7 +250,10 @@ await prueba('las consultas filtran por eq. y por gt.', async () => {
   await porToken('tok-1');
 
   const consulta = log.find((l) => l.metodo === 'GET' && l.tabla === 'sesiones').consulta;
-  assert.match(consulta, /token=eq\.tok-1/, 'debe filtrar por el token exacto');
+  // Con el entrecomillado del almacén, el token literal va detrás de `%22…%22`
+  // en la consulta que se manda. Es lo que evita que un punto dentro del valor
+  // —los correos lo llevan— y eso corta el operador. Ver `valor` en lib/store.js.
+  assert.match(consulta, /token=eq\.%22tok-1%22/, 'debe filtrar por el token exacto');
   assert.match(consulta, /expira=gt\./, 'debe descartar lo caducado');
 });
 

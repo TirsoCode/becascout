@@ -27,6 +27,21 @@
  * respondería en `/api/auth` y lo demás caería en un 404. Con el comodín,
  * `store.js` puede vivir en `lib/` y no se despliega como función aparte.
  *
+ * ── Sobre `registro-google`: el token se verifica aquí ────────────────────
+ *
+ * Esta rutaSOLO aceptaba un `{ correo }` que el navegador declaraba. Eso no es
+ * iniciar sesión, es escribir a quién te apetece: un `curl` con
+ * `{"correo":"el.correo.de.otro@ejemplo.com"}` recibía una cookie de sesión
+ * válida de treinta días sin ninguna credencial. Se comprobó en producción el
+ * 17 de octubre de 2026: `POST /api/registro-google` con un correo inventado
+ * devolvió `200` y `Set-Cookie`, y esa cookie pasó `/api/yo`.
+ *
+ * El motivo de fondo es que el navegador nunca es una fuente de confianza:
+ * quien llama a esta ruta puede ser la página o un `curl`. El correo tiene que
+ * salir de quien ha autenticado de verdad, así que ahora el cliente manda el
+ * token y el servidor pregunta a Google o a Supabase quién lo es. Si no se
+ * puede comprobar, no hay cuenta.
+ *
  * ── Sobre el hash ────────────────────────────────────────────────────────
  *
  * scrypt con un salt por usuario. No es MD5 ni SHA-256 pelado — esos se
@@ -95,17 +110,70 @@ function leerCookie(cabecera) {
 
 /* ── Validación ─────────────────────────────────────────────────────────── */
 
+/**
+ * Un correo es un correo, en minúsculas y sin espacios.
+ *
+ * Sin esto `Ana@ejemplo.com` y `ana@ejemplo.com` son dos cuentas distintas:
+ * quien se da de alta con mayúsculas no puede volver a entrar escribiendo su
+ * dirección en minúsculas, y el mismo correo puede quedar registrado dos
+ * veces. Aquí solo hacen falta `trim` y `toLowerCase`.
+ */
+function normaliza(c) {
+  return typeof c === 'string' ? c.trim().toLowerCase() : '';
+}
+
+/**
+ * `fetch` con reloj. Una llamada a Google o Supabase que se queda colgada no
+ * puede tener en pie la petición: en un entorno serverless el runtime mata la
+ * función a los 10-15 segundos y el cliente se queda esperando.
+ */
+async function conTimeout(url, opciones, ms) {
+  const ctrl = new AbortController();
+  const reloj = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...opciones, signal: ctrl.signal });
+  } finally {
+    clearTimeout(reloj);
+  }
+}
+
+/**
+ * El patrón es deliberadamente más estrecho que el de RFC 5322, que es un
+ * documento de 1982 y acepta casi cualquier cosa. Aquí no hace falta aceptar
+ * `Ana" Lopez <a@b.com>`: si un correo lleva comillas, ángulos o espacios es
+ * que algo va mal, y además ese texto acaba pintado en la web.
+ */
 function correoValido(c) {
-  return typeof c === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c.trim());
+  const s = normaliza(c);
+  return typeof c === 'string'
+    && s.length <= 254
+    && /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(s);
 }
 
 function politica(c) {
   return typeof c === 'string' && c.length >= 10;
 }
 
-async function cuerpo(req) {
+/**
+ * Lee el cuerpo de la petición, con un techo.
+ *
+ * Sin el techo, `for await (const t of req)` acepta tanto como le manden y lo
+ * acumula en memoria: un `POST` con un cuerpo de un gigabyte tumba la función
+ * con un OOM antes de llegar al `catch`. Un formulario de alta no pasa de un
+ * kilobyte, así que 16 KB es holgado de sobra.
+ */
+async function cuerpo(req, tope = 16 * 1024) {
   const trozos = [];
-  for await (const t of req) trozos.push(t);
+  let total = 0;
+  for await (const t of req) {
+    total += t.length;
+    if (total > tope) {
+      const err = new Error('cuerpo demasiado grande');
+      err.codigo = 413;
+      throw err;
+    }
+    trozos.push(t);
+  }
   if (!trozos.length) return {};
   try {
     return JSON.parse(Buffer.concat(trozos).toString('utf8'));
@@ -135,9 +203,15 @@ export default async function handler(req, res) {
 
     json(res, 404, { error: 'ruta desconocida' });
   } catch (err) {
+    // Un cuerpo que pasa del techo no es un fallo de la web: es 413, no un 503
+    // que le dice al visitante que vuelva más tarde sin explicarle qué pasó.
+    if (err?.codigo === 413) {
+      return json(res, 413, { error: 'La petición es demasiado grande.' });
+    }
+
     // Sin `SUPABASE_URL` el almacén cae al fichero JSON, y en Vercel el disco
     // es de solo lectura: todo alta de cuenta revienta con EROFS. Sin este
-    // `catch`, quien lo Suffre ve la página de error de Vercel con un stack
+    // `catch`, quien lo sufre ve la página de error de Vercel con un stack
     // trace dentro —que además se lleva por delante el nombre de la variable
     // que falta—. Se responde en JSON y con un texto que se puede enseñar.
     console.error('api:', ruta, err.message);
@@ -150,6 +224,9 @@ export default async function handler(req, res) {
 /**
  * Alta de una cuenta que se valida con Google.
  *
+ * El cliente manda `token`, no `correo`. El correo se deduce del token contra
+ * Google o Supabase, nunca de lo que diga el navegador.
+ *
  * Se genera una contraseña aleatoria que no se le enseña a nadie. Es una
  * contraseña de servicio: existe para que la fila tenga un hash consistente
  * y no un hueco, y no sirve para entrar — entrar es con Google.
@@ -159,8 +236,15 @@ export default async function handler(req, res) {
  * su contraseña sustituida por otra.
  */
 async function registroGoogle(req, res) {
-  const { correo } = await cuerpo(req);
-  if (!correoValido(correo)) return json(res, 400, { error: 'El correo no es válido.' });
+  const { token } = await cuerpo(req);
+  if (typeof token !== 'string' || !token.trim()) {
+    return json(res, 400, { error: 'Falta el token de acceso.' });
+  }
+
+  const correo = await correoDeToken(token.trim());
+  if (!correo) {
+    return json(res, 401, { error: 'No hemos podido comprobar tu sesión con Google.' });
+  }
 
   let usuario = await buscar(correo);
   if (!usuario) {
@@ -169,18 +253,91 @@ async function registroGoogle(req, res) {
     usuario = await crear(correo, hashPass, salt);
   }
 
-  const token = randomBytes(32).toString('base64url');
-  await guardarToken(usuario.correo, token);
+  const tokenSesion = randomBytes(32).toString('base64url');
+  await guardarToken(usuario.correo, tokenSesion);
 
   json(res, 200, { ok: true, correo: usuario.correo }, {
-    'Set-Cookie': cookie(token, DIAS * 24 * 60 * 60),
+    'Set-Cookie': cookie(tokenSesion, DIAS * 24 * 60 * 60),
   });
+}
+
+/**
+ * Dice qué correo es ese token, o `null` si no se puede saber.
+ *
+ * Hay dos formatos porque hay dos flujos en marcha, y cada uno se valida
+ * contra quien lo emitió:
+ *
+ *  - Un **JWT de Supabase** (tres trozos separados por puntos) se pregunta a
+ *    `GET /auth/v1/user` de Supabase. Supabase comprueba la firma; aquí solo
+ *    se lee el `email` que devuelve.
+ *  - Un **access token de Google** —el que da Google Identity Services— se
+ *    pregunta a `tokeninfo`, que es la forma canónica de validarlo.
+ *
+ * En los dos casos quien responde es el proveedor, no el cliente. Cualquier
+ * otro formato devuelve `null` y la ruta responde 401.
+ */
+async function correoDeToken(token) {
+  // ── JWT de Supabase ──
+  if (token.split('.').length === 3) {
+    const url = process.env.SUPABASE_URL;
+    const anon = process.env.SUPABASE_ANON_KEY;
+    if (!url || !anon) {
+      console.error('registro-google: falta SUPABASE_URL o SUPABASE_ANON_KEY');
+      return null;
+    }
+    try {
+      const r = await conTimeout(`${url}/auth/v1/user`, {
+        headers: { apikey: anon, authorization: `Bearer ${token}` },
+      }, 8000);
+      if (!r.ok) return null;
+      return normaliza((await r.json())?.email);
+    } catch (err) {
+      console.error('registro-google: Supabase no respondió:', err.message);
+      return null;
+    }
+  }
+
+  // ── Access token de Google ──
+  try {
+    const r = await conTimeout(
+      `https://oauth2.googleapis.com/tokeninfo?access_token=${encodeURIComponent(token)}`,
+      {},
+      8000,
+    );
+    if (!r.ok) return null;
+    const d = await r.json();
+
+    // `email_verified` llega como cadena. Sin comprobarlo, una cuenta de Google
+    // con el correo sin confirmar podría quedarse con la dirección de otra
+    // persona —y esa fila es la que luego se le devuelve a quien entre.
+    if (String(d?.email_verified) !== 'true') return null;
+
+    // Que el token se emitió para *nuestra* app. No es imprescindible: el
+    // token sigue atado a la cuenta de Google que lo concedió, así que no
+    // permite hacerse pasar por nadie. Es defensa en profundidad, y solo
+    // funciona si la variable está puesta; si falta, se avisa por log en vez
+    // de dejar que la comprobación parezca activa cuando no lo está.
+    const esperado = process.env.GOOGLE_CLIENT_ID;
+    if (esperado && d?.aud !== esperado) {
+      console.error('registro-google: el token es de otra aplicación de Google');
+      return null;
+    }
+    if (!esperado) {
+      console.error('registro-google: falta GOOGLE_CLIENT_ID, no se puede comprobar el `aud`');
+    }
+
+    return normaliza(d?.email);
+  } catch (err) {
+    console.error('registro-google: Google no respondió:', err.message);
+    return null;
+  }
 }
 
 async function registro(req, res) {
   const { correo, password } = await cuerpo(req);
+  const mail = normaliza(correo);
 
-  if (!correoValido(correo)) return json(res, 400, { error: 'El correo no es válido.' });
+  if (!correoValido(mail)) return json(res, 400, { error: 'El correo no es válido.' });
   if (!politica(password)) {
     return json(res, 400, { error: 'La contraseña necesita al menos 10 caracteres.' });
   }
@@ -188,7 +345,7 @@ async function registro(req, res) {
   const salt = randomBytes(16).toString('base64');
   const hashPass = await hash(password, salt);
 
-  const usuario = await crear(correo, hashPass, salt);
+  const usuario = await crear(mail, hashPass, salt);
   if (!usuario) {
     return json(res, 409, { error: 'Ya hay una cuenta con ese correo.' });
   }
@@ -203,14 +360,27 @@ async function registro(req, res) {
 
 async function login(req, res) {
   const { correo, password } = await cuerpo(req);
-  const usuario = await buscar(correo ?? '');
+  const usuario = await buscar(normaliza(correo));
 
-  // Se calcula el hash aunque el usuario no exista, para que el tiempo de
-  // respuesta sea el mismo en los dos casos y no revele qué correos hay.
-  const saltFalso = 'falsofalsofalsofalso';
-  const referencia = usuario ? usuario.hash : await hash(password ?? '', saltFalso);
-  const calculado = await hash(password ?? '', usuario ? usuario.salt : saltFalso);
+  // Se hashea **siempre dos veces**, haya cuenta o no. La cuenta que existe usa
+  // su propio salt y la que no, uno de mentira; las dos ramas hacen el mismo
+  // trabajo.
+  //
+  // Antes solo se hacía el hash de relleno cuando el correo no estaba en la
+  // base, así que un login correcto gastaba un scrypt y uno con correo
+  // inexistente gastaba dos: medido en este repositorio, 325 ms frente a 846
+  // ms. Eso es una diferencia de 2,6× que se lee desde fuera con unas pocas
+  // peticiones y permite enumerar qué correos están dados de alta, que es
+  // justo lo que el comentario de este fichero dice que hay que evitar.
+  const saltReal = usuario?.salt ?? 'falsofalsofalsofalso';
+  const [calculado, relleno] = await Promise.all([
+    hash(password ?? '', saltReal),
+    // El relleno se calcula siempre. Cuando el usuario existe, no se compara
+    // con nada: solo se pierde el tiempo.
+    hash('relleno', saltReal),
+  ]);
 
+  const referencia = usuario?.hash ?? relleno;
   const coincide = seguro(referencia, calculado);
   if (!usuario || !coincide) {
     return json(res, 401, { error: 'Correo o contraseña incorrectos.' });
