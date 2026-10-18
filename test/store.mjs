@@ -48,20 +48,16 @@ const log = [];
  * almacén sí que lo hace bien, porque codifica con `encodeURIComponent`; el
  * simulador es el que tenía que aprender a hacerlo igual.
  *
- * Y desde que el almacén entrecomilla (ver `valor` en lib/store.js), el
- * simulador tiene que quitárselas: el `%40` del `@` se resuelve al leer la
- * query, pero las comillas delimitadoras llegan tal cual, y una fila esa
- * buscada como `"persona@ejemplo.com"` —con comillas— no existe. Otra vez
- * 200 con `[]` y ni un solo error a la vista.
+  * El almacén ya no entrecomilla (ver `valor` en lib/store.js): PostgREST
+  * trata las comillas dobles como nombre de columna, no como cadena, y una
+  * fila buscada como "persona@ejemplo.com" no existe. El simulador ya no
+  * tiene que quitárselas.
  */
 function partir(v) {
   const punto = v.indexOf('.');
   if (punto === -1) return ['', ''];
   const op = v.slice(0, punto);
-  let valor = v.slice(punto + 1);
-  if (valor.startsWith('"') && valor.endsWith('"') && valor.length > 1) {
-    valor = valor.slice(1, -1);
-  }
+  const valor = v.slice(punto + 1);
   return [op, valor];
 }
 
@@ -283,10 +279,10 @@ await prueba('las consultas filtran por eq. y por gt.', async () => {
   await porToken('tok-1');
 
   const consulta = log.find((l) => l.metodo === 'GET' && l.tabla === 'sesiones').consulta;
-  // Con el entrecomillado del almacén, el token literal va detrás de `%22…%22`
-  // en la consulta que se manda. Es lo que evita que un punto dentro del valor
-  // —los correos lo llevan— y eso corta el operador. Ver `valor` en lib/store.js.
-  assert.match(consulta, /token=eq\.%22tok-1%22/, 'debe filtrar por el token exacto');
+  // El token literal va detrás de `eq.` sin comillas: PostgREST trata las
+  // comillas dobles como nombre de columna, así que entrecomillar rompe la
+  // consulta. Ver `valor` en lib/store.js.
+  assert.match(consulta, /token=eq\.tok-1/, 'debe filtrar por el token exacto');
   assert.match(consulta, /expira=gt\./, 'debe descartar lo caducado');
 });
 
