@@ -113,8 +113,14 @@ jobs:
 
       - name: Commit
         run: |
-          git config user.name  'becascout-bot'
-          git config user.email 'bot@becascout.com'
+          # El correo del commit tiene que estar en una cuenta de GitHub, no
+          # valer cualquiera. Vercel bloquea el despliegue —«the commit email
+          # could not be matched to a GitHub account»— cuando no puede
+          # emparejar al autor: pasó con `tirsolemda@gmail.com` el 18 de octubre
+          # de 2026. Se usa el `noreply` de la cuenta dueña del repo; si el repo
+          # cambia de dueño, cambia también aquí.
+          git config user.name  'BecasScout'
+          git config user.email '284927969+TirsoCode@users.noreply.github.com'
           git add data/becas.json data/usuarios.json 2>/dev/null || true
           git add -A data/
           if git diff --staged --quiet; then
