@@ -7,7 +7,7 @@
  * texto tapado— sin ningún dato real.
  */
 
-import { sesion, pedirAcceso, revisarEncuesta } from './auth.js';
+import { sesion, pedirAcceso, abrirAjustes, revisarEncuesta } from './auth.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
 async function pintarCabecera() {
@@ -46,14 +46,31 @@ async function pintarCabecera() {
   b.textContent = String(s.email ?? '').split('@')[0];
   nombre.appendChild(b);
 
-  div.append(av, nombre);
+  // El perfil abre los ajustes —salir y borrar la cuenta—; en la sesión de
+  // juguete no hay nada que ajustar y el nombre queda como texto.
+  if (!s.local) {
+    const pf = document.createElement('button');
+    pf.className = 'session-perfil';
+    pf.title = 'Ajustes de la cuenta';
+    pf.append(av, nombre);
+    pf.onclick = abrirAjustes;
+    div.append(pf);
+  } else {
+    div.append(av, nombre);
+  }
+
   cont.appendChild(div);
 }
 
-/* Todos los botones de la portada abren el mismo modal. */
+/* Todos los botones de la portada abren el mismo modal. Y al cerrarse con
+   sesión confirmada, la cabecera se repinta: quedarse el «Crear cuenta»
+   escrito un rato más, con la cuenta ya hecha, es exactamente el momento en
+   que alguien vuelve a empezar. */
 function conectarBotones() {
   document.querySelectorAll('[data-open-auth]').forEach((b) => {
-    b.addEventListener('click', () => pedirAcceso());
+    b.addEventListener('click', () => {
+      pedirAcceso().then((s) => { if (s) pintarCabecera(); });
+    });
   });
 }
 

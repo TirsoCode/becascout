@@ -149,9 +149,24 @@ const servidor = createServer(async (req, res) => {
 
   if (req.method === 'DELETE') {
     const q = new URLSearchParams(consulta);
+    const borradas = [];
     for (const [k, v] of q) {
       const [, valor] = partir(v);
-      for (const [clave, fila] of tablas[tabla]) if (fila[k] === valor) tablas[tabla].delete(clave);
+      for (const [clave, fila] of tablas[tabla]) {
+        if (fila[k] === valor) { tablas[tabla].delete(clave); borradas.push(fila); }
+      }
+    }
+    // La FK de sesiones lleva `on delete cascade` en la migración: borrar una
+    // cuenta es borrar sus sesiones y no hace falta ningún DELETE aparte. Esto
+    // lo hace el Postgres de debajo, no PostgREST, pero el simulador tiene que
+    // imitarlo o una baja que en producción limpia todo parecería dejar basura
+    // detrás.
+    if (tabla === 'cuentas') {
+      for (const fila of borradas) {
+        for (const [tk, ses] of tablas.sesiones) {
+          if (ses.correo === fila.correo) tablas.sesiones.delete(tk);
+        }
+      }
     }
     return responde(204);
   }
@@ -167,7 +182,7 @@ const PUERTO = await new Promise((r) => servidor.listen(0, () => r(servidor.addr
 process.env.SUPABASE_URL = `http://127.0.0.1:${PUERTO}`;
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'clave-de-prueba';
 
-const { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken } =
+const { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, borrarCuenta } =
   await import('../lib/store.js');
 
 /* ── Comprobaciones ───────────────────────────────────────────────────────── */
@@ -284,6 +299,28 @@ await prueba('las consultas filtran por eq. y por gt.', async () => {
   // consulta. Ver `valor` en lib/store.js.
   assert.match(consulta, /token=eq\.tok-1/, 'debe filtrar por el token exacto');
   assert.match(consulta, /expira=gt\./, 'debe descartar lo caducado');
+});
+
+await prueba('borrarCuenta borra la cuenta y se lleva las sesiones', async () => {
+  await crear('b@ejemplo.com', 'hash', 'sal');
+  await guardarToken('b@ejemplo.com', 'tok-b1');
+  await guardarToken('b@ejemplo.com', 'tok-b2');
+
+  assert.equal(await borrarCuenta('B@Ejemplo.com'), true, 'debe borrar con el correo tal cual lo escriba quien llama');
+
+  assert.equal(await buscar('b@ejemplo.com'), null, 'la cuenta ya no existe');
+  assert.equal(await porToken('tok-b1'), null, 'las sesiones mueren con la cuenta — el cascade del FK');
+  assert.equal(await porToken('tok-b2'), null);
+
+  // La petición que hace el trabajo: DELETE a cuentas filtrando por el correo,
+  // codificado con encodeURIComponent (lleva punto y @).
+  const baja = log.find((l) => l.metodo === 'DELETE' && l.tabla === 'cuentas');
+  assert.ok(baja, 'debe borrar en cuentas, no en sesiones');
+  assert.match(baja.consulta, /correo=eq\.b%40ejemplo\.com/, 'debe filtrar por el correo exacto');
+});
+
+await prueba('borrarCuenta devuelve false si la cuenta no existe', async () => {
+  assert.equal(await borrarCuenta('nadie@ejemplo.com'), false);
 });
 
 servidor.close();

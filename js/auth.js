@@ -475,6 +475,158 @@ function abrirEncuesta() {
   });
 }
 
+/* ── Ajustes de la cuenta ───────────────────────────────────────────────── */
+
+/**
+ * Lo que una cuenta tiene de suyo: salir y borrarla.
+ *
+ * Salir es un clic. Borrar es un paso intermedio que pide escribir el correo a
+ * mano, porque es lo único que no tiene vuelta atrás: la fila desaparece con
+ * sus sesiones y sin cuenta ni siquiera llegaría un aviso de plazo. El trámite
+ * lo comprueba también el servidor —el navegador siempre puede mentir— y por
+ * eso la ruta solo lo acepta con el correo bien escrito.
+ *
+ * No se pide la contraseña a propósito: las cuentas de Google llevan una
+ * contraseña de servicio que su dueño no conoce, y exigírsela las dejaría sin
+ * poder borrar lo suyo. La sesión abierta más el correo escrito valen para
+ * todos los tipos de cuenta.
+ */
+export async function abrirAjustes() {
+  // La sesión de juguete no es cuenta: no hay ajustes que dar. Salir ya está
+  // a un clic en la cabecera de donde sí lo hay.
+  const s = await sesion();
+  if (!s || s.local) return;
+  if (document.getElementById('scrim')) return;
+
+  const scrim = document.createElement('div');
+  scrim.className = 'scrim';
+  scrim.id = 'scrim';
+
+  const caja = document.createElement('div');
+  caja.className = 'modal modal-wrap ajustes';
+  caja.setAttribute('role', 'dialog');
+  caja.setAttribute('aria-modal', 'true');
+  caja.setAttribute('aria-labelledby', 'ajs-t');
+  caja.tabIndex = -1;
+  scrim.appendChild(caja);
+
+  document.body.appendChild(scrim);
+  document.body.style.overflow = 'hidden';
+
+  let cerrado = false;
+  function cerrar() {
+    if (cerrado) return;
+    cerrado = true;
+    document.removeEventListener('keydown', alEscape);
+    scrim.remove();
+    document.body.style.overflow = '';
+  }
+  function alEscape(e) {
+    if (e.key === 'Escape') cerrar();
+  }
+
+  // El cierre va por delegación desde el scrim: el aspa se vuelve a crear con
+  // el contenido de cada paso y el listener no sabe nada de eso.
+  scrim.addEventListener('click', (e) => {
+    if (e.target === scrim || e.target.closest('.modal-x')) cerrar();
+  });
+  document.addEventListener('keydown', alEscape);
+
+  function pasoInicio() {
+    caja.innerHTML = `
+      <button class="modal-x" aria-label="Cerrar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <h3 id="ajs-t">Tu cuenta</h3>
+
+      <p class="ajs-correo"></p>
+
+      <div class="ajs-act">
+        <button type="button" class="btn btn-quiet" id="ajs-salir">Cerrar sesión</button>
+        <button type="button" class="btn btn-rust" id="ajs-borrar">Eliminar la cuenta</button>
+      </div>`;
+
+    // El correo vuelve de la sesión y lo escribió quien registró la cuenta:
+    // por textContent, como en las cabeceras.
+    caja.querySelector('.ajs-correo').textContent = s.email ?? '';
+    caja.querySelector('#ajs-salir').onclick = salir;
+    caja.querySelector('#ajs-borrar').onclick = pasoBorrar;
+    caja.focus();
+  }
+
+  function pasoBorrar() {
+    caja.innerHTML = `
+      <button class="modal-x" aria-label="Cerrar">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <h3>Eliminar la cuenta</h3>
+      <p class="enc-sub">Se acaba aquí: se pierde la cuenta y la sesión, y no
+         llegarán más avisos de plazo. Para confirmar, escribe tu dirección
+         de correo.</p>
+
+      <form id="ajs-form">
+        <label class="flab" for="ajs-conf">Tu correo</label>
+        <input id="ajs-conf" type="email" required autocomplete="email"
+               placeholder="El correo con el que creaste la cuenta">
+        <button type="submit" class="btn btn-rust" id="ajs-si">Borrar definitivamente</button>
+      </form>
+
+      <div class="modal-msg"></div>
+
+      <p class="enc-skip"><button type="button" id="ajs-no">Volver</button></p>`;
+
+    caja.querySelector('#ajs-no').onclick = pasoInicio;
+    caja.querySelector('#ajs-form').onsubmit = alEnviar;
+    caja.focus();
+  }
+
+  async function alEnviar(e) {
+    e.preventDefault();
+    const btn = caja.querySelector('#ajs-si');
+    const confirmar = caja.querySelector('#ajs-conf').value.trim();
+
+    btn.disabled = true;
+    btn.textContent = 'Borrando…';
+
+    try {
+      const res = await fetch(`${API}/cuenta`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ confirmar }),
+      });
+
+      if (res.ok) {
+        // La cuenta ya no existe: el perfil guardado en este navegador y el
+        // recuerdo de la encuesta tampoco tienen dueño ya. Se van con ella.
+        try {
+          localStorage.removeItem(PERFIL);
+          localStorage.removeItem(ORIGEN);
+        } catch { /* modo privado */ }
+        cache = null;
+        location.reload();
+        return;
+      }
+
+      const d = await res.json().catch(() => ({}));
+      msgDelModal(caja, d.error ?? 'No se pudo borrar la cuenta.');
+    } catch {
+      msgDelModal(caja, 'No se pudo borrar la cuenta.');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Borrar definitivamente';
+  }
+
+  pasoInicio();
+}
+
 /* ── Google ─────────────────────────────────────────────────────────────── */
 
 function conGoogle(scrim, cerrar) {

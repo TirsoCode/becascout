@@ -17,7 +17,7 @@
  * los mismos tengas cuenta o no.
  */
 
-import { sesion, haySesion, pedirAcceso, perfil, salir, revisarEncuesta } from './auth.js';
+import { sesion, haySesion, pedirAcceso, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
 
 const R = 34;                  // radio del anillo
 const CIRC = 2 * Math.PI * R;
@@ -77,9 +77,6 @@ async function pintarCabecera() {
 
   zona.innerHTML = '';
   if (s) {
-    const d = document.createElement('div');
-    d.className = 'session';
-
     // El avatar se pinta con `textContent` porque el correo lo elige quien se
     // registra. Interpolado en la plantilla, bastaba un correo que empezara por
     // `<` o por `"` para inyectar HTML. Una sola letra en pantalla no
@@ -94,17 +91,33 @@ async function pintarCabecera() {
     nombre.appendChild(b);
     if (s.local) nombre.appendChild(document.createTextNode(' (local)'));
 
+    // El perfil abre los ajustes —salir y borrar la cuenta—, salvo en la
+    // sesión de juguete, que no es cuenta y ahí no hay nada que ajustar.
+    const d = document.createElement('div');
+    d.className = 'session';
+
+    if (!s.local) {
+      const pf = document.createElement('button');
+      pf.className = 'session-perfil';
+      pf.title = 'Ajustes de la cuenta';
+      pf.append(av, nombre);
+      pf.onclick = abrirAjustes;
+      d.append(pf);
+    } else {
+      d.append(av, nombre);
+    }
+
     const x = document.createElement('button');
     x.textContent = 'Salir';
     x.onclick = salir;
 
-    d.append(av, nombre, x);
+    d.append(x);
     zona.appendChild(d);
   } else {
     const b = document.createElement('button');
     b.className = 'btn btn-brand';
     b.textContent = 'Crear cuenta';
-    b.onclick = () => pedirAcceso().then((s) => s && pintar());
+    b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
     zona.appendChild(b);
   }
 }
@@ -280,7 +293,7 @@ function cartelAcceso(abierta) {
   const b = document.createElement('button');
   b.className = 'btn cartel-btn';
   b.textContent = 'Crear cuenta gratis';
-  b.onclick = () => pedirAcceso().then((s) => s && pintar());
+  b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
 
   barra.append(txt, b);
   document.body.appendChild(barra);

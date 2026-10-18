@@ -80,8 +80,9 @@ data/becas.json       salida de la ingesta
 
 ### Dos cosas de `api/` que no son obvias
 
-**`api/[...ruta].js` es un comodín a propósito.** Un solo fichero maneja las siete
-rutas (`/api/registro`, `/api/login`, `/api/salir`, `/api/yo`, `/api/config`).
+**`api/[...ruta].js` es un comodín a propósito.** Un solo fichero maneja todas las
+rutas (`/api/registro`, `/api/login`, `/api/salir`, `/api/yo`, `/api/config`,
+`/api/origen`, `/api/registro-google` y el `DELETE /api/cuenta`).
 Vercel mapea cada fichero de `api/` a su propia ruta, así que un `api/auth.js`
 solo respondería en `/api/auth` y lo demás sería un 404 — que en el navegador se
 ve como «no hay servidor» y cae al modo local de juguete.

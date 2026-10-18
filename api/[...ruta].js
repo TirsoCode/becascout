@@ -63,7 +63,7 @@
 
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
-import { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken } from '../lib/store.js';
+import { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, borrarCuenta } from '../lib/store.js';
 
 const scryptAsync = promisify(scrypt);
 
@@ -199,6 +199,7 @@ export default async function handler(req, res) {
     if (ruta === 'login' && req.method === 'POST') return await login(req, res);
     if (ruta === 'salir' && req.method === 'POST') return await salir(req, res);
     if (ruta === 'yo' && req.method === 'GET') return await yo(req, res);
+    if (ruta === 'cuenta' && req.method === 'DELETE') return await borrarCuentaRuta(req, res);
     if (ruta === 'origen' && req.method === 'POST') return await anotarOrigen(req, res);
     if (ruta === 'config' && req.method === 'GET') return await config(req, res);
 
@@ -432,6 +433,33 @@ async function yo(req, res) {
   const usuario = await porToken(token);
   if (!usuario) return json(res, 401, { error: 'sin sesión' });
   json(res, 200, { correo: usuario.correo });
+}
+
+/**
+ * Borrar la cuenta de quien tiene la sesión abierta.
+ *
+ * Irreversible, así que no vale con estar dentro: el cuerpo tiene que traer
+ * `confirmar` con la dirección de la cuenta escrita a mano. Si un clic
+ * accidental no tuviera ese trámite, una rúa en el móvil haría lo que nunca
+ * se puede deshacer.
+ *
+ * Funciona igual para cuentas de Google, que llevan una contraseña de
+ * servicio que su dueño no conoce: pedir una contraseña aquí las dejaría sin
+ * salir. La confirmación vale para todos los tipos de cuenta.
+ */
+async function borrarCuentaRuta(req, res) {
+  const token = leerCookie(req.headers.cookie);
+  const usuario = await porToken(token);
+  if (!usuario) return json(res, 401, { error: 'sin sesión' });
+
+  const { confirmar: dicho } = await cuerpo(req);
+  if (normaliza(dicho) !== usuario.correo) {
+    return json(res, 400, { error: 'Escribe tu dirección de correo para confirmar.' });
+  }
+
+  await borrarCuenta(usuario.correo);
+  if (token) await quitarToken(token);
+  json(res, 200, { ok: true }, { 'Set-Cookie': cookie('', 0) });
 }
 
 /**
