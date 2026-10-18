@@ -437,10 +437,30 @@ img, svg { display: block; max-width: 100%; }
   opacity: .5;
 }
 
-/* Aquí hubo una puerta con cartel, candado y el aviso ámbar de arriba. Ya no
-   está. Ver `velar()` en js/becas.js: el velo no lleva ninguna marca, y es a
-   propósito. No queda CSS huérfano aquí por descuido; lo que se quitó, se
-   quitó entero. */
+/* Cartel de acceso: barra fija en el borde inferior, siempre visible mientras
+   el velo esté puesto.
+
+   Aquí hubo una puerta con cartel, candado y aviso ámbar, y se quitó entera el
+   17 de octubre de 2026. Volvió el 18, pero de otra forma: ni candado ni
+   «bloqueado» dentro de la lista, sino una sola barra **fuera del contenido**
+   que dice para qué hace falta la cuenta. Fija, para que siga ahí cuando el
+   estudiante lleve media lista leída, que es cuando decide. Ver
+   `cartelAcceso()` en js/becas.js. */
+.cartel-acceso {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 150;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 10px 16px;
+  padding: 11px 16px calc(11px + env(safe-area-inset-bottom, 0px));
+  background: var(--paper);
+  border-top: 1px solid var(--rule-2);
+  box-shadow: 0 -12px 30px -20px rgba(22,25,27,.45);
+}
+.cartel-acceso p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.cartel-acceso .btn { flex: none; }
+
+/* La barra va por encima del final de la página: se le reserva su alto para
+   que la última tarjeta no quede detrás de ella. */
+body.con-cartel { padding-bottom: 78px; }
 
 /* ── Modal de acceso ───────────────────────────────────────── */
 .scrim {

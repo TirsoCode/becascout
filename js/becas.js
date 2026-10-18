@@ -235,27 +235,55 @@ async function pintar() {
 
   $('#zona-lista').innerHTML = html;
   if (!abierta) velar();
+  cartelAcceso(abierta);
 }
 
 /**
- * Echa el velo por encima. Y nada más.
+ * Echa el velo por encima del contenido. Y solo eso.
  *
- * Aquí no hay cartel, ni candado, ni «bloqueado», ni el aviso ámbar de arriba.
- * Se quitó a propósito el 17 de octubre de 2026: cualquier marca de «aquí hay
- * una puerta» convierte la lista en un cartel que dice «esto está aquí», y quien
- * no tiene cuenta lo lee como una traba puesta para que se dé de alta. Las 85
- * fichas se ven igual que si fueran suyas: mismo sitio, mismo orden, mismo
- * número. Solo que no se leen.
- *
- * El coste de quitarlo es que ya no hay ninguna llamada a la acción dentro de
- * la lista. Se entra por el botón «Crear cuenta» de la cabecera, que es lo
- * único que queda. Es una decisión de producto y es reversible: si dentro de
- * un mes la conversión es cero, el motivo está aquí y no en el resto.
+ * Dentro de la lista no hay candado ni la palabra «bloqueado»: las fichas se
+ * ven igual que si fueran suyas —mismo sitio, mismo orden, mismo número—, solo
+ * que borrosas. La llamada a la acción va **fuera** del contenido, en la barra
+ * fija de abajo (`cartelAcceso`), y eso es a propósito: un cartel encima de
+ * cada ficha convertiría la lista en un anuncio de lo que esconde.
  */
 function velar() {
   document.querySelectorAll('[data-beca]').forEach((nodo) => {
     nodo.firstElementChild.classList.add('lock-body');
   });
+}
+
+/**
+ * La barra de abajo: «Inicia sesión para ver las becas», siempre a la vista.
+ *
+ * El velo tapa, pero sin una llamada a la acción visible el único camino era
+ * el botón «Crear cuenta» de la cabecera, que en móvil se pierde al hacer
+ * scroll. Por eso la barra va `position: fixed`: sigue ahí cuando el
+ * estudiante lleva media lista bajada, que es justo cuando decide si la cuenta
+ * le merece la pena.
+ *
+ * Se rehace en cada `pintar()` porque la sesión puede cambiar entre pintada y
+ * pintada: se quita la anterior y se decide de cero. Con cuenta, no se crea.
+ */
+function cartelAcceso(abierta) {
+  document.getElementById('cartel-acceso')?.remove();
+  document.body.classList.toggle('con-cartel', !abierta);
+  if (abierta) return;
+
+  const barra = document.createElement('div');
+  barra.id = 'cartel-acceso';
+  barra.className = 'cartel-acceso';
+
+  const txt = document.createElement('p');
+  txt.textContent = 'Inicia sesión para ver las becas';
+
+  const b = document.createElement('button');
+  b.className = 'btn btn-brand';
+  b.textContent = 'Inicia sesión';
+  b.onclick = () => pedirAcceso().then((s) => s && pintar());
+
+  barra.append(txt, b);
+  document.body.appendChild(barra);
 }
 
 /* ── Tarjeta ────────────────────────────────────────────────────────────── */

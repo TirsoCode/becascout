@@ -132,18 +132,19 @@ El bloqueo es visual, no una comprobación de permiso. El contenido se pinta
 entero y se cubre con `filter: blur()` más una retícula de píxeles. El texto
 está en el DOM y se puede leer en el inspector.
 
-**El velo no lleva ninguna marca.** Ni cartel con botón, ni candado, ni la
-palabra «bloqueado», ni el aviso ámbar que antes iba encima de la lista. Las 85
-fichas salen igual que si fueran de quien las está mirando: mismo orden, mismo
-número, misma retícula. Lo único que hay que crear es la cuenta, y se hace por
-el botón de la cabecera.
+**El velo no lleva ninguna marca dentro de la lista.** Ni candado, ni la
+palabra «bloqueado», ni un botón encima de cada ficha. Las 85 salen igual que
+si fueran de quien las está mirando: mismo orden, mismo número, misma retícula,
+solo que borrosas. Lo que sí hay es **una barra fija abajo de todo**, fuera del
+contenido, con «Inicia sesión para ver las becas» y su botón.
 
-Se quitó el 17 de octubre de 2026 y fue deliberado: cualquier rótulo de «aquí
-hay una puerta» convierte la lista en un cartel que señala lo que esconde, y
-quien no tiene cuenta lo lee como una traba para darse de alta en vez de como
-«todavía no te han enseñado esto». El coste es que no queda ninguna llamada a
-la acción dentro de la lista. Si la conversión llega a cero, el sitio para
-mirar es esta decisión, no el diseño de las tarjetas.
+El 17 de octubre de 2026 el velo se quedó sin ninguna marca, y el 18 volvió el
+cartel en esa forma. El motivo del cambio: sin una llamada a la acción a la
+vista, el único camino era el botón «Crear cuenta» de la cabecera, que en móvil
+se pierde al bajar. La marca va **fuera** de la lista —una sola barra en el
+borde inferior— y no encima de las fichas, porque un cartel sobre cada ficha
+convierte la lista en un anuncio de lo que esconde; una barra al pie dice para
+qué hace falta la cuenta sin señalar cada hueco.
 
 Se podría «proteger» ocultando los datos y pidiéndolos después, pero entonces
 la página sería un formulario en blanco, se pierde la sensación de que hay
