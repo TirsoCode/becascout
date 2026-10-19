@@ -52,14 +52,17 @@ qué no se puede evitar.
 index.html            portada. No enseña ni una beca
 becas.html            buscador. Contenido pixelado hasta tener cuenta
 sobre.html            qué es esto, cómo se extrae y con qué reglas. Indexable
+erasmus-mundus.html   las becas Erasmus Mundus. Indexable. La genera paginas.mjs
 privacidad.html       política de privacidad
 cookies.html          política de cookies
 404.html              cuando la URL no existe. Vercel la sirve con estado 404
 styles.css            sistema de diseño
 robots.txt            quién puede rastrear. Los bots de IA, permitidos a propósito
-sitemap.xml           las páginas indexables (la portada y sobre.html)
+sitemap.xml           las páginas indexables (portada, sobre.html y erasmus-mundus)
 llms.txt              resumen del sitio para modelos, formato de llmstxt.org
-.well-known/ai.txt    dónde buscan los agentes: apunta a los dos de abajo
+llms-full.txt         el texto de las páginas, sin repetir lo que ya dice llms.txt
+feed.xml              las convocatorias en RSS. Lo genera paginas.mjs
+.well-known/ai.txt    dónde buscan los agentes: apunta a los de abajo
 ai/summary.json       quién es BecasScout, en JSON, para asistentes de IA
 ai/faq.json           las preguntas frecuentes, en JSON, para asistentes de IA
 og.png, logo.png      tarjeta social y logo cuadrado del JSON-LD. Salen de tools/
@@ -78,6 +81,7 @@ api/
   [...ruta].js        la API entera como una función (ver más abajo)
 auth/
   callback.html       receptor del token de Google
+  callback.js         su lógica. Aparte porque la CSP no deja guiones inline
 lib/
   store.js            cuentas y sesiones. Postgres, con fichero de respaldo
 ingest/
@@ -85,6 +89,8 @@ ingest/
   xml.mjs             parser de XML mínimo, sin dependencias
   extract.mjs         requisitos, con LLM o por reglas
   run.mjs             orquesta la ingesta
+  erasmus.mjs         catálogo de Erasmus Mundus. También refresca sus hechos
+  paginas.mjs         genera erasmus-mundus.html, feed.xml y llms-full.txt
 supabase/migrations/  SQL de las tablas
 test/
   store.mjs           el almacén contra un Supabase de mentira
@@ -260,6 +266,25 @@ deciden qué ve el estudiante.
 vercel build --yes --target production
 vercel deploy --prod --prebuilt --yes
 ```
+
+**El commit tiene que estar en GitHub antes de desplegar.** Vercel comprueba
+quién es el autor del commit contra el repositorio conectado, y si el commit
+solo está en local no lo encuentra: bloquea el despliegue con «the commit
+author doesn't have permission to create deployments for this project». Pasó
+el 19 de octubre de 2026 tres veces seguidas, y el mensaje no dice nada de que
+falte un `git push`. El orden correcto es **commit → push → deploy**.
+
+**`.gitignore` decide lo que sube, y no solo lo que se versiona.** La regla
+`*.png` apartaba `og.png` y `logo.png`, así que ni entraron en el repositorio
+ni se sirvieron: la tarjeta social y el logo del JSON-LD daban 404 en
+producción. Para los ficheros que hay que servir y además versionar, la
+excepción va **después** de la regla.
+
+**Comprobar lo que se sirve, no lo que hay en el disco.** Un despliegue puede
+dejar fuera ficheros sin avisar: el 19 de octubre de 2026 un despliegue hecho
+desde un *worktree* se llevó por delante `auth/callback.js` y con él el login
+con Google, que la CSP bloquea por ser un guion inline. Antes de dar un
+despliegue por bueno, pedir las rutas una a una.
 
 Las claves van aparte y una sola vez, con `vercel env add … production`. Cada
 cambio de entorno **exige un redesplie**: Vercel no las injecta en caliente, y
