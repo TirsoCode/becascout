@@ -16,6 +16,7 @@ import { recolectar, textoCompleto } from './boe.mjs';
 import { idDesdeBoe, render, aRegistro as aRegistroBdns } from './bdns.mjs';
 import { recolectar as recolectarErasmus } from './erasmus.mjs';
 import { parrafosConOrigen, extrae } from './extract.mjs';
+import { idAnuncio, ensambla, faltan } from './ensamblar.mjs';
 
 const BDNS_BASE = 'https://www.infosubvenciones.es/bdnstrans/GE/es';
 
@@ -75,22 +76,6 @@ function diasAtras(n) {
   const d = new Date();
   d.setDate(d.getDate() - (Number(n) || 21));
   return d.toISOString().slice(0, 10);
-}
-
-/**
- * El id del anuncio del BOE del que salió un registro guardado.
- *
- * Las fichas nuevas lo traen en `boeIdAnuncio`. Las antiguas solo lo tienen
- * dentro de `url` (`…txt.php?id=BOE-B-2026-…`), porque al enriquecer con BDNS
- * el `id` del registro se renombró a `BDNS-…` y el id del anuncio dejó de
- * estar suelto. Sin las dos vías la caché no acierta con nada de lo ya
- * publicado: `boeIdBases` es el id del documento de **Bases** (BOE-A-…), que
- * no es el anuncio que recorre el sumario (BOE-B-…).
- */
-function idAnuncio(b) {
-  return b.boeIdAnuncio
-    ?? /boe\.es\/diario_boe\/txt\.php\?id=([^&\s]+)/.exec(b.url ?? '')?.[1]
-    ?? b.id;
 }
 
 /**
@@ -397,87 +382,34 @@ if (!process.argv.includes('--sin-erasmus')) {
 // ── El fichero ────────────────────────────────────────────────────────────
 //
 // Aquí es donde se decide qué se escribe, y es el punto donde el 19 de
-// octubre de 2026 se perdió la base.
+// octubre de 2026 se perdió la base. Lo que hace falta está en
+// `ingest/ensamblar.mjs`, que está fuera de aquí para poder probarlo: la
+// regla se rompió una vez y se rompió en silencio.
 //
-// La caché no es solo un ahorro de tiempo: el conector **no baja** los
-// anuncios que ya tiene guardados, así que esas fichas no pasan por
-// `procesar` y nunca están en `registros`. Si al escribir solo se escriben
-// las de `registros`, la caché se come las fichas.
-//
-// Eso es lo que pasó: se quitó el arrastre de las fichas viejas, el
-// conector se saltó 62 anuncios de la ventana por estar en la caché, y el
-// fichero pasó de 2.626 fichas a 76. La web se quedó con el 3 % de lo que
-// tenía, el paso siguiente salió en verde y nadie se enteró.
-//
-// La regla que sale de ahí, y que el invariante de abajo vigila: **todo
-// anuncio que el BOE ha publicado en esta ventana y ha pasado el filtro
-// tiene que estar en el fichero**, o se acaba de descargar o sale de la
-// caché. Lo que se salga de la ventana, fuera.
-const salida = new Map();
-
-// 1. Lo que la caché perdonó. Va primero para que la posición de cada ficha
-//    no cambie de una pasada a otra.
-for (const id of omitidas) {
-  const previa = cache.get(id);
-  if (!previa) continue;
-  // `cerrada` se recalcula: el de la caché tiene la fecha del día en que se
-  // extrajo, y un plazo puede haber vencido desde entonces. Sin esto, una
-  // convocatoria cerrada hacía tres semanas seguía enseñándose como abierta.
-  salida.set(id, {
-    ...previa,
-    cerrada: previa.cierra ? new Date(previa.cierra) < new Date() : false,
-  });
-}
-
-// 2. Lo recién bajado, que pisa a lo de la caché: es el mismo anuncio, pero
-//    con la extracción de hoy. Y las fichas de Erasmus, que se suman al
-//    final y no pasan por la caché.
-//
-// La clave es el id del anuncio del BOE y no el del registro: al enriquecer
-// con BDNS el registro se renombra a `BDNS-…` y el id del anuncio deja de
-// estar suelto. Con la clave equivocada, la misma convocatoria entra dos
-// veces en el fichero.
-let repetidas = 0;
-for (const r of registros) {
-  const clave = idAnuncio(r);
-  if (salida.has(clave)) repetidas++;
-  salida.set(clave, r);
-}
+// La regla, en una línea: todo anuncio que el BOE ha publicado en esta
+// ventana y ha pasado el filtro tiene que estar en el fichero, o se acaba de
+// descargar o sale de la caché. Lo que se salga de la ventana, fuera.
+const { publicables, repetidas } = ensambla({ registros, omitidas, cache });
 if (repetidas) {
   console.log(`  ${repetidas} fichas repetidas, eliminadas al escribir.`);
 }
 
 // ── El invariante ────────────────────────────────────────────────────────
 //
-// Ni una menos. Si el BOE ha dado N convocatorias en esta ventana y en el
+// Ni una menos. Si el BOE ha dado N convocatorias en la ventana y en el
 // fichero hay menos, se ha perdido alguna, y no se escribe: una base a la
 // que se le caen fichas sin que nadie se entere es justo lo que vació la
-// base el 19 de octubre de 2026, y se salió porque el paso terminó en
+// base el 19 de octubre de 2026, y se salvó porque el paso terminó en
 // verde.
 //
 // El paso se para con un error y el fichero no se escribe. La web sigue
 // sirviendo el último `becas.json` bueno, que es justo para lo que está.
-const esperadas = fichas.length + omitidas.size;
-const emitidas = [...salida.values()].filter((r) => r.fuente !== 'erasmus-mundus').length;
-if (emitidas !== esperadas) {
+const { esperadas, emitidas, faltan: perdidas } = faltan(publicables, { fichas, omitidas });
+if (perdidas) {
   console.error(`\n  FALTAN FICHAS: el BOE ha dado ${esperadas} convocatorias en la ventana y en el fichero hay ${emitidas}.`);
   console.error('  No se escribe data/becas.json. Revisa el log antes de fiarte de la pasada.\n');
   process.exit(1);
 }
-
-// ── El orden del fichero ─────────────────────────────────────────────────
-//
-// Por fecha de publicación y, a igualdad, por identificador. El motivo no
-// es que se vea mejor —la web los ordena por su cuenta— sino el diff: el
-// fichero se commitea dos veces al día, y uno que reordena sus filas cada
-// vez no dice nada de qué ha cambiado. Con este orden, una ficha nueva entra
-// en su sitio, una que se sale de la ventana se va, y el resto no se mueve.
-const publicables = [...salida.values()].sort((a, b) => {
-  const pa = a.publicada ?? '';
-  const pb = b.publicada ?? '';
-  if (pa !== pb) return pb.localeCompare(pa);
-  return String(a.id).localeCompare(String(b.id));
-});
 
 await mkdir(new URL('../data/', import.meta.url), { recursive: true });
 await writeFile(
