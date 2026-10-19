@@ -183,12 +183,123 @@ siga bajando. Va en la retícula editorial y no como marco, y por eso es un
 | --- | --- | --- |
 | BOE | API abierta, sin clave | `datosabiertos/api/boe/sumario/{fecha}` |
 | BOE (texto) | XML por documento | `diario_boe/xml.php?id=...` |
-| DAAD | HTML | Conector pendiente, se rompe seguido |
-| Erasmus Mundus | JSON de la aplicación | Conector pendiente |
+| DAAD | Chrome (WAF) | 153 programas de Alemania, con su nivel |
+| Erasmus Mundus | HTML con `fetch` | 217 programas, con los países del consorcio |
+| Comisión (SEDIA) | API con `multipart` | Convocatorias de la UE que se piden en nombre propio |
+| BDNS | Chrome (WAF) | `infosubvenciones.es`. Da presupuesto, plazo y el enlace a las Bases |
 
 Al añadir un conector nuevo, que degrade en silencio: si el portal cambia,
-que devuelva vacío y avise por log, pero que no rompa la web.
+que devuelva vacío y avise por log, pero no rompa la web.
 
+### Las fuentes de fuera de España
+
+El 19 de octubre de 2026 el sitio prometía «becas de Europa» y solo tenía
+España. Ahora hay cuatro fuentes más, y cada una tiene su trampa:
+
+**Erasmus Mundus** (`ingest/erasmus.mjs`). El catálogo de EACEA sirve el
+HTML plano, pero **parte los atributos en varias líneas**: `<article
+class="ecl-card">` no casa con nada y el conector devolvía una lista vacía
+sin dar ningún error. Todos los atributos van con espacios en blanco
+flexibles. Y hay **dos catálogos** con marcado distinto: el de Joint
+Masters pone el título en un `<span class="ecl-link__label">` y el de
+Intra-Africa en un `<div class="ecl-content-block__title">`, sin enlace.
+Con solo el primero se perdía la mitad de la cuarta página.
+
+Los **países** no salen en la tarjeta, y la ficha de cada programa contesta
+«Sorry» (protección anti-bot). La salida es cruzar el filtro de países del
+propio catálogo, que trae 77 con su código ISO. Eso son 92 peticiones, así
+que va en un fichero aparte —`data/paises-erasmus.json`— que se regenera a
+mano con `node ingest/erasmus-paises.mjs`. Los países de un programa no
+cambian, y bajarlos en cada pasada es tirar ancho de banda.
+
+**DAAD** (`ingest/daad.mjs`). `www2.daad.de` contesta 403 a cualquier
+`fetch`, aunque lleven las cabeceras completas de un navegador: el WAF lee
+la huella de TLS. Solo pasa con Chrome. Ojo con su campo «Country»: es **de
+dónde vienes**, no a dónde vas. El destino es Alemania salvo que el
+programa diga otra cosa.
+
+Ojo también con su nivel: «Graduates» quiere decir **quien ya tiene un
+título**, no «grado». Traducirlo a «Grado» mandaba a un posgraduado al
+filtro equivocado.
+
+**La Comisión** (`ingest/ue.mjs`). La API de búsqueda del portal de
+financiación (`api.tech.ec.europa.eu/search-api`) **exige `multipart`**.
+Con un cuerpo JSON responde 200 y trae 213.936 resultados: el cuerpo se
+ignora en silencio. Con `multipart` y una query de Elasticsearch filtra de
+verdad. Y el `apiKey=SEDIA` va **una sola vez** en la URL: duplicado sale
+con dos `apiKey` y el API contesta 200 con la lista vacía.
+
+Ojo con el estado: «Open for submission» no significa «el plazo está
+dentro». Hay convocatoria marcada como abierta con fecha de cierre de 2023.
+**La fecha es la verdad** y el conector la mira siempre.
+
+Y solo entra lo que se pide **en nombre propio**. El portal mezcla las
+becas de doctorado y postdoctorado con las llamadas a organizaciones, que
+son licitaciones. Enseñar una licitación en un buscador de becas miente,
+porque quien lo lee no se puede apuntar.
+
+### El filtro de destino y de nivel
+
+El `<select>` de destino guardaba el país en el perfil y **no lo usaba para
+nada**: la lista salía entera siempre. Ahora filtra, con dos decisiones
+que conviene no deshacer:
+
+- **El destino se guarda como código ISO**, no como nombre. El nombre
+  cambia y el código no. `js/paises.js` es la lista única: la usan el
+  desplegable y los conectores, y si son dos se desincronizan.
+- **Una convocatoria sin destino conocido no se esconde.** Se queda y se
+  avisa de cuántas son («N sin destino conocido (también salen)»). Si el
+  filtro aparta una beca que sí valía, quien la buscaba no ve el hueco y no
+  sabe que faltaba. Enseñar de más cuesta un clic; quitar de más pierde la
+  beca sin dejar rastro.
+- **La píldora de destino enseña tres países y un «+N».** Un consorcio de
+  Erasmus puede tener once, y la píldora se convertía en un muro de texto
+  de 589 píxeles. Los que no caben van en el `title`, que es donde se lee
+  el detalle. Y el orden es alfabético a propósito: el del catálogo es el
+  del recorrido por sus 77 filtros, no el del peso de cada país en el
+  consorcio, así que ordenar por nombre no finge una jerarquía que no está.
+
+El **nivel** solo lo traen las fuentes que lo dan como dato estructural
+(DAAD). Las Bases del BOE no lo dan: therein «grado» es «grado de
+cumplimiento de los objetivos» y «Máster, Doctorado, cursos» es la lista
+de cosas que se puede financiar. Buscarlo ahí producía un nivel
+inventado para la mitad de las fichas, así que se busca **solo en el
+anuncio**, que es donde sí lo dice.
+
+### El WAF de BDNS y el límite de navegadores
+
+BDNS está detrás de un WAF que **no dice que no**: contesta «Acceso
+Denegado» a unas peticiones y deja pasar otras. El programa se lo come
+como si la ficha no trajera nada, y la consecuencia es una base a la que
+le faltan presupuesto, plazo y Bases en una parte de las fichas, **sin
+ningún error que lo delate**.
+
+Por eso `bdns.mjs` limita los navegadores abiertos a la vez
+(`MAX_NAVEGADORES`, tres). Con seis a la vez, la mitad de las fichas se
+quedaban fuera: de seis, entraban una o dos. Con el límite dentro de
+`render()`, el orquestador puede pedir seis fichas y tres esperan su turno
+en vez de pedirle al WAF que corte.
+
+Y el límite va **dentro** de `render()` y no en el orquestador a propósito:
+así vale para todas las fuentes, incluidas las que no conoce quien
+orquesta.
+
+### La versión de las reglas de extracción
+
+La caché guarda el **resultado** de extraer, no el texto. El BOE es
+inmutable, pero **las reglas cambian**, y entonces la caché se queda con
+datos viejos y el fichero sale con una mezcla de dos versiones. Pasó el
+19 de octubre de 2026: se añadió el destino y el nivel, y las fichas del
+BOE que venían de la caché siguieron sin ellos porque el conector ni se los
+descargó. La web enseñaba 390 fichas y el filtro de destino no filtraba
+ninguna, sin que nada fallara.
+
+Por eso la caché lleva la versión de las reglas con la que se extrajo
+(`VERSION_REGLAS` en `run.mjs`, y `version_reglas` en el propio
+`data/becas.json`). Cuando el número cambia, la caché **no vale** y se
+vuelve a bajar todo. El número se sube **a mano** cuando cambia una regla
+de extracción, y por eso está escrito en mayúsculas: si se olvida, la web
+enseña una mezcla de dos versiones y no hay ningún error que lo delate.
 ## El filtro: qué es una beca y qué no
 
 El BOE publica cada día unas 230 noticias y unas 5 convocatorias. Sin filtro,
@@ -242,6 +353,8 @@ de actas y dos casos más. **Ninguna beca perdida.**
 node ingest/run.mjs --desde 2025-09-01 --hasta 2025-09-30   # ingesta real
 node test/store.mjs                                            # cuentas, sin red
 node test/extract.mjs                                          # reglas de extracción
+node test/pais.mjs                                             # el filtro de destino
+node test/web.mjs                                              # lo que se ve en el navegador
 ```
 
 `test/store.mjs` levanta un Supabase de mentira y comprueba que el almacén
@@ -253,6 +366,29 @@ anunciaba aquí y no estaba escrito). Comprueba las reglas de extracción sobre
 un XML embebido, sin red, y que la base publicada no tenga requisitos sin cita
 ni confunda un presupuesto con el importe de una beca. Es la prueba que
 sostiene la regla de que **ningún requisito se muestra sin su cita**.
+
+`test/pais.mjs` comprueba el **filtro de destino y de nivel**: que el
+destino aparta lo que debe, que una convocatoria sin destino conocido se
+queda, y que la píldora no se convierte en un muro de texto. El filtro
+**no filtraba** —guardaba el país en el perfil y no lo usaba para nada— y
+no había ninguna prueba que lo dijera.
+
+`test/web.mjs` mide lo que se ve en el navegador: abre Chrome con el
+protocolo de depuración, carga la página en un viewport de 390 × 844 y
+comprueba que nada se sale de la pantalla, que el filtro recorta de verdad
+y que el velo tapa todas las fichas. Es el único test que pilla lo que
+solo se ve mirando: una cita con un identificador de 40 caracteres que
+empuja la tarjeta fuera de la pantalla, un desplegable con 37 países que no
+cabe, una píldora de 589 píxeles. Nada de eso falla en los tests de
+lógica, y las dos reglas del proyecto —«¿se lee bien en 390 px?» y «¿hay
+una fuente para cada dato?»— son de la página.
+
+Necesita el servidor local:
+
+```bash
+node serve.mjs &
+node test/web.mjs http://localhost:5173
+```
 
 Lo que **no** hay todavía es un test del **filtro** (`motivoDescarte` en
 `ingest/boe.mjs`). Hoy se comprueba a mano, mirando el log de la pasada y

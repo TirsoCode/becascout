@@ -18,7 +18,7 @@ import { idDesdeBoe, render, aRegistro as aRegistroBdns } from './bdns.mjs';
 import { recolectar as recolectarErasmus } from './erasmus.mjs';
 import { recolectar as recolectarDaad } from './daad.mjs';
 import { recolectar as recolectarUe } from './ue.mjs';
-import { parrafosConOrigen, extrae } from './extract.mjs';
+import { parrafosConOrigen, extrae, buscaNivel } from './extract.mjs';
 import { idAnuncio, ensambla, faltan } from './ensamblar.mjs';
 
 const BDNS_BASE = 'https://www.infosubvenciones.es/bdnstrans/GE/es';
@@ -174,6 +174,48 @@ async function cachePrevia() {
   }
 }
 
+/**
+ * La versión de las reglas de extracción.
+ *
+ * ── Por qué existe ───────────────────────────────────────────────────────
+ *
+ * La caché guarda el **resultado** de extraer, no el texto. Eso está bien
+ * mientras las reglas no cambian: el BOE es inmutable y la extracción de
+ * hoy es la de ayer.
+ *
+ * Pero en cuanto cambian las reglas, la caché se queda con datos viejos y
+ * **el fichero sale con una mezcla de dos versiones**. Pasó el 19 de
+ * octubre de 2026: se añadió el destino y el nivel a los registros, y las
+ * 24 fichas del BOE de la caché siguieron sin ellos porque el conector ni
+ * se los 下载ó. La web enseñaba 390 fichas y el filtro de destino no
+ * filtraba ninguna, sin que nada fallara.
+ *
+ * Por eso la caché lleva la versión de las reglas con la que se extrajo.
+ * Cuando el número cambia, la caché **no vale** y se vuelve a bajar todo.
+ *
+ * El número se sube a mano cuando cambia una regla de extracción. Es
+ * un paso que hay que acordarse de hacer, y por eso está aquí escrito en
+ * mayúsculas: si se olvida, la web enseña una mezcla de dos versiones y
+ * no hay ningún error que lo delate.
+ */
+const VERSION_REGLAS = 3;
+
+/**
+ * La versión de reglas con la que se extrajo el fichero guardado.
+ *
+ * Vive en el propio `data/becas.json`, en `version_reglas`. Si no está,
+ * es que el fichero es de antes de que existiera el campo, y por tanto de
+ * reglas viejas: la caché no vale.
+ */
+async function leeVersionReglas() {
+  try {
+    const previa = JSON.parse(await readFile(new URL('../data/becas.json', import.meta.url), 'utf8'));
+    return previa.version_reglas ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 function fechaPorDefecto(deltaDias) {
   const d = new Date();
   d.setDate(d.getDate() + deltaDias);
@@ -229,6 +271,18 @@ const CONCURRENCIA = Math.max(1, Number(arg('concurrencia', 6)) || 6);
 const cache = await cachePrevia();
 console.log(`Caché:     ${cache.size} fichas ya bajadas de una pasada anterior`);
 
+// La caché solo vale si se extrajo con las mismas reglas. Si no, se
+// descarta entera y se vuelve a bajar todo: es una pasada lenta, pero sale
+// un fichero coherente, que es lo que importa.
+if (cache.size) {
+  const versionPrevia = Number(await leeVersionReglas());
+  if (versionPrevia !== VERSION_REGLAS) {
+    console.log(`  La caché es de la versión ${versionPrevia || 'sin versión'} y las reglas son la ${VERSION_REGLAS}.`);
+    console.log('  Se vuelve a bajar todo: una mezcla de dos versiones se ve como un fallo que no está.');
+    cache.clear();
+  }
+}
+
 // `reutilizadas` es lo que se ha saltado por estar en la caché. Antes vivía
 // dentro de `procesar`, y eso contaba cero: las fichas cacheadas ya no llegan
 // a `procesar`, porque el conector no se las descarga. Un contador que siempre
@@ -283,9 +337,25 @@ async function procesar(f) {
   // el bucle era secuencial, y en cuanto hay dos fichas en vuelo una le
   // pisa los requisitos a la otra. Con esto dentro, no hay nada que pisar.
   let requisitos = [];
+  // El texto de las Bases, cuando se han podido bajar. Vive aquí y no
+  // dentro del `if` porque se usa después, para buscar el nivel: si el
+  // anuncio no lo dice, lo dicen las Bases.
+  let bases = null;
 
   if (bdnsId && usarBdns) {
     const html = await render(`${BDNS_BASE}/convocatoria/${bdnsId}`).catch(() => null);
+    // El WAF de BDNS contesta «Acceso Denegado» **sin dar error**, y eso es
+    // lo peor: la ficha se queda sin presupuesto, sin plazo y sin Bases, y
+    // no hay ningún fallo que lo delate. Solo se ve en el log, contando.
+    //
+    // Con seis Chromes a la vez, la mitad de las fichas se quedan fuera. Es
+    // el mismo motivo por el que la concurrencia está en una bandera y no
+    // escrita en el código. El límite de navegadores está en `bdns.mjs`.
+    if (!html) {
+      console.warn(`  ${f.id}: BDNS no ha contestado (${bdnsId}).`);
+    } else if (/Acceso Denegado/i.test(html)) {
+      console.warn(`  ${f.id}: el WAF de BDNS ha cortado (${bdnsId}).`);
+    }
     if (html && !/Acceso Denegado/i.test(html)) {
       const ficha = aRegistroBdns(html, bdnsId);
       // Se mezclan los dos documentos: la identidad y el enlace oficial
@@ -307,7 +377,7 @@ async function procesar(f) {
       // texto y se extraen los requisitos de ahí, que es donde se pueden
       // citar.
       if (ficha.boeId) {
-        const bases = await textoCompleto({
+        bases = await textoCompleto({
           id: ficha.boeId,
           urlXml: `https://www.boe.es/diario_boe/xml.php?id=${ficha.boeId}`,
         }).catch(() => null);
@@ -323,7 +393,41 @@ async function procesar(f) {
   if (!requisitos.length) {
     requisitos = await extrae(parrafosConOrigen(f.texto));
   }
+
+  // ── El nivel, aparte de los requisitos ─────────────────────────────────
+  //
+  // El nivel no es un requisito: es **de qué va la convocatoria**, y por
+  // eso sirve para filtrar.
+  //
+  // Se busca **solo en el anuncio**, y no en las Bases. Las Bases del BOE
+  // son el texto de la convocatoria entera, y therein «grado» aparece
+  // como «grado de cumplimiento de los objetivos» y «Máster, Doctorado,
+  // cursos y seminarios» como la lista de cosas que se puede financiar.
+  // Ninguna de las dos cosas dice a quién va la beca, y con las Bases
+  // salía un nivel inventado para la mitad de las fichas.
+  //
+  // En el anuncio sí sirve: el extracto del BOE dice «becas para
+  // estudiantes de Doctorado» cuando es para doctorados. Y cuando no lo
+  // dice, se queda sin nivel, que es lo honesto: el filtro de nivel
+  // aparta las que lo tienen y deja pasar las que no.
+  const nivel = buscaNivel(parrafosConOrigen(f.texto));
+  if (nivel) {
+    requisitos = [...requisitos, {
+      tipo: 'nivel',
+      etiqueta: 'Nivel al que se puede pedir',
+      valor: nivel.nivel,
+      cita: nivel.cita,
+      obligatorio: false,
+      extractor: 'reglas',
+    }];
+  }
+
   registro.requisitos = requisitos;
+  // Y el nivel, que se ha encontrado después de crear el registro. Sin
+  // esta línea el filtro de nivel no filtraría por las fichas del BOE:
+  // `aRegistro` se llamó con la lista vacía, cuando aún no se había
+  // buscado nada.
+  registro.nivel = requisitos.find((r) => r.tipo === 'nivel')?.valor ?? null;
 
   // El plazo puede venir de la ficha de BDNS (fecha explícita), de un
   // requisito extraído de las Bases, o de ningún sitio. Si no viene, se queda
@@ -526,7 +630,15 @@ if (perdidas) {
 await mkdir(new URL('../data/', import.meta.url), { recursive: true });
 await writeFile(
   new URL('../data/becas.json', import.meta.url),
-  JSON.stringify({ generado: new Date().toISOString(), rango: { desde, hasta }, becas: publicables }, null, 1),
+  JSON.stringify({
+    generado: new Date().toISOString(),
+    // La versión de las reglas de extracción con la que se hizo este
+    // fichero. La próxima pasada la lee para saber si su caché vale. Ver
+    // `VERSION_REGLAS`.
+    version_reglas: VERSION_REGLAS,
+    rango: { desde, hasta },
+    becas: publicables,
+  }, null, 1),
 );
 
 const conReq = publicables.filter((r) => r.requisitos.length > 0).length;

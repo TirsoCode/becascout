@@ -353,6 +353,14 @@ img, svg { display: block; max-width: 100%; }
   display: grid; grid-template-columns: 1fr auto; gap: 20px;
   transition: border-color .22s var(--ease), transform .32s var(--ease), box-shadow .32s var(--ease);
 }
+/* La columna de texto tiene que poder encogerse por debajo de su contenido.
+ *
+ * En un grid, `1fr` es «una parte», y su tamaño mínimo es el del contenido:
+ * una palabra larga —el identificador de una convocatoria de la UE— hace
+ * que la columna se salga de la pantalla y empuje la ficha entera fuera. Con
+ * `min-width: 0` la columna sí encoge, y es la cita la que se parte.
+ */
+.beca > * { min-width: 0; }
 /* Al pasar el ratón la tarjeta se levanta: sube cuatro píxeles y proyecta una
    sombra larga y suave. Es el único gesto de la lista, así que se nota sin
    resultar un salto. Los navegadores que respetan `prefers-reduced-motion` lo
@@ -397,6 +405,14 @@ img, svg { display: block; max-width: 100%; }
 .req-src {
   display: block; font-family: var(--mono); font-size: 10.5px; line-height: 1.55;
   color: var(--ink-5); margin-top: 3px; font-style: normal;
+  /* Las palabras largas se parten. Sin esto, un identificador de
+     convocatoria —«HORIZON-MSCA-2026-DN-01-01»— no cabe en 390 px y
+     empuja la ficha entera fuera de la pantalla. Pasó el 19 de octubre de
+     2026 con la convocatoria de la Comisión, que es justo la que lleva el
+     identificador más largo. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
 }
 .req-none { font-size: 13px; color: var(--ink-4); font-style: italic; }
 

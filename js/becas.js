@@ -299,6 +299,13 @@ async function pintar() {
     ? filtradas.filter((b) => !(b.paises?.length)).length
     : 0;
 
+  // Y lo mismo con el nivel: las que no lo dicen se quedan, y hay que
+  // decirlo. Sin este aviso, filtrar por «Grado» parecía no hacer nada,
+  // porque la lista apenas cambiaba.
+  const sinNivelConocido = nivelElegido
+    ? filtradas.filter((b) => !b.nivel).length
+    : 0;
+
   const conReq = filtradas.filter((b) => b.requisitos.length).length;
 
   // Cada cifra va en su `<span>`. Sueltas en el flujo, el punto separador
@@ -315,21 +322,34 @@ async function pintar() {
   if (sinPaisConocido) {
     cuenta.push(`<span><b>${sinPaisConocido}</b> sin destino conocido (también salen)</span>`);
   }
+  if (sinNivelConocido) {
+    cuenta.push(`<span><b>${sinNivelConocido}</b> sin nivel conocido (también salen)</span>`);
+  }
   $('#counts').innerHTML = cuenta.join('\n     ');
 
-  if (!orden.length) {
+  if (!filtradas.length) {
+    // O no hay nada en la base, o el filtro dejó todo fuera. Son dos
+    // cosas distintas y el mensaje tiene que distinguirlas: si el
+    // estudiante ha filtrado por un país y no sale nada, lo que ve es
+    // «no hay nada», y lo que tiene que entender es «no hay nada *para
+    // ese filtro*». En el segundo caso, el aviso de las que no dicen
+    // dónde dice cuántas se han quedado fuera.
+    const filtrado = paisElegido || nivelElegido;
     $('#zona-lista').innerHTML = `
       <div class="empty">
-        <h3>Todavía no hay convocatorias</h3>
-        <p>La base se llena con <code>node ingest/run.mjs</code>, que lee el sumario del BOE
-           y descarga las Bases completas de las que hay que leer.</p>
+        <h3>${filtrado ? 'No hay ninguna convocatoria con ese filtro' : 'Todavía no hay convocatorias'}</h3>
+        <p>${filtrado
+          ? `Prueba con <b>${esc(nombreDe(paisElegido) || paisElegido || 'cualquier destino')}</b> o quita el filtro.
+             ${sinPaisConocido ? `Hay ${sinPaisConocido} que no dicen dónde y no se pueden filtrar por país.` : ''}`
+          : `La base se llena con <code>node ingest/run.mjs</code>, que lee el sumario del BOE
+             y descarga las Bases completas de las que hay que leer.`}</p>
       </div>`;
     return;
   }
 
   const html = `
     <div class="list">
-      ${orden.map((b) => `<div class="lock" data-beca>${tarjeta(b)}</div>`).join('')}
+      ${filtradas.map((b) => `<div class="lock" data-beca>${tarjeta(b)}</div>`).join('')}
     </div>`;
 
   $('#zona-lista').innerHTML = html;
@@ -528,15 +548,36 @@ function pillPlazo(cierra) {
  *
  * Solo si el dato existe. Una convocatoria sin destino conocido no
  * inventa uno: no se pone «Europa» ni «Países de la UE», que sería
- * rellenar el hueco con una suposición. Y si son varios —un consorcio de
- * Erasmus son tres— se enseñan todos, porque elegir uno escondería los
- * otros dos.
+ * rellenar el hueco con una suposición.
+ *
+ * Y si son varios, **no se enseñan todos**. Un consorcio de Erasmus puede
+ * tener once países, y la píldora se convertía en un muro de texto de 589
+ * píxeles —en un móvil, media pantalla—. Se enseñan los tres primeros y el
+ * resto va en el `title`, que es donde se lee el detalle.
+ *
+ * El orden es alfabético, y a propósito. El orden en que vienen los países
+ * en el catálogo es el del recorrido por sus 77 filtros, que no dice nada
+ * del peso de cada país en el consorcio: el primero no es el principal.
+ * Ordenar por nombre da un criterio estable y no finge una jerarquía que
+ * no está.
  */
 function pillDestino(b) {
   const paises = b.paises ?? [];
   if (!paises.length) return '';
-  const nombres = paises.map((c) => nombreDe(c)).join(', ');
-  return `<span class="pill mono" title="Destino">${esc(nombres)}</span>`;
+
+  const ordenados = [...paises].sort((a, b) => {
+    const na = nombreDe(a), nb = nombreDe(b);
+    return na.localeCompare(nb, 'es');
+  });
+
+  const MAX = 3;
+  const visibles = ordenados.slice(0, MAX);
+  const resto = ordenados.length - visibles.length;
+
+  const texto = visibles.map((c) => nombreDe(c)).join(', ') + (resto ? ` +${resto}` : '');
+  const completo = ordenados.map((c) => nombreDe(c)).join(', ');
+
+  return `<span class="pill mono" title="Destino: ${esc(completo)}">${esc(texto)}</span>`;
 }
 
 /* ── Utilidades ─────────────────────────────────────────────────────────── */

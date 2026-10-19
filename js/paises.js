@@ -39,7 +39,7 @@
 export const CODIGOS = [
   'ES', 'FR', 'DE', 'IT', 'PT', 'NL', 'BE', 'AT', 'IE', 'FI',
   'SE', 'DK', 'PL', 'CZ', 'SK', 'HU', 'RO', 'BG', 'GR', 'HR',
-  'SI', 'EE', 'LV', 'LT', 'CY', 'MT',
+  'SI', 'EE', 'LV', 'LT', 'CY', 'MT', 'LU',
   'IS', 'LI', 'NO', 'CH', 'GB',
   'AL', 'BA', 'GE', 'XK', 'MD', 'ME', 'MK', 'RS', 'TR', 'UA',
 ];
@@ -72,6 +72,7 @@ export const NOMBRES = {
   LT: 'Lituania',
   CY: 'Chipre',
   MT: 'Malta',
+  LU: 'Luxemburgo',
   IS: 'Islandia',
   LI: 'Liechtenstein',
   NO: 'Noruega',
@@ -127,6 +128,7 @@ const SINONIMOS = {
   lituania: 'LT', lithuania: 'LT',
   chipre: 'CY', cyprus: 'CY',
   malta: 'MT',
+  luxemburgo: 'LU', luxembourg: 'LU',
   islandia: 'IS', iceland: 'IS',
   liechtenstein: 'LI',
   noruega: 'NO', norway: 'NO',

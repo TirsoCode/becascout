@@ -42,6 +42,55 @@ const BASE = 'https://www.infosubvenciones.es/bdnstrans/GE/es';
 const CHROME = process.env.CHROME_BIN || 'google-chrome';
 const TIMEOUT_MS = 45_000;
 
+/**
+ * Cuántos navegadores pueden estar abiertos a la vez.
+ *
+ * ── Por qué el límite está aquí y no en el orquestador ───────────────────
+ *
+ * El WAF de BDNS no dice «no» cuando hay demasiada carga: contesta
+ * «Acceso Denegado» a unas peticiones y deja pasar otras, y el programa se
+ * lo come como si la ficha no trajera nada. El resultado es una base a la
+ * que le faltan presupuesto, plazo y Bases en una parte de las fichas, y
+ * **ningún error que lo delate**.
+ *
+ * Por eso el límite va **dentro** de `render()`, que es donde se abre el
+ * navegador: así vale para todas las fuentes y no solo para las que el
+ * orquestador conoce. El orquestador puede pedir seis fichas a la vez; si
+ * solo hay hueco para tres navegadores, tres esperan su turno en lugar de
+ * pedirle al WAF que corte.
+ *
+ * El número es tres porque con seis la mitad de las fichas se quedan
+ * fuera. Con tres entran todas. Es un número medido, no estimado.
+ */
+const MAX_NAVEGADORES = Number(process.env.MAX_CHROME ?? 3);
+
+/** Los navegadores que hay abiertos ahora mismo. */
+let abiertos = 0;
+/** Los que esperan hueco. */
+const esperando = [];
+
+/**
+ * Espera a que haya hueco para abrir un navegador.
+ *
+ * Sin esto, `Promise.all` de seis fichas abre seis navegadores a la vez
+ * y el WAF corta la mitad.
+ */
+async function esperarHueco() {
+  if (abiertos < MAX_NAVEGADORES) {
+    abiertos++;
+    return;
+  }
+  await new Promise((resolver) => esperando.push(resolver));
+  abiertos++;
+}
+
+/** Devuelve el hueco al que se le ha pasado. */
+function devolverHueco() {
+  abiertos--;
+  const siguiente = esperando.shift();
+  if (siguiente) siguiente();
+}
+
 /** Navegadores donde encontrar Chrome, por si cambia el nombre en el runner. */
 const CANDIDATOS = [
   'google-chrome', 'google-chrome-stable',
@@ -94,6 +143,10 @@ export async function render(url, { timeout = TIMEOUT_MS, chrome = true } = {}) 
     }
   }
 
+  // El hueco se pide antes de abrir el navegador y se devuelve en el
+  // `finally`, pase lo que pase. Sin esto, un `throw` dejaría el hueco
+  // ocupado y la ingesta se iría parando sola.
+  await esperarHueco();
   const perfil = await mkdtemp(join(tmpdir(), 'bs-'));
   try {
     const { stdout } = await exec(CHROME, [
@@ -114,6 +167,7 @@ export async function render(url, { timeout = TIMEOUT_MS, chrome = true } = {}) 
     // El perfil temporal ocupa ~50 MB. Si se queda, el runner se llena en
     // unas pocas pasadas.
     await rm(perfil, { recursive: true, force: true }).catch(() => {});
+    devolverHueco();
   }
 }
 

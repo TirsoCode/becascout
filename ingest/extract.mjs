@@ -343,16 +343,39 @@ export function extraePorReglas(parrafos) {
  * dentro de la cita: ver `citaSostiene`.
  */
 export function buscaNivel(parrafos) {
+  // ── El orden importa ────────────────────────────────────────────────────
+  //
+  // Se mira primero lo más específico y de más a menos nivel. Una
+  // convocatoria de doctorado menciona el grado que hay que tener antes, y
+  // si se mirara al revés saldría «Grado» para una beca de doctorado.
+  //
+  // Y hay dos formas de decirlo. La explícita —«estudiantes de
+  // Doctorado»— es la fácil. La que de verdad sale en las Bases es la
+  // suelta: la palabra «Grado» o «Máster» aparece en un párrafo que habla
+  // de las titulaciones de las que se puede pedir, y no siempre pegada a
+  // «estudiantes». Los patrones de abajo cubren las dos.
   const patrones = [
+    // Doctorado.
     { nivel: 'Doctorado', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+(?:doctorado|phd)\b/i },
     { nivel: 'Doctorado', re: /\bprograma\s+de\s+doctorado\b/i },
     { nivel: 'Doctorado', re: /\bformaci[óo]n\s+doctoral\b/i },
+    { nivel: 'Doctorado', re: /\b(?:doctorado|phd)\b[,\s]*(?:en curso|finalizado|estudiantes)\b/i },
+    { nivel: 'Doctorado', re: /\bt[íi]tulo\s+de\s+doctorado\b/i },
+    { nivel: 'Doctorado', re: /\b(?:estancias?|becas?)\s+de\s+(?:investigaci[óo]n|doctorado)\b/i },
+
+    // Máster.
     { nivel: 'Máster', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+(?:m[áa]ster|master)\b/i },
     { nivel: 'Máster', re: /\bm[áa]ster\s+universitario\b/i },
     { nivel: 'Máster', re: /\bt[íi]tulo\s+de\s+m[áa]ster\b/i },
+    { nivel: 'Máster', re: /\b(?:becas?|ayudas?)\s+para\s+(?:estudiar|continuar)\s+(?:un\s+|el\s+)?m[áa]ster\b/i },
+    { nivel: 'Máster', re: /\bm[áa]ster\s+(?:universitario|en curso)\b/i },
+
+    // Grado.
     { nivel: 'Grado', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+grado\b/i },
     { nivel: 'Grado', re: /\b(?:estudiantes?|alumnos?)\s+de\s+primer\s+curso\b/i },
     { nivel: 'Grado', re: /\btitulaci[óo]n\s+de\s+grado\b/i },
+    { nivel: 'Grado', re: /\b(?:primer|segundo|tercer|cuarto)\s+curso\s+de\s+(?:grado|la\s+licenciatura)\b/i },
+    { nivel: 'Grado', re: /\bgrado\s+universitario\b/i },
   ];
 
   for (const { nivel, re } of patrones) {
