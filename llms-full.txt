@@ -45,22 +45,140 @@ esas están en la web de cada máster.
   > the entry requirements and all the steps of the application process
 
 
-### Los 75 programas
+### Los 217 programas
 
 - Erasmus Mundus Joint Master in Multilingualism and Cultural Diversity — https://www.multidiverse.eu/
 - Erasmus Mundus Masters in Journalism, Media and Globalisation (Mundus Journalism) — https://mundusjournalism.com
+- Master Erasmus Mundus in Lexicography — https://www.emlex.eu.usc.gal/
+- Groundwater and Global Change - Impacts and Adaptation — https://www.groundwatermaster.eu/
+- Children’s Literature, Media and Cultural Entrepreneurship — https://www.clmce-erasmusmundus.eu/
+- Erasmus Mundus Joint Master Redesigning the Post-Industrial City — https://www.unic.eu/en/repic#all
+- RE_PLAY: EUROPEAN JOINT MASTERS IN GAMES — https://www.replaymasters.eu/
+- Joint Master&#039;s in Nanomaterials for Green and Digital Transitions — https://www.greenanomaster.eu/
+- Erasmus Mundus Joint Master Degree on Public Health in Disaster — https://masterpublichealthdisasters.eu/
+- International Master in Advanced Design of Sustainable Ships and Offshore Structures — http://www.EMship.eu
+- EUROPHOTONICS — http://www.europhotonics.org/wordpress/
+- Sustainable Information Technologies for Societies Joint Masters — https://aissprogram.eu/
 - European Masters in Earthen Architecture and Construction — https://msc-terra.org/
+- Sustainable Forest and Nature Management — https://em-sufonama.eu
+- International Master in Soils and Global Change — https://imsoglo.eu/
+- Flood Risk Management — https://www.floodriskmaster.org/
+- European Master in Sustainable Systems Engineering — https://www.emsse.eu
+- European Master on Embedded Intelligence Nanosystems Engineering – from Nanoscale Technologies to Ubiquitous Smart Sensors — http://eminent-master.eu/
+- Copernicus Master in Digital Earth — https://master-cde.eu/
+- International Master on Wine Tourism Transitions and Innovations — http://www.wintour-master.eu/en/
+- Manufacturing 4.0 by intElligent and susTAinable technologies - META 4.0 — https://www.master-meta4-0.eu
+- Human Diseases Models Morphological Phenotyping — https://morphophen.eu/
+- Erasmus Mundus Master in Biomedical Engineering — http://www.emmbiome.eu/
 - Transfers-Fluids-Materials Aeronautical Sustainable Applications — https://tfmasa.com/
+- Euro-Asian Joint Master Programme in Medical Technology and Healthcare Business — https://master-emmah.eu
+- Hydrogen Systems and Enabling Technologies — https://www.hysetmaster.polito.it/
+- Master of Science (MSc) in Global Environment and Development — https://merged.info/
+- Erasmus Mundus Joint Master In Artificial Intelligence — https://emai-master.eu
+- EMJM AQUACULTURE, ENVIRONMENT AND SOCIETY – STAR — https://www.emm-aces.org/
+- International Master of Advanced Methods in Particle Physics — https://imapp.eu/
+- Master in Materials Science powEred by Large-Scale Facilities — https://www.mamaself.eu/
+- Architectural and Urban Contemporary Heritage — https://www.arurcohe.com/
+- Masters degree in Environmental Sciences, Policy and Management — https://mespom.eu/
+- Master in Membrane Engineering for Sustainable Development — https://mesd.edu.umontpellier.fr/
 - Erasmus Mundus Joint Master Programme on the Engineering of Data-intensive Intelligent Software Systems — https://www.master-ediss.eu
+- EMJM in Global Forestry — https://globalforestry.eu/
+- Joint Master Programme in Resilience in Educational Contexts — http://flourishproject.mt/
+- Erasmus Mundus Joint Master on “Climate Change and Diversity: Sustainable Territorial Development” — https://ccd-stede.eu/
+- ERASMUS MUNDUS JOINT MASTER in ARCHAEOLOGICAl MATERIALS SCIENCE — http://www.erasmusmundus-archmat.eu/
+- Master of Applied Cybersecurity — http://cybermacs.eu/
+- European Master in Law and Economics — http://www.emle.org/
+- Functional Advanced Materials Engineering with Artificial Intelligence for Sustainability — https://www.fame-master.eu/
+- Global MINDS European Master in the Psychology of Global Mobility, Inclusion and Diversity in Society — https://global-minds.eu
+- Public Sector Innovation and eGovernance — https://pioneer-master.eu/
+- International Master in Technology and Management for Circular Economy — https://imatec-mundus.eu/
 - Radiation and its Effects on MicroElectronics and Photonics Technologies — https://master-radmep.org/
+- Joint Master&#039;s Degree Programme in Service Design Strategies and Innovations — https://www.sdsi.ma/
+- Education in Museums and Heritage — https://www.gla.ac.uk/postgraduate/erasmusmundus/edumah/
+- International Master in Brain and Data Science — https://www.neurodata-master.org/
+- Religious Diversity in a Globalised World — https://www.red-global.eu/
+- International Master of Science in Fire Safety Engineering — https://imfse.be/
+- Erasmus Mundus Joint Master in Planetary Geosciences — https://geoplanet-impg.eu
+- Managing Art and Cultural Heritage in Global Markets — https://www.magma-erasmusmundus.eu/
+- Governance &amp; Administration of Leisure and Sports International Master — http://www.master-goals.eu/
+- Coastal Hazards – Risks, Climate Change Impacts and Adaptation — https://www.coasthazar.eu
+- Master of Science in Coastal and Marine Engineering and Management — https://www.ntnu.edu/studies/mscomem
 - Bio and Pharmaceutical Materials Science — https://www.master-biopham.eu/
-- Master's Programme in Cybersecurity and Assurance — https://www.cybersure-master.eu
+- Cartography - Mapping for a sustainable world — https://cartographymaster.eu/
+- Erasmus Mundus Joint Master in Sustainable Mineral and Metal Processing Engineering — https://www.master-promise.eu/
+- Techniques, Patrimoine, Territoires de l&#039;Industrie : Histoire, Valorisation, Didactique — https://www.tpti.eu/en/
+- European Master in Law, Data and Artificial Intelligence — https://emildai.eu
+- Islands and Sustainability — https://islandsmaster.eu/
+- Quantum Technologies and Engineering Erasmus Mundus Master — http://www.quanteem.eu
+- Sustainable Biomass and Bioproducts Engineering — https://emjm-sbbe.eu
+- Sustainability in Agriculture, Food Production and Food Technology in the Danube Region - Danube AgriFood Master — http://www.agrifoodmaster.eu/
+- EU-CONEXUS Joint Master Programme in Marine Biotechnology — https://www.eu-conexus.eu/en/marine-biotechnology/
+- ChEMoinformaticsplus - Artificial Intelligence in Chemistry — https://masterchemoinfo.u-strasbg.fr/
+- Master&#039;s Programme in Cybersecurity and Assurance — https://www.cybersure-master.eu
+- Transnational German Studies Erasmus Mundus Joint Master — https://transnationalgermanstudies.eu/en/programme/
+- QUAntum Research Master-level Education Network — http://www.master-quarmen.eu/
+- Master Degree in Sustainable Design, Construction and Management of the Built Environment — http://www.mbuild.eu/
+- Master in Astrophysics and Space Science — https://www.master-mass.eu/
+- Master Program in Advanced Materials Innovative Recycling AMIR EM — https://www.amir-em-master.com/
+- European Master in Migration and Intercultural Relations — https://www.emmir.org/
+- International Master in Sustainable Drug Discovery — http://sustainabledrugdiscovery.eu
+- Master of Science in Geospatial Technologies — https://mastergeotech.info/
+- Erasmus Mundus Joint Master in Cybersecurity — https://cyberus.univ-ubs.fr/en/index.html
+- European Master in Dynamics of Renewables-based Power Systems — https://master-dream.ec-nantes.fr/
 - Data Engineering and Artificial Intelligence — https://deai.ulb.be/
+- Erasmus Mundus Master Impact Entrepreneurship — https://www.emmie.uliege.be/cms/c_7950389/en/emmie
+- International Masters in Environmental Technology and Engineering – Consolidation phase — https://www.imete.eu/
+- European Master in Advanced Structural Analysis and Design using Composite Materials — https://msc-frp.org/
+- CYBER: Joint Master in CYberspace, Behavior and E-theRapy — http://www.cyber-t.eu/
+- Erasmus Mundus Joint Master Degree in Economics of Globalisation and European Integration — https://www.master-egei.eu/
+- Erasmus Mundus MSc in Chemical Innovation and Regulation — https://www.emmcchir.org/
+- European Master in Embedded Computing Systems — http://www.emecs.eu
+- Master in Work, Organizational and Personnel Psychology — https://www.erasmuswop.org
+- International Master of Science in Health Mangement in Aquaculture — http://www.aquah.eu
+- International Master of Science in Marine Biological Resources — http://www.imbrsea.eu/
 - Renewable Energy in the Marine environment — https://master-remplus2.eu/
+- International Master of Science in Rural Development — http://www.imrd.ugent.be/
+- Kino Eyes - The European Fiction Master — http://www.kinoeyes.eu/
+- Intelligent Field Robotic Systems — http://ifrosmaster.org/
+- Master in Applied Ecohydrology — http://www.maeh-mundus.eu/
+- Infectious Diseases and One Health — http://infectious-diseases-one-health.eu/
+- European Joint Masters in Management and Engineering of Environment and Energy + — https://www.imt-atlantique.fr/en/study/msc/emjmd-me3plusqJaTLx94UxC2zIVi2A$
+- Mediterranean Forestry and Natural Resources Management — https://www.medfor.eu/
+- European MSc in Marine EnviRonment 2030 — http://merconsortium.eu/
+- Marine and maritime Intelligent Robotics — http://www.master-mir.eu/
+- Erasmus Mundus Master’s Degree in Women’s and Gender Studies — https://gemmaerasmusmundus.eu/
 - Sustainable Catalysis — https://www.master-sucat.eu/
+- European Master of Science in Nuclear Fusion and Engineering Physics — http://www.em-master-fusion.org/
+- European Master of Science in Sustainable Food Systems Engineering, Technology and Business — https://iiw.kuleuven.be/english/food4s/
+- Erasmus Mundus Joint Master Degree in Food Innovation &amp; Product Design — http://www.fipdes.eu/
+- Master of Urban Climate and Sustainability1.5 — http://www.murcs.eu/
+- Nanomedicine for Drug Delivery — http://master-nanomed.eu/
+- Euroculture: Society, Politics and Culture in a Global Context — http://www.euroculturemaster.eu/
+- European Joint Master in Social Work with Children and Youth — https://eswochy.eu/
+- Models and Methods of Quantitative Economics — http://master-economics-qem.univ-paris1.fr/
+- Erasmus Mundus Master Program in Plant Breeding — https://emplant-master.eu/
+- Re:Anima - European Joint Masters in Animation — http://www.reanima.eu/
 - Law and Gender, Intersectionality and Diversity — https://lawgid.ius.bg.ac.rs/
 - International Law of Security, Peace and Sustainable Development — https://master-international-law-erasmusmundus.eu/
+- Educating software engineers with a sustainability mindset to improve the well-being of people through software solutions — http://se4gd.eu/
+- Sustainable Ship and Shipping 4.0 — http://www.master-seas40.unina.it/
+- Master&#039;s programme in Security and Cloud Computing — https://secclo.eu/
+- International Master of Science in Sustainable and Innovative Natural Resource Management — https://sinrem.eu/
+- Joint International Master in Smart Systems Integrated Solutions — https://ssi-master.eu/
+- European Master in Advanced Solid Mechanics — https://master-strains.eu/
+- Transition, Innovation and Sustainability Environments — https://www.tise-master.eu/
+- Erasmus Mundus Human Rights Policy and Practice — http://www.emhrpp.com/
+- Erasmus Mundus Joint Master Degree in Tropical Biodiversity and Ecosystems — https://www.tropimundo.eu/
+- WAVES ACOUSTICS VIBRATIONS ENGINEERING SOUND — https://master-waves.eu/
 - International Master in Transnational Migrations — https://www.master-mitra.eu/en/
+- World Textile Engineering Advanced Master — https://we-team.education/
+- Joint European Master Programme in Advanced Materials Science and Engineering — https://www.eusmat.net/international-studies/master/amase/
+- Chemical Nano-Engineering — https://www.master-cne.eu/
+- Cultures Littéraires Européennes - CLE — https://www.cle.unibo.it/
+- Central and East European, Russian and Eurasian Studies — https://erasmusmundus-ceeres.eu/
+- European Master in Building Information Modelling — https://bimaplus.org/
+- Big Data Management and Analytics — https://bdma.ulb.ac.be/bdma/
+- Advanced Spectroscopy in Chemistry Master&#039;s Course — http://www.master-asc.org/
 - Engineering for Environmental Sustainability and International Cooperation — https://eesic.eu/
 - Joint master in Applied security and defense - Networks for Unified Strategies — https://master-janus-security-defense.eu/
 - Large Scale Accelerators and Lasers — https://www.master-lascala.eu/
@@ -77,7 +195,7 @@ esas están en la web de cada máster.
 - Interdisciplinary Mathematics — https://www.intermaths.eu/erasmus-mundus
 - International Master in Security, Intelligence and Strategic Studies — https://www.securityintelligence-erasmusmundus.eu/
 - Choreomundus – Erasmus Mundus Master in Dance and Movement as Practical Knowledge and Heritage — https://choreomundus.org/
-- European Master's in Clinical Linguistics 25 — https://www.emcl.eu/
+- European Master&#039;s in Clinical Linguistics 25 — https://www.emcl.eu/
 - Master of Science in European Forestry — http://www.europeanforestry.eu
 - Excellence in Analytical Chemistry — https://www.analyticalchemistry.eu/
 - InterCultural Leadership in Digital Era International Master — https://clide.umk.pl/
@@ -88,7 +206,7 @@ esas están en la web de cada máster.
 - Europubhealth+│European Master in Public Health — https://www.europubhealth.org/
 - European Master in Linguistic Data Science — https://emlds.fcsh.unl.pt/
 - Education, Migration, and Diversity — https://www.edumig.org/
-- Master International en Sciences de l'Education Inclusive — https://master-misei.com
+- Master International en Sciences de l&#039;Education Inclusive — https://master-misei.com
 - Erasmus Mundus Master Course in Mechatronics — https://www.eu4m.eu
 - Digital Creativity Art&amp;Science European Master — https://master-digicrea.univ-st-etienne.fr/
 - Erasmus Mundus Joint Master in Sustainable Transportation and Electric Power Systems — https://www.emjmdstepsrock.eu/
@@ -108,20 +226,44 @@ esas están en la web de cada máster.
 - Response_Able Futures; A European Joint Masters in Design and Care — https://www.response-able-futures.eu/
 - EUropean master on COntrol of Renewable Energy systems — https://master-eu-core.ec-nantes.fr
 - Erasmus Mundus Joint Master in Cutting-Edge Technologies for Sustainable Agriculture — https://sustagri-em.eu/
-- Erasmus Mundus Joint Master's programme in Surface, Electro, Radiation, and Photo-chemistry — https://www.master-serp.eu/
+- Erasmus Mundus Joint Master&#039;s programme in Surface, Electro, Radiation, and Photo-chemistry — https://www.master-serp.eu/
 - Theoretical Chemistry and Computational Modeling — https://www.emtccm.org
 - Social Psychology of Transformation:  Understanding and Mastering Social Change — https://spot-psychology.eu/
 - Research and Innovation in Higher Education — http://www.marihe.eu/
 - From Membrane Biology to Neuroscience and Experimental Medicine — https://life.univ-cotedazur.fr/international/erasmus-mundus-joint-master-membiomed
 - Erasmus Mundus Joint Master in Insects as Solutions for a Sustainable Future — https://issf-master.eu/
 - Electric vehicle PropulsIon &amp; COntrol Plus — https://master-epico.ec-nantes.fr/
-- International Master's in Advanced Research in Criminology — https://www.internationalmastercriminology.eu/
+- International Master&#039;s in Advanced Research in Criminology — https://www.internationalmastercriminology.eu/
 - Decentralised Smart Energy Systems 2.0 — https://densys.univ-lorraine.fr/
 - International Master in Innovative Medicine — https://www.innovativemedicine.eu/home
 - Mechanics of Sustainable Materials and Structures — https://www.ms2master.com
 - Erasmus Mundus Joint Master in Global Change Ecology and Biodiversity Management — https://globe-master.eu/
+- Strengthening Mobility and Promoting Regional Integration of Engineering Education in Africa — http://www.spreeafrica.com/
+- Mobility of African Scholars for Transformative Engineering Training — http://www.intra-africa-mastet.org/
+- Mobility for Innovative Renewable Energy Technologies — https://miret.mu.ac.ke/
+- Fostering Research and Intra-African knowledge transfer through Mobility and Education — http://frame.nust.na/
 - Renewable Energy and Sustainable COnstruction, RESCO — http://resco-master.eu/
+- Education for Laser-based Manufacturing — https://elbmmobility.org/
+- Appui à la Formation, à la Recherche et à l&#039;Innovation pour le Développement Intra-Afrique — http://www.utm.rnu.tn/afridi/fr
+- African Water Resources Mobility Network: Building transdisciplinary capacity for sustainable water resources management in Africa — http://www.ru.ac.za/intra-africa-awarmn
+- EMerald Master in Georesources Engineering — https://www.em-georesources.eu/
+- FilmMemory - Joint Master of Arts in European Film Heritage, History and Cultures — https://www.filmmemory.eu/
+- MSc in Smart Cities and Communities — https://www.smaccs.eu/
+- European Master For Industry in Microwave Electronics and Photonics — https://www.erasmus-mundus.emimep.eu/
+- Multiphase Systems for Sustainable Engineering — https://www.multiphase-master.eu/
+- Safe and Reliable Nuclear Applications — https://www.imt-atlantique.fr/en/study/masters/emjmd/sarena
+- Education Policies for Global Development — http://www.globed.eu/
 - Erasmus Mundus Joint Master Degree in Sports Ethics and Integrity — https://www.maisi-project.eu/
+- Communications Engineering and Data Science — https://www.unite-codas-master.eu/
+- Erasmus Mundus Masters Program in Public Policy — https://www.mundusmapp.org/
+- PlantHealth - European Master Degree in PLANT HEALTH IN SUSTAINABLE CROPPING SYSTEMS — https://www.planthealth.upv.es/web/
+- Erasmus Mundus Joint Master in Physiology and Medicine of Humans in Space and Extreme Environment — https://space-med.eu
+- Erasmus Mundus Joint Master Programme in Imaging — https://www.emjm-imaging.eu/
+- International Masters in Risk Assessment and Management of Civil Infrastructures — https://msc-norisk.org/
+- Interdisciplinarity in Materials for Energy Storage and Conversion — https://i-mesc.eu/
+- Erasmus Mundus Master in &#039;Global Studies&#039; — https://globalstudies-masters.eu/
+- European Master of Science in Skin Health and Care — http://www.emotion-master.eu/
+- Image Processing and Computer Vision ai — http://ipcv.eu/
 
 ### Lo que no sabemos
 
