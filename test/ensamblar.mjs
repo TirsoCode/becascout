@@ -148,6 +148,23 @@ test('las fichas de Erasmus no cuentan para el invariante', () => {
   assert.equal(cuenta.faltan, 0);
 });
 
+test('el invariante funciona con un Set, que es lo que le pasa de verdad', () => {
+  // El conector devuelve las omitidas como un `Set`, no como un array. Un
+  // `Set` no tiene `length`, así que el recuento salía `NaN`… y `NaN` es
+  // *falsy*: el invariante no disparaba nunca. Justamente el fallo que este
+  // invariante existe para cazar estaba en el propio invariante.
+  const publicables = [boe('BOE-A-2026-1')];
+  const cuenta = faltan(publicables, {
+    fichas: [boe('BOE-A-2026-1')],
+    omitidas: new Set(Array.from({ length: 62 }, (_, i) => `BOE-A-2026-${i + 10}`)),
+  });
+
+  assert.equal(cuenta.esperadas, 63);
+  assert.equal(cuenta.faltan, 62);
+  // Y lo que de verdad importa: que se note.
+  assert.ok(cuenta.faltan > 0, 'una ficha perdida tiene que notarse');
+});
+
 /* ── Lo que se escribe ──────────────────────────────────────────────────── */
 
 test('`cerrada` se recalcula con la fecha de hoy', () => {

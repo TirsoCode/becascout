@@ -111,7 +111,12 @@ export function ensambla({ registros = [], omitidas = [], cache = new Map(), aho
  * qué hacer: `run.mjs` para la pasada y no escribe el fichero.
  */
 export function faltan(publicables, { fichas = [], omitidas = [] } = {}) {
-  const esperadas = fichas.length + omitidas.length;
+  // `omitidas` llega como `Set` desde el conector, y un `Set` no tiene
+  // `length`: tiene `size`. Con `.length` a secas salía `undefined`, la suma
+  // daba `NaN`, y `NaN` es *falsy* —así que el invariante no disparaba nunca.
+  // El fallo que este invariante existe para cazar estaba, justamente, en
+  // este contador.
+  const esperadas = fichas.length + (omitidas.size ?? omitidas.length ?? 0);
   // Las de Erasmus Mundus no vienen del BOE: no cuentan para el invariante.
   const emitidas = publicables.filter((r) => r.fuente !== 'erasmus-mundus').length;
   return { esperadas, emitidas, faltan: esperadas - emitidas };
