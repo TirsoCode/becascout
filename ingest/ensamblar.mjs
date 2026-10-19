@@ -110,6 +110,19 @@ export function ensambla({ registros = [], omitidas = [], cache = new Map(), aho
  * Devuelve el recuento en lugar de lanzar, para que quien lo llama decida
  * qué hacer: `run.mjs` para la pasada y no escribe el fichero.
  */
+
+/**
+ * Las fuentes que **no** vienen del BOE.
+ *
+ * El invariante compara lo que el BOE dio con lo que hay en el fichero, así
+ * que las fichas de otras fuentes tienen que quedar fuera de la cuenta. Con
+ * una lista explícita y no con «todo lo que no sea Erasmus», porque cuando
+ * se añadieron DAAD y la Comisión el invariante empezó a dar `faltan = -154`
+ * y a **no disparar nunca**: el fallo que este invariante existe para
+ * cazar quedaba libre otra vez.
+ */
+export const FUENTES_EXTERNAS = new Set(['erasmus-mundus', 'daad', 'ue']);
+
 export function faltan(publicables, { fichas = [], omitidas = [] } = {}) {
   // `omitidas` llega como `Set` desde el conector, y un `Set` no tiene
   // `length`: tiene `size`. Con `.length` a secas salía `undefined`, la suma
@@ -117,7 +130,7 @@ export function faltan(publicables, { fichas = [], omitidas = [] } = {}) {
   // El fallo que este invariante existe para cazar estaba, justamente, en
   // este contador.
   const esperadas = fichas.length + (omitidas.size ?? omitidas.length ?? 0);
-  // Las de Erasmus Mundus no vienen del BOE: no cuentan para el invariante.
-  const emitidas = publicables.filter((r) => r.fuente !== 'erasmus-mundus').length;
+  // Las de fuera del BOE no cuentan: el invariante vigila al BOE.
+  const emitidas = publicables.filter((r) => !FUENTES_EXTERNAS.has(r.fuente)).length;
   return { esperadas, emitidas, faltan: esperadas - emitidas };
 }

@@ -1,0 +1,2366 @@
+{
+ "generado": "2026-10-19T15:30:42.179Z",
+ "total": 206,
+ "programas": [
+  {
+   "id": "101241106",
+   "titulo": "International Master in Contemporary Challenges in the World of Work",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241106",
+   "web": "https://www.master-wocc.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "BE",
+    "CA",
+    "AR"
+   ]
+  },
+  {
+   "id": "101239077",
+   "titulo": "Erasmus Mundus Joint Master in Insects as Solutions for a Sustainable Future",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239077",
+   "web": "https://issf-master.eu/",
+   "paises": [
+    "FR",
+    "PT",
+    "BE"
+   ]
+  },
+  {
+   "id": "101238875",
+   "titulo": "Renewable Energy and Sustainable COnstruction, RESCO",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238875",
+   "web": "http://resco-master.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "PT",
+    "HU"
+   ]
+  },
+  {
+   "id": "101241190",
+   "titulo": "European Masters in Earthen Architecture and Construction",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241190",
+   "web": "https://msc-terra.org/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "PT"
+   ]
+  },
+  {
+   "id": "101240181",
+   "titulo": "Transfers-Fluids-Materials Aeronautical Sustainable Applications",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240181",
+   "web": "https://tfmasa.com/",
+   "paises": [
+    "FR",
+    "DE",
+    "BE"
+   ]
+  },
+  {
+   "id": "101238766",
+   "titulo": "Radiation and its Effects on MicroElectronics and Photonics Technologies",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238766",
+   "web": "https://master-radmep.org/",
+   "paises": [
+    "FR",
+    "BE",
+    "FI"
+   ]
+  },
+  {
+   "id": "101241095",
+   "titulo": "Bio and Pharmaceutical Materials Science",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241095",
+   "web": "https://www.master-biopham.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "PL"
+   ]
+  },
+  {
+   "id": "101241135",
+   "titulo": "Master&#039;s Programme in Cybersecurity and Assurance",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241135",
+   "web": "https://www.cybersure-master.eu",
+   "paises": [
+    "FR",
+    "FI",
+    "SE",
+    "AT",
+    "EE",
+    "NO",
+    "DK"
+   ]
+  },
+  {
+   "id": "101241133",
+   "titulo": "Data Engineering and Artificial Intelligence",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241133",
+   "web": "https://deai.ulb.be/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "BE",
+    "AT"
+   ]
+  },
+  {
+   "id": "101239651",
+   "titulo": "Renewable Energy in the Marine environment",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239651",
+   "web": "https://master-remplus2.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "IE"
+   ]
+  },
+  {
+   "id": "101238854",
+   "titulo": "Sustainable Catalysis",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238854",
+   "web": "https://www.master-sucat.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "PT"
+   ]
+  },
+  {
+   "id": "101241222",
+   "titulo": "International Master in Transnational Migrations",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241222",
+   "web": "https://www.master-mitra.eu/en/",
+   "paises": [
+    "FR",
+    "ES",
+    "BE",
+    "PL",
+    "GR",
+    "IE",
+    "HU",
+    "RO",
+    "SN",
+    "TR",
+    "BR"
+   ]
+  },
+  {
+   "id": "101241310",
+   "titulo": "Joint master in Applied security and defense - Networks for Unified Strategies",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241310",
+   "web": "https://master-janus-security-defense.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "GB",
+    "RO",
+    "LB"
+   ]
+  },
+  {
+   "id": "101241086",
+   "titulo": "Large Scale Accelerators and Lasers",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241086",
+   "web": "https://www.master-lascala.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "SE",
+    "HU"
+   ]
+  },
+  {
+   "id": "101240600",
+   "titulo": "NOHA Erasmus Mundus Joint Master in International Humanitarian Action (NOHA)",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240600",
+   "web": "https://www.nohanet.org/masters",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "NL",
+    "SE",
+    "PL",
+    "IE",
+    "MT"
+   ]
+  },
+  {
+   "id": "101239299",
+   "titulo": "Teaching, designing, managing, foreign Language learning for a Multicultural and inclusive Environment",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239299",
+   "web": "https://telme.hypotheses.org/",
+   "paises": [
+    "FR",
+    "ES",
+    "FI",
+    "PL",
+    "IE"
+   ]
+  },
+  {
+   "id": "101239847",
+   "titulo": "Joint European Master Degree in Nuclear Physics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239847",
+   "web": "https://www.emm-nucphys.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT"
+   ]
+  },
+  {
+   "id": "101239726",
+   "titulo": "European Master in Biological and Chemical Engineering for a Sustainable Bioeconomy",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239726",
+   "web": "https://www.bioceb.eu/",
+   "paises": [
+    "FR",
+    "BE",
+    "FI",
+    "EE"
+   ]
+  },
+  {
+   "id": "101239924",
+   "titulo": "Erasmus Mundus Joint Master Programme in Neuroscience",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239924",
+   "web": "https://www.neurasmus.u-bordeaux.fr/",
+   "paises": [
+    "FR",
+    "DE",
+    "PT",
+    "IE",
+    "CA"
+   ]
+  },
+  {
+   "id": "101240735",
+   "titulo": "Interdisciplinary Mathematics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240735",
+   "web": "https://www.intermaths.eu/erasmus-mundus",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "DE",
+    "AT"
+   ]
+  },
+  {
+   "id": "101241246",
+   "titulo": "Choreomundus – Erasmus Mundus Master in Dance and Movement as Practical Knowledge and Heritage",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241246",
+   "web": "https://choreomundus.org/",
+   "paises": [
+    "FR",
+    "GB",
+    "GR",
+    "LT"
+   ]
+  },
+  {
+   "id": "101239159",
+   "titulo": "Master of Science in European Forestry",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239159",
+   "web": "http://www.europeanforestry.eu",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "NL",
+    "FI",
+    "AT",
+    "RO"
+   ]
+  },
+  {
+   "id": "101235187",
+   "titulo": "Excellence in Analytical Chemistry",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101235187",
+   "web": "https://www.analyticalchemistry.eu/",
+   "paises": [
+    "FR",
+    "FI",
+    "SE",
+    "EE"
+   ]
+  },
+  {
+   "id": "101179080",
+   "titulo": "European Master in Animal Biodiversity and Genomics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101179080",
+   "web": "https://www.emabg.eu/",
+   "paises": [
+    "FR",
+    "DE",
+    "NL",
+    "SE",
+    "AT",
+    "NO"
+   ]
+  },
+  {
+   "id": "101180052",
+   "titulo": "EMJM ENVIRONMENTAL CONTAMINATION AND TOXICOLOGY + ONE HEALTH",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180052",
+   "web": "https://www.ectplus.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "PT",
+    "BE",
+    "NO"
+   ]
+  },
+  {
+   "id": "101177274",
+   "titulo": "International Master in Quaternary and Prehistory",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101177274",
+   "web": "https://quaternaryprehistory.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "PT",
+    "PH"
+   ]
+  },
+  {
+   "id": "101180119",
+   "titulo": "Europubhealth+│European Master in Public Health",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180119",
+   "web": "https://www.europubhealth.org/",
+   "paises": [
+    "FR",
+    "ES",
+    "BE",
+    "NL",
+    "PL",
+    "GB",
+    "IE"
+   ]
+  },
+  {
+   "id": "101180418",
+   "titulo": "Master International en Sciences de l&#039;Education Inclusive",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180418",
+   "web": "https://master-misei.com",
+   "paises": [
+    "FR",
+    "IT",
+    "AT",
+    "CH"
+   ]
+  },
+  {
+   "id": "101180050",
+   "titulo": "Erasmus Mundus Master Course in Mechatronics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180050",
+   "web": "https://www.eu4m.eu",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "SE"
+   ]
+  },
+  {
+   "id": "101180274",
+   "titulo": "Digital Creativity Art&amp;Science European Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180274",
+   "web": "https://master-digicrea.univ-st-etienne.fr/",
+   "paises": [
+    "FR",
+    "PT",
+    "PL"
+   ]
+  },
+  {
+   "id": "101180080",
+   "titulo": "Mathematical Modelling, Simulation and Data Science for Industrial and Societal Challenges",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180080",
+   "web": "https://mathsdisc.eu/",
+   "paises": [
+    "FR",
+    "IT",
+    "DE",
+    "PT",
+    "UA"
+   ]
+  },
+  {
+   "id": "101180342",
+   "titulo": "International Master degree on the biology of Ageing",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180342",
+   "web": "https://life.univ-cotedazur.fr/international/imagein",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "PT"
+   ]
+  },
+  {
+   "id": "101172104",
+   "titulo": "Leading International Vaccinology Education for Innovation",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101172104",
+   "web": "https://masterlive-vaccinology.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "BE"
+   ]
+  },
+  {
+   "id": "101179940",
+   "titulo": "Greening Energy Market and Finance",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101179940",
+   "web": "https://site.unibo.it/grenfin-emjm",
+   "paises": [
+    "FR",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101179938",
+   "titulo": "Erasmus Mundus - Master of Science in Imaging and Light in Extended Reality",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101179938",
+   "web": "https://imlex.org/",
+   "paises": [
+    "FR",
+    "BE",
+    "FI",
+    "JP"
+   ]
+  },
+  {
+   "id": "101179922",
+   "titulo": "Economic POlicies for the Global bifurcation - Joint Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101179922",
+   "web": "https://www.epog.eu/",
+   "paises": [
+    "FR",
+    "IT",
+    "DE",
+    "AT",
+    "ZA",
+    "BR",
+    "CH"
+   ]
+  },
+  {
+   "id": "101180354",
+   "titulo": "Intelligent Photonics for Security Reliability Sustainability and Safety",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180354",
+   "web": "https://www.master-photonics4security.eu/",
+   "paises": [
+    "FR",
+    "FI",
+    "LT"
+   ]
+  },
+  {
+   "id": "101180094",
+   "titulo": "MASTER IN INTELLECTUAL PROPERTY AND DATA LAW",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180094",
+   "web": "https://mipdal.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "GB",
+    "EE"
+   ]
+  },
+  {
+   "id": "101180476",
+   "titulo": "EUropean master on COntrol of Renewable Energy systems",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180476",
+   "web": "https://master-eu-core.ec-nantes.fr",
+   "paises": [
+    "FR",
+    "DE",
+    "HR"
+   ]
+  },
+  {
+   "id": "101180445",
+   "titulo": "Erasmus Mundus Joint Master&#039;s programme in Surface, Electro, Radiation, and Photo-chemistry",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180445",
+   "web": "https://www.master-serp.eu/",
+   "paises": [
+    "FR",
+    "IT",
+    "PT",
+    "PL",
+    "CA"
+   ]
+  },
+  {
+   "id": "101180348",
+   "titulo": "Theoretical Chemistry and Computational Modeling",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180348",
+   "web": "https://www.emtccm.org",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "BE",
+    "NL"
+   ]
+  },
+  {
+   "id": "101180228",
+   "titulo": "From Membrane Biology to Neuroscience and Experimental Medicine",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180228",
+   "web": "https://life.univ-cotedazur.fr/international/erasmus-mundus-joint-master-membiomed",
+   "paises": [
+    "FR",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101180198",
+   "titulo": "Electric vehicle PropulsIon &amp; COntrol Plus",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180198",
+   "web": "https://master-epico.ec-nantes.fr/",
+   "paises": [
+    "FR",
+    "IT",
+    "DE",
+    "RO",
+    "MX"
+   ]
+  },
+  {
+   "id": "101180112",
+   "titulo": "Decentralised Smart Energy Systems 2.0",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180112",
+   "web": "https://densys.univ-lorraine.fr/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "SE"
+   ]
+  },
+  {
+   "id": "101178091",
+   "titulo": "Mechanics of Sustainable Materials and Structures",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101178091",
+   "web": "https://www.ms2master.com",
+   "paises": [
+    "FR",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101127887",
+   "titulo": "EMerald Master in Georesources Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127887",
+   "web": "https://www.em-georesources.eu/",
+   "paises": [
+    "FR",
+    "DE",
+    "SE"
+   ]
+  },
+  {
+   "id": "101128187",
+   "titulo": "European Master For Industry in Microwave Electronics and Photonics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128187",
+   "web": "https://www.erasmus-mundus.emimep.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101128275",
+   "titulo": "Multiphase Systems for Sustainable Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128275",
+   "web": "https://www.multiphase-master.eu/",
+   "paises": [
+    "FR",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101128167",
+   "titulo": "Safe and Reliable Nuclear Applications",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128167",
+   "web": "https://www.imt-atlantique.fr/en/study/masters/emjmd/sarena",
+   "paises": [
+    "FR",
+    "ES",
+    "FI",
+    "SI"
+   ]
+  },
+  {
+   "id": "101128281",
+   "titulo": "Communications Engineering and Data Science",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128281",
+   "web": "https://www.unite-codas-master.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "DE",
+    "PT",
+    "FI"
+   ]
+  },
+  {
+   "id": "101128273",
+   "titulo": "PlantHealth - European Master Degree in PLANT HEALTH IN SUSTAINABLE CROPPING SYSTEMS",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128273",
+   "web": "https://www.planthealth.upv.es/web/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "DE"
+   ]
+  },
+  {
+   "id": "101127568",
+   "titulo": "Erasmus Mundus Joint Master in Physiology and Medicine of Humans in Space and Extreme Environment",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127568",
+   "web": "https://space-med.eu",
+   "paises": [
+    "FR",
+    "DE",
+    "SI"
+   ]
+  },
+  {
+   "id": "101128171",
+   "titulo": "International Masters in Risk Assessment and Management of Civil Infrastructures",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128171",
+   "web": "https://msc-norisk.org/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "PT"
+   ]
+  },
+  {
+   "id": "101128159",
+   "titulo": "Interdisciplinarity in Materials for Energy Storage and Conversion",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128159",
+   "web": "https://i-mesc.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "PL",
+    "SI"
+   ]
+  },
+  {
+   "id": "101127924",
+   "titulo": "Image Processing and Computer Vision ai",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127924",
+   "web": "http://ipcv.eu/",
+   "paises": [
+    "FR",
+    "ES",
+    "HU"
+   ]
+  },
+  {
+   "id": "101126545",
+   "titulo": "Master Erasmus Mundus in Lexicography",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101126545",
+   "web": "https://www.emlex.eu.usc.gal/",
+   "paises": [
+    "FR",
+    "ES",
+    "IT",
+    "DE",
+    "PT",
+    "HU",
+    "GE"
+   ]
+  },
+  {
+   "id": "101127545",
+   "titulo": "Joint Master&#039;s in Nanomaterials for Green and Digital Transitions",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127545",
+   "web": "https://www.greenanomaster.eu/",
+   "paises": [
+    "FR",
+    "IT",
+    "SI"
+   ]
+  },
+  {
+   "id": "101128183",
+   "titulo": "International Master in Advanced Design of Sustainable Ships and Offshore Structures",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128183",
+   "web": "http://www.EMship.eu",
+   "paises": [
+    "FR",
+    "ES",
+    "PT",
+    "RO"
+   ]
+  },
+  {
+   "id": "101128124",
+   "titulo": "EUROPHOTONICS",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128124",
+   "web": "http://www.europhotonics.org/wordpress/",
+   "paises": [
+    "FR",
+    "ES",
+    "FI",
+    "LT"
+   ]
+  },
+  {
+   "id": "101241178",
+   "titulo": "InterCultural Leadership in Digital Era International Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241178",
+   "web": "https://clide.umk.pl/",
+   "paises": [
+    "ES",
+    "PL",
+    "AT",
+    "UA",
+    "MA"
+   ]
+  },
+  {
+   "id": "101241082",
+   "titulo": "Erasmus Mundus Joint Master in Sustainable Transportation and Electric Power Systems",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241082",
+   "web": "https://www.emjmdstepsrock.eu/",
+   "paises": [
+    "ES",
+    "IT",
+    "DE",
+    "PT"
+   ]
+  },
+  {
+   "id": "101241064",
+   "titulo": "European Politics and Society: Václav Havel Joint Master Degree",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241064",
+   "web": "https://epsmaster.eu/",
+   "paises": [
+    "ES",
+    "NL",
+    "PL",
+    "CZ"
+   ]
+  },
+  {
+   "id": "101238589",
+   "titulo": "Erasmus Mundus Joint Master Degree in Sports Ethics and Integrity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238589",
+   "web": "https://www.maisi-project.eu/",
+   "paises": [
+    "ES",
+    "DE",
+    "BE",
+    "GR",
+    "CZ"
+   ]
+  },
+  {
+   "id": "101238940",
+   "titulo": "Erasmus Mundus Joint Master Programme on the Engineering of Data-intensive Intelligent Software Systems",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238940",
+   "web": "https://www.master-ediss.eu",
+   "paises": [
+    "ES",
+    "IT",
+    "FI"
+   ]
+  },
+  {
+   "id": "101238242",
+   "titulo": "International Law of Security, Peace and Sustainable Development",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238242",
+   "web": "https://master-international-law-erasmusmundus.eu/",
+   "paises": [
+    "ES",
+    "DE",
+    "PT",
+    "BE",
+    "GB",
+    "EE"
+   ]
+  },
+  {
+   "id": "101240871",
+   "titulo": "Engineering for Environmental Sustainability and International Cooperation",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240871",
+   "web": "https://eesic.eu/",
+   "paises": [
+    "ES",
+    "IT",
+    "PT"
+   ]
+  },
+  {
+   "id": "101238231",
+   "titulo": "Data Science of Human Multimodal Communication: European and International Joint Masters Degree",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101238231",
+   "web": "https://multicom-em.eu/",
+   "paises": [
+    "ES",
+    "DE",
+    "SE"
+   ]
+  },
+  {
+   "id": "101180353",
+   "titulo": "European Master in Linguistic Data Science",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180353",
+   "web": "https://emlds.fcsh.unl.pt/",
+   "paises": [
+    "ES",
+    "IT",
+    "PT",
+    "IE"
+   ]
+  },
+  {
+   "id": "101177425",
+   "titulo": "Global Markets, Local Creativities",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101177425",
+   "web": "https://globallocal-erasmusmundus.eu/",
+   "paises": [
+    "ES",
+    "DE",
+    "NL",
+    "SE",
+    "GB",
+    "JP",
+    "CO"
+   ]
+  },
+  {
+   "id": "101180030",
+   "titulo": "Health and Wellbeing across the Lifespan",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180030",
+   "web": "https://www.hygieiamaster.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "RS"
+   ]
+  },
+  {
+   "id": "101180446",
+   "titulo": "Erasmus Mundus Joint Master in Cutting-Edge Technologies for Sustainable Agriculture",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180446",
+   "web": "https://sustagri-em.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "GR"
+   ]
+  },
+  {
+   "id": "101180177",
+   "titulo": "International Master&#039;s in Advanced Research in Criminology",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180177",
+   "web": "https://www.internationalmastercriminology.eu/",
+   "paises": [
+    "ES",
+    "BE",
+    "NL",
+    "GB"
+   ]
+  },
+  {
+   "id": "101180104",
+   "titulo": "Erasmus Mundus Joint Master in Global Change Ecology and Biodiversity Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180104",
+   "web": "https://globe-master.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "GB",
+    "MX"
+   ]
+  },
+  {
+   "id": "101128215",
+   "titulo": "MSc in Smart Cities and Communities",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128215",
+   "web": "https://www.smaccs.eu/",
+   "paises": [
+    "ES",
+    "FI",
+    "GR"
+   ]
+  },
+  {
+   "id": "101128259",
+   "titulo": "Education Policies for Global Development",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128259",
+   "web": "http://www.globed.eu/",
+   "paises": [
+    "ES",
+    "DE",
+    "GB",
+    "CY"
+   ]
+  },
+  {
+   "id": "101128240",
+   "titulo": "Erasmus Mundus Masters Program in Public Policy",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128240",
+   "web": "https://www.mundusmapp.org/",
+   "paises": [
+    "ES",
+    "NL",
+    "GB",
+    "AT"
+   ]
+  },
+  {
+   "id": "101128127",
+   "titulo": "European Master of Science in Skin Health and Care",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128127",
+   "web": "http://www.emotion-master.eu/",
+   "paises": [
+    "ES",
+    "IT"
+   ]
+  },
+  {
+   "id": "101128126",
+   "titulo": "Erasmus Mundus Joint Master Redesigning the Post-Industrial City",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128126",
+   "web": "https://www.unic.eu/en/repic#all",
+   "paises": [
+    "ES",
+    "DE",
+    "NL",
+    "FI",
+    "IE",
+    "HR",
+    "TR"
+   ]
+  },
+  {
+   "id": "101128198",
+   "titulo": "Erasmus Mundus Joint Master Degree on Public Health in Disaster",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128198",
+   "web": "https://masterpublichealthdisasters.eu/",
+   "paises": [
+    "ES",
+    "SE",
+    "CY"
+   ]
+  },
+  {
+   "id": "101127982",
+   "titulo": "Flood Risk Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127982",
+   "web": "https://www.floodriskmaster.org/",
+   "paises": [
+    "ES",
+    "NL",
+    "SI"
+   ]
+  },
+  {
+   "id": "101128119",
+   "titulo": "European Master in Sustainable Systems Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128119",
+   "web": "https://www.emsse.eu",
+   "paises": [
+    "ES",
+    "IT",
+    "AL"
+   ]
+  },
+  {
+   "id": "101128149",
+   "titulo": "International Master on Wine Tourism Transitions and Innovations",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128149",
+   "web": "http://www.wintour-master.eu/en/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101082155",
+   "titulo": "Human Diseases Models Morphological Phenotyping",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082155",
+   "web": "https://morphophen.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "GR"
+   ]
+  },
+  {
+   "id": "101082651",
+   "titulo": "Hydrogen Systems and Enabling Technologies",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082651",
+   "web": "https://www.hysetmaster.polito.it/",
+   "paises": [
+    "ES",
+    "NL",
+    "NO"
+   ]
+  },
+  {
+   "id": "101082433",
+   "titulo": "Erasmus Mundus Joint Master In Artificial Intelligence",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082433",
+   "web": "https://emai-master.eu",
+   "paises": [
+    "ES",
+    "SI"
+   ]
+  },
+  {
+   "id": "101081182",
+   "titulo": "Architectural and Urban Contemporary Heritage",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081182",
+   "web": "https://www.arurcohe.com/",
+   "paises": [
+    "ES",
+    "LT"
+   ]
+  },
+  {
+   "id": "101081874",
+   "titulo": "Master in Membrane Engineering for Sustainable Development",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081874",
+   "web": "https://mesd.edu.umontpellier.fr/",
+   "paises": [
+    "ES",
+    "PT",
+    "SE",
+    "CZ"
+   ]
+  },
+  {
+   "id": "101082393",
+   "titulo": "European Master in Law and Economics",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082393",
+   "web": "http://www.emle.org/",
+   "paises": [
+    "ES",
+    "PL",
+    "IN",
+    "IL"
+   ]
+  },
+  {
+   "id": "101082436",
+   "titulo": "International Master in Technology and Management for Circular Economy",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082436",
+   "web": "https://imatec-mundus.eu/",
+   "paises": [
+    "ES",
+    "FI",
+    "CZ"
+   ]
+  },
+  {
+   "id": "101082417",
+   "titulo": "Religious Diversity in a Globalised World",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082417",
+   "web": "https://www.red-global.eu/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101081748",
+   "titulo": "International Master of Science in Fire Safety Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081748",
+   "web": "https://imfse.be/",
+   "paises": [
+    "ES",
+    "SE",
+    "GB"
+   ]
+  },
+  {
+   "id": "101050331",
+   "titulo": "Coastal Hazards – Risks, Climate Change Impacts and Adaptation",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050331",
+   "web": "https://www.coasthazar.eu",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101050462",
+   "titulo": "Master of Science in Coastal and Marine Engineering and Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050462",
+   "web": "https://www.ntnu.edu/studies/mscomem",
+   "paises": [
+    "ES",
+    "NO"
+   ]
+  },
+  {
+   "id": "101050444",
+   "titulo": "Techniques, Patrimoine, Territoires de l&#039;Industrie : Histoire, Valorisation, Didactique",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050444",
+   "web": "https://www.tpti.eu/en/",
+   "paises": [
+    "ES",
+    "PT",
+    "CZ",
+    "JP",
+    "SN",
+    "TN",
+    "AR"
+   ]
+  },
+  {
+   "id": "101050369",
+   "titulo": "European Master in Law, Data and Artificial Intelligence",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050369",
+   "web": "https://emildai.eu",
+   "paises": [
+    "ES",
+    "IE"
+   ]
+  },
+  {
+   "id": "101050349",
+   "titulo": "Islands and Sustainability",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050349",
+   "web": "https://islandsmaster.eu/",
+   "paises": [
+    "ES",
+    "GR",
+    "IS"
+   ]
+  },
+  {
+   "id": "101050789",
+   "titulo": "Sustainable Biomass and Bioproducts Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050789",
+   "web": "https://emjm-sbbe.eu",
+   "paises": [
+    "ES",
+    "FI",
+    "PL"
+   ]
+  },
+  {
+   "id": "101050597",
+   "titulo": "EU-CONEXUS Joint Master Programme in Marine Biotechnology",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050597",
+   "web": "https://www.eu-conexus.eu/en/marine-biotechnology/",
+   "paises": [
+    "ES",
+    "GR",
+    "RO",
+    "LT",
+    "HR"
+   ]
+  },
+  {
+   "id": "101051004",
+   "titulo": "Master Degree in Sustainable Design, Construction and Management of the Built Environment",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101051004",
+   "web": "http://www.mbuild.eu/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101049867",
+   "titulo": "Master Program in Advanced Materials Innovative Recycling AMIR EM",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049867",
+   "web": "https://www.amir-em-master.com/",
+   "paises": [
+    "ES",
+    "HU"
+   ]
+  },
+  {
+   "id": "101049796",
+   "titulo": "Master of Science in Geospatial Technologies",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049796",
+   "web": "https://mastergeotech.info/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101049647",
+   "titulo": "European Master in Dynamics of Renewables-based Power Systems",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049647",
+   "web": "https://master-dream.ec-nantes.fr/",
+   "paises": [
+    "ES",
+    "RO"
+   ]
+  },
+  {
+   "id": "101048961",
+   "titulo": "European Master in Advanced Structural Analysis and Design using Composite Materials",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101048961",
+   "web": "https://msc-frp.org/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101048710",
+   "titulo": "CYBER: Joint Master in CYberspace, Behavior and E-theRapy",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101048710",
+   "web": "http://www.cyber-t.eu/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Joint Master Degree in Economics of Globalisation and European Integration",
+   "titulo": "Erasmus Mundus Joint Master Degree in Economics of Globalisation and European Integration",
+   "proyecto": null,
+   "web": "https://www.master-egei.eu/",
+   "paises": [
+    "ES",
+    "EE",
+    "CL",
+    "CN"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus MSc in Chemical Innovation and Regulation",
+   "titulo": "Erasmus Mundus MSc in Chemical Innovation and Regulation",
+   "proyecto": null,
+   "web": "https://www.emmcchir.org/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "Master in Work, Organizational and Personnel Psychology",
+   "titulo": "Master in Work, Organizational and Personnel Psychology",
+   "proyecto": null,
+   "web": "https://www.erasmuswop.org",
+   "paises": [
+    "ES",
+    "PT",
+    "BR",
+    "US"
+   ]
+  },
+  {
+   "id": "International Master of Science in Health Mangement in Aquaculture",
+   "titulo": "International Master of Science in Health Mangement in Aquaculture",
+   "proyecto": null,
+   "web": "http://www.aquah.eu",
+   "paises": [
+    "ES",
+    "NO"
+   ]
+  },
+  {
+   "id": "International Master of Science in Marine Biological Resources",
+   "titulo": "International Master of Science in Marine Biological Resources",
+   "proyecto": null,
+   "web": "http://www.imbrsea.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "SE",
+    "IE",
+    "NO"
+   ]
+  },
+  {
+   "id": "International Master of Science in Rural Development",
+   "titulo": "International Master of Science in Rural Development",
+   "proyecto": null,
+   "web": "http://www.imrd.ugent.be/",
+   "paises": [
+    "ES",
+    "SK"
+   ]
+  },
+  {
+   "id": "Intelligent Field Robotic Systems",
+   "titulo": "Intelligent Field Robotic Systems",
+   "proyecto": null,
+   "web": "http://ifrosmaster.org/",
+   "paises": [
+    "ES",
+    "HU",
+    "HR"
+   ]
+  },
+  {
+   "id": "Infectious Diseases and One Health",
+   "titulo": "Infectious Diseases and One Health",
+   "proyecto": null,
+   "web": "http://infectious-diseases-one-health.eu/",
+   "paises": [
+    "ES"
+   ]
+  },
+  {
+   "id": "Mediterranean Forestry and Natural Resources Management",
+   "titulo": "Mediterranean Forestry and Natural Resources Management",
+   "proyecto": null,
+   "web": "https://www.medfor.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "TR"
+   ]
+  },
+  {
+   "id": "European MSc in Marine EnviRonment 2030",
+   "titulo": "European MSc in Marine EnviRonment 2030",
+   "proyecto": null,
+   "web": "http://merconsortium.eu/",
+   "paises": [
+    "ES",
+    "GB"
+   ]
+  },
+  {
+   "id": "Marine and maritime Intelligent Robotics",
+   "titulo": "Marine and maritime Intelligent Robotics",
+   "proyecto": null,
+   "web": "http://www.master-mir.eu/",
+   "paises": [
+    "ES",
+    "PT",
+    "NO"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Master’s Degree in Women’s and Gender Studies",
+   "titulo": "Erasmus Mundus Master’s Degree in Women’s and Gender Studies",
+   "proyecto": null,
+   "web": "https://gemmaerasmusmundus.eu/",
+   "paises": [
+    "ES",
+    "GB"
+   ]
+  },
+  {
+   "id": "European Master of Science in Nuclear Fusion and Engineering Physics",
+   "titulo": "European Master of Science in Nuclear Fusion and Engineering Physics",
+   "proyecto": null,
+   "web": "http://www.em-master-fusion.org/",
+   "paises": [
+    "ES",
+    "CZ"
+   ]
+  },
+  {
+   "id": "Master of Urban Climate and Sustainability1.5",
+   "titulo": "Master of Urban Climate and Sustainability1.5",
+   "proyecto": null,
+   "web": "http://www.murcs.eu/",
+   "paises": [
+    "ES",
+    "FI",
+    "GB"
+   ]
+  },
+  {
+   "id": "Euroculture: Society, Politics and Culture in a Global Context",
+   "titulo": "Euroculture: Society, Politics and Culture in a Global Context",
+   "proyecto": null,
+   "web": "http://www.euroculturemaster.eu/",
+   "paises": [
+    "ES",
+    "SE",
+    "CZ",
+    "IN",
+    "JP",
+    "MX",
+    "US"
+   ]
+  },
+  {
+   "id": "Models and Methods of Quantitative Economics",
+   "titulo": "Models and Methods of Quantitative Economics",
+   "proyecto": null,
+   "web": "http://master-economics-qem.univ-paris1.fr/",
+   "paises": [
+    "ES"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Master Program in Plant Breeding",
+   "titulo": "Erasmus Mundus Master Program in Plant Breeding",
+   "proyecto": null,
+   "web": "https://emplant-master.eu/",
+   "paises": [
+    "ES",
+    "SE",
+    "AT",
+    "HU"
+   ]
+  },
+  {
+   "id": "Sustainable Ship and Shipping 4.0",
+   "titulo": "Sustainable Ship and Shipping 4.0",
+   "proyecto": null,
+   "web": "http://www.master-seas40.unina.it/",
+   "paises": [
+    "ES",
+    "HR"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Human Rights Policy and Practice",
+   "titulo": "Erasmus Mundus Human Rights Policy and Practice",
+   "proyecto": null,
+   "web": "http://www.emhrpp.com/",
+   "paises": [
+    "ES",
+    "SE",
+    "GB",
+    "NO"
+   ]
+  },
+  {
+   "id": "WAVES ACOUSTICS VIBRATIONS ENGINEERING SOUND",
+   "titulo": "WAVES ACOUSTICS VIBRATIONS ENGINEERING SOUND",
+   "proyecto": null,
+   "web": "https://master-waves.eu/",
+   "paises": [
+    "ES",
+    "PT"
+   ]
+  },
+  {
+   "id": "101240350",
+   "titulo": "Law and Gender, Intersectionality and Diversity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240350",
+   "web": "https://lawgid.ius.bg.ac.rs/",
+   "paises": [
+    "IT",
+    "SE",
+    "RS"
+   ]
+  },
+  {
+   "id": "101241097",
+   "titulo": "International Master in Security, Intelligence and Strategic Studies",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241097",
+   "web": "https://www.securityintelligence-erasmusmundus.eu/",
+   "paises": [
+    "IT",
+    "GB",
+    "IE",
+    "CZ",
+    "RS"
+   ]
+  },
+  {
+   "id": "101180007",
+   "titulo": "Education, Migration, and Diversity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180007",
+   "web": "https://www.edumig.org/",
+   "paises": [
+    "IT",
+    "DE",
+    "SE"
+   ]
+  },
+  {
+   "id": "101180000",
+   "titulo": "Erasmus Mundus Master in European Environmental Economics and Policy",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180000",
+   "web": "https://4euplus.eu/4EU-981.html",
+   "paises": [
+    "IT",
+    "DE",
+    "PL",
+    "CZ",
+    "DK"
+   ]
+  },
+  {
+   "id": "101180302",
+   "titulo": "Social Psychology of Transformation:  Understanding and Mastering Social Change",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180302",
+   "web": "https://spot-psychology.eu/",
+   "paises": [
+    "IT",
+    "DE",
+    "PT",
+    "EE",
+    "RS",
+    "BA"
+   ]
+  },
+  {
+   "id": "101128227",
+   "titulo": "Erasmus Mundus Joint Master Programme in Imaging",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128227",
+   "web": "https://www.emjm-imaging.eu/",
+   "paises": [
+    "IT",
+    "FI",
+    "SE"
+   ]
+  },
+  {
+   "id": "101127220",
+   "titulo": "Sustainable Forest and Nature Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127220",
+   "web": "https://em-sufonama.eu",
+   "paises": [
+    "IT",
+    "SE",
+    "GB",
+    "DK"
+   ]
+  },
+  {
+   "id": "101241136",
+   "titulo": "Erasmus Mundus Joint Master in Multilingualism and Cultural Diversity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241136",
+   "web": "https://www.multidiverse.eu/",
+   "paises": [
+    "DE",
+    "PL",
+    "GR"
+   ]
+  },
+  {
+   "id": "101234513",
+   "titulo": "Erasmus Mundus Masters in Journalism, Media and Globalisation (Mundus Journalism)",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101234513",
+   "web": "https://mundusjournalism.com",
+   "paises": [
+    "DE",
+    "NL",
+    "GB",
+    "CZ",
+    "DK"
+   ]
+  },
+  {
+   "id": "101180266",
+   "titulo": "Research and Innovation in Higher Education",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180266",
+   "web": "http://www.marihe.eu/",
+   "paises": [
+    "DE",
+    "PT",
+    "FI",
+    "AT",
+    "HU",
+    "IN",
+    "CN"
+   ]
+  },
+  {
+   "id": "101180032",
+   "titulo": "International Master in Innovative Medicine",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180032",
+   "web": "https://www.innovativemedicine.eu/home",
+   "paises": [
+    "DE",
+    "NL",
+    "SE",
+    "EE"
+   ]
+  },
+  {
+   "id": "101127959",
+   "titulo": "Erasmus Mundus Master in &#039;Global Studies&#039;",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127959",
+   "web": "https://globalstudies-masters.eu/",
+   "paises": [
+    "DE",
+    "PL",
+    "AT",
+    "DK"
+   ]
+  },
+  {
+   "id": "101127390",
+   "titulo": "Groundwater and Global Change - Impacts and Adaptation",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127390",
+   "web": "https://www.groundwatermaster.eu/",
+   "paises": [
+    "DE",
+    "PT",
+    "NL"
+   ]
+  },
+  {
+   "id": "101239524",
+   "titulo": "DocNomadsPlus, Joint Master in Documentary Filmmaking",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239524",
+   "web": "https://docnomadsplus.eu",
+   "paises": [
+    "PT",
+    "BE",
+    "LT"
+   ]
+  },
+  {
+   "id": "101180273",
+   "titulo": "RESOUND - Joint Master of Arts in Sound Design for Media Arts",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180273",
+   "web": "https://resound-ma.eu/",
+   "paises": [
+    "PT",
+    "FI",
+    "IE"
+   ]
+  },
+  {
+   "id": "101180512",
+   "titulo": "Coordinated Humanitarian Response, Health and Displacement",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180512",
+   "web": "https://humanresponse.eu/",
+   "paises": [
+    "PT",
+    "GR",
+    "NO",
+    "UG",
+    "CV",
+    "MZ"
+   ]
+  },
+  {
+   "id": "101180493",
+   "titulo": "Response_Able Futures; A European Joint Masters in Design and Care",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101180493",
+   "web": "https://www.response-able-futures.eu/",
+   "paises": [
+    "PT",
+    "BE",
+    "GB"
+   ]
+  },
+  {
+   "id": "101127690",
+   "titulo": "FilmMemory - Joint Master of Arts in European Film Heritage, History and Cultures",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127690",
+   "web": "https://www.filmmemory.eu/",
+   "paises": [
+    "PT",
+    "IE",
+    "EE"
+   ]
+  },
+  {
+   "id": "101128161",
+   "titulo": "RE_PLAY: EUROPEAN JOINT MASTERS IN GAMES",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128161",
+   "web": "https://www.replaymasters.eu/",
+   "paises": [
+    "PT",
+    "FI"
+   ]
+  },
+  {
+   "id": "101127953",
+   "titulo": "Sustainable Information Technologies for Societies Joint Masters",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101127953",
+   "web": "https://aissprogram.eu/",
+   "paises": [
+    "PT",
+    "FI",
+    "EE"
+   ]
+  },
+  {
+   "id": "101128051",
+   "titulo": "European Master on Embedded Intelligence Nanosystems Engineering – from Nanoscale Technologies to Ubiquitous Smart Sensors",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128051",
+   "web": "http://eminent-master.eu/",
+   "paises": [
+    "PT",
+    "GR",
+    "LT"
+   ]
+  },
+  {
+   "id": "101081786",
+   "titulo": "Euro-Asian Joint Master Programme in Medical Technology and Healthcare Business",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081786",
+   "web": "https://master-emmah.eu",
+   "paises": [
+    "PT",
+    "TW"
+   ]
+  },
+  {
+   "id": "101082428",
+   "titulo": "Joint Master Programme in Resilience in Educational Contexts",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082428",
+   "web": "http://flourishproject.mt/",
+   "paises": [
+    "PT",
+    "RO",
+    "MT"
+   ]
+  },
+  {
+   "id": "101082398",
+   "titulo": "Erasmus Mundus Joint Master on “Climate Change and Diversity: Sustainable Territorial Development”",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082398",
+   "web": "https://ccd-stede.eu/",
+   "paises": [
+    "PT",
+    "ZA",
+    "BF",
+    "EC"
+   ]
+  },
+  {
+   "id": "101082567",
+   "titulo": "ERASMUS MUNDUS JOINT MASTER in ARCHAEOLOGICAl MATERIALS SCIENCE",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082567",
+   "web": "http://www.erasmusmundus-archmat.eu/",
+   "paises": [
+    "PT",
+    "GR"
+   ]
+  },
+  {
+   "id": "101082749",
+   "titulo": "Functional Advanced Materials Engineering with Artificial Intelligence for Sustainability",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082749",
+   "web": "https://www.fame-master.eu/",
+   "paises": [
+    "PT"
+   ]
+  },
+  {
+   "id": "101082707",
+   "titulo": "Global MINDS European Master in the Psychology of Global Mobility, Inclusion and Diversity in Society",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082707",
+   "web": "https://global-minds.eu",
+   "paises": [
+    "PT",
+    "PL",
+    "IE",
+    "NO"
+   ]
+  },
+  {
+   "id": "101081356",
+   "titulo": "International Master in Brain and Data Science",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081356",
+   "web": "https://www.neurodata-master.org/",
+   "paises": [
+    "PT",
+    "FI",
+    "HR",
+    "IL"
+   ]
+  },
+  {
+   "id": "101081552",
+   "titulo": "Erasmus Mundus Joint Master in Planetary Geosciences",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081552",
+   "web": "https://geoplanet-impg.eu",
+   "paises": [
+    "PT"
+   ]
+  },
+  {
+   "id": "101081731",
+   "titulo": "Managing Art and Cultural Heritage in Global Markets",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101081731",
+   "web": "https://www.magma-erasmusmundus.eu/",
+   "paises": [
+    "PT",
+    "GB"
+   ]
+  },
+  {
+   "id": "101050239",
+   "titulo": "Governance &amp; Administration of Leisure and Sports International Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050239",
+   "web": "http://www.master-goals.eu/",
+   "paises": [
+    "PT",
+    "PL",
+    "LT",
+    "LU"
+   ]
+  },
+  {
+   "id": "101050809",
+   "titulo": "ChEMoinformaticsplus - Artificial Intelligence in Chemistry",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050809",
+   "web": "https://masterchemoinfo.u-strasbg.fr/",
+   "paises": [
+    "PT",
+    "SI",
+    "IL",
+    "UA"
+   ]
+  },
+  {
+   "id": "101050810",
+   "titulo": "Transnational German Studies Erasmus Mundus Joint Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050810",
+   "web": "https://transnationalgermanstudies.eu/en/programme/",
+   "paises": [
+    "PT",
+    "LU"
+   ]
+  },
+  {
+   "id": "101050997",
+   "titulo": "QUAntum Research Master-level Education Network",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050997",
+   "web": "http://www.master-quarmen.eu/",
+   "paises": [
+    "PT",
+    "CA"
+   ]
+  },
+  {
+   "id": "Kino Eyes - The European Fiction Master",
+   "titulo": "Kino Eyes - The European Fiction Master",
+   "proyecto": null,
+   "web": "http://www.kinoeyes.eu/",
+   "paises": [
+    "PT",
+    "GB",
+    "IE",
+    "EE"
+   ]
+  },
+  {
+   "id": "Master in Applied Ecohydrology",
+   "titulo": "Master in Applied Ecohydrology",
+   "proyecto": null,
+   "web": "http://www.maeh-mundus.eu/",
+   "paises": [
+    "PT"
+   ]
+  },
+  {
+   "id": "European Master of Science in Sustainable Food Systems Engineering, Technology and Business",
+   "titulo": "European Master of Science in Sustainable Food Systems Engineering, Technology and Business",
+   "proyecto": null,
+   "web": "https://iiw.kuleuven.be/english/food4s/",
+   "paises": [
+    "PT",
+    "IE"
+   ]
+  },
+  {
+   "id": "European Joint Master in Social Work with Children and Youth",
+   "titulo": "European Joint Master in Social Work with Children and Youth",
+   "proyecto": null,
+   "web": "https://eswochy.eu/",
+   "paises": [
+    "PT",
+    "LT",
+    "SK",
+    "LV"
+   ]
+  },
+  {
+   "id": "Re:Anima - European Joint Masters in Animation",
+   "titulo": "Re:Anima - European Joint Masters in Animation",
+   "proyecto": null,
+   "web": "http://www.reanima.eu/",
+   "paises": [
+    "PT",
+    "FI"
+   ]
+  },
+  {
+   "id": "Transition, Innovation and Sustainability Environments",
+   "titulo": "Transition, Innovation and Sustainability Environments",
+   "proyecto": null,
+   "web": "https://www.tise-master.eu/",
+   "paises": [
+    "PT",
+    "AT",
+    "IE"
+   ]
+  },
+  {
+   "id": "Cultures Littéraires Européennes - CLE",
+   "titulo": "Cultures Littéraires Européennes - CLE",
+   "proyecto": null,
+   "web": "https://www.cle.unibo.it/",
+   "paises": [
+    "PT",
+    "GR",
+    "IN",
+    "SN"
+   ]
+  },
+  {
+   "id": "European Master in Building Information Modelling",
+   "titulo": "European Master in Building Information Modelling",
+   "proyecto": null,
+   "web": "https://bimaplus.org/",
+   "paises": [
+    "PT",
+    "SI"
+   ]
+  },
+  {
+   "id": "101240661",
+   "titulo": "Geo-Information Science and Earth Observation for Environmental Modelling and Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101240661",
+   "web": "https://www.gem-msc.eu/",
+   "paises": [
+    "BE",
+    "NL",
+    "SE",
+    "EE"
+   ]
+  },
+  {
+   "id": "101239448",
+   "titulo": "European Master&#039;s in Clinical Linguistics 25",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101239448",
+   "web": "https://www.emcl.eu/",
+   "paises": [
+    "BE",
+    "NL",
+    "FI"
+   ]
+  },
+  {
+   "id": "101126726",
+   "titulo": "Children’s Literature, Media and Cultural Entrepreneurship",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101126726",
+   "web": "https://www.clmce-erasmusmundus.eu/",
+   "paises": [
+    "NL",
+    "GB",
+    "DK"
+   ]
+  },
+  {
+   "id": "101082388",
+   "titulo": "Joint Master&#039;s Degree Programme in Service Design Strategies and Innovations",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082388",
+   "web": "https://www.sdsi.ma/",
+   "paises": [
+    "FI",
+    "EE",
+    "LV"
+   ]
+  },
+  {
+   "id": "101050446",
+   "titulo": "Erasmus Mundus Joint Master in Sustainable Mineral and Metal Processing Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050446",
+   "web": "https://www.master-promise.eu/",
+   "paises": [
+    "FI",
+    "AT",
+    "HR",
+    "CL"
+   ]
+  },
+  {
+   "id": "Educating software engineers with a sustainability mindset to improve the well-being of people through software solutions",
+   "titulo": "Educating software engineers with a sustainability mindset to improve the well-being of people through software solutions",
+   "proyecto": null,
+   "web": "http://se4gd.eu/",
+   "paises": [
+    "FI"
+   ]
+  },
+  {
+   "id": "Master&#039;s programme in Security and Cloud Computing",
+   "titulo": "Master&#039;s programme in Security and Cloud Computing",
+   "proyecto": null,
+   "web": "https://secclo.eu/",
+   "paises": [
+    "FI",
+    "SE",
+    "EE",
+    "NO",
+    "DK"
+   ]
+  },
+  {
+   "id": "Joint International Master in Smart Systems Integrated Solutions",
+   "titulo": "Joint International Master in Smart Systems Integrated Solutions",
+   "proyecto": null,
+   "web": "https://ssi-master.eu/",
+   "paises": [
+    "FI",
+    "NO",
+    "HU"
+   ]
+  },
+  {
+   "id": "Advanced Spectroscopy in Chemistry Master&#039;s Course",
+   "titulo": "Advanced Spectroscopy in Chemistry Master&#039;s Course",
+   "proyecto": null,
+   "web": "http://www.master-asc.org/",
+   "paises": [
+    "FI"
+   ]
+  },
+  {
+   "id": "101082211",
+   "titulo": "Masters degree in Environmental Sciences, Policy and Management",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082211",
+   "web": "https://mespom.eu/",
+   "paises": [
+    "SE",
+    "GB",
+    "AT",
+    "GR"
+   ]
+  },
+  {
+   "id": "European Joint Masters in Management and Engineering of Environment and Energy +",
+   "titulo": "European Joint Masters in Management and Engineering of Environment and Energy +",
+   "proyecto": null,
+   "web": "https://www.imt-atlantique.fr/en/study/msc/emjmd-me3plusqJaTLx94UxC2zIVi2A$",
+   "paises": [
+    "SE",
+    "HU"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Joint Master Degree in Food Innovation &amp; Product Design",
+   "titulo": "Erasmus Mundus Joint Master Degree in Food Innovation &amp; Product Design",
+   "proyecto": null,
+   "web": "http://www.fipdes.eu/",
+   "paises": [
+    "SE",
+    "IE"
+   ]
+  },
+  {
+   "id": "International Master of Science in Sustainable and Innovative Natural Resource Management",
+   "titulo": "International Master of Science in Sustainable and Innovative Natural Resource Management",
+   "proyecto": null,
+   "web": "https://sinrem.eu/",
+   "paises": [
+    "SE"
+   ]
+  },
+  {
+   "id": "World Textile Engineering Advanced Master",
+   "titulo": "World Textile Engineering Advanced Master",
+   "proyecto": null,
+   "web": "https://we-team.education/",
+   "paises": [
+    "SE",
+    "GR",
+    "JP"
+   ]
+  },
+  {
+   "id": "Joint European Master Programme in Advanced Materials Science and Engineering",
+   "titulo": "Joint European Master Programme in Advanced Materials Science and Engineering",
+   "proyecto": null,
+   "web": "https://www.eusmat.net/international-studies/master/amase/",
+   "paises": [
+    "SE",
+    "AT"
+   ]
+  },
+  {
+   "id": "101082117",
+   "titulo": "Master of Science (MSc) in Global Environment and Development",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082117",
+   "web": "https://merged.info/",
+   "paises": [
+    "PL",
+    "DK"
+   ]
+  },
+  {
+   "id": "Master in Materials Science powEred by Large-Scale Facilities",
+   "titulo": "Master in Materials Science powEred by Large-Scale Facilities",
+   "proyecto": null,
+   "web": "https://www.mamaself.eu/",
+   "paises": [
+    "PL"
+   ]
+  },
+  {
+   "id": "101080968",
+   "titulo": "EMJM AQUACULTURE, ENVIRONMENT AND SOCIETY – STAR",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101080968",
+   "web": "https://www.emm-aces.org/",
+   "paises": [
+    "GB",
+    "GR"
+   ]
+  },
+  {
+   "id": "101082003",
+   "titulo": "Education in Museums and Heritage",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082003",
+   "web": "https://www.gla.ac.uk/postgraduate/erasmusmundus/edumah/",
+   "paises": [
+    "GB",
+    "EE",
+    "MT"
+   ]
+  },
+  {
+   "id": "European Master in Embedded Computing Systems",
+   "titulo": "European Master in Embedded Computing Systems",
+   "proyecto": null,
+   "web": "http://www.emecs.eu",
+   "paises": [
+    "GB",
+    "NO"
+   ]
+  },
+  {
+   "id": "Central and East European, Russian and Eurasian Studies",
+   "titulo": "Central and East European, Russian and Eurasian Studies",
+   "proyecto": null,
+   "web": "https://erasmusmundus-ceeres.eu/",
+   "paises": [
+    "GB",
+    "EE",
+    "HU",
+    "BA",
+    "GE",
+    "KZ"
+   ]
+  },
+  {
+   "id": "101126802",
+   "titulo": "International Master in Soils and Global Change",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101126802",
+   "web": "https://imsoglo.eu/",
+   "paises": [
+    "AT",
+    "DK"
+   ]
+  },
+  {
+   "id": "101128006",
+   "titulo": "Copernicus Master in Digital Earth",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101128006",
+   "web": "https://master-cde.eu/",
+   "paises": [
+    "AT",
+    "CZ"
+   ]
+  },
+  {
+   "id": "101050459",
+   "titulo": "Cartography - Mapping for a sustainable world",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050459",
+   "web": "https://cartographymaster.eu/",
+   "paises": [
+    "AT"
+   ]
+  },
+  {
+   "id": "101050466",
+   "titulo": "Sustainability in Agriculture, Food Production and Food Technology in the Danube Region - Danube AgriFood Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050466",
+   "web": "http://www.agrifoodmaster.eu/",
+   "paises": [
+    "AT",
+    "CZ",
+    "HU",
+    "RO",
+    "HR",
+    "RS",
+    "SK"
+   ]
+  },
+  {
+   "id": "101082688",
+   "titulo": "Erasmus Mundus Master in Biomedical Engineering",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082688",
+   "web": "http://www.emmbiome.eu/",
+   "paises": [
+    "GR",
+    "RO",
+    "RS"
+   ]
+  },
+  {
+   "id": "Nanomedicine for Drug Delivery",
+   "titulo": "Nanomedicine for Drug Delivery",
+   "proyecto": null,
+   "web": "http://master-nanomed.eu/",
+   "paises": [
+    "GR"
+   ]
+  },
+  {
+   "id": "European Master in Advanced Solid Mechanics",
+   "titulo": "European Master in Advanced Solid Mechanics",
+   "proyecto": null,
+   "web": "https://master-strains.eu/",
+   "paises": [
+    "GR"
+   ]
+  },
+  {
+   "id": "101241068",
+   "titulo": "Theatre in Social, Participatory Art, Community and Educational contexts",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101241068",
+   "web": "https://www.theatre-spaces.eu/",
+   "paises": [
+    "IE",
+    "NO",
+    "RO"
+   ]
+  },
+  {
+   "id": "101082574",
+   "titulo": "Public Sector Innovation and eGovernance",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082574",
+   "web": "https://pioneer-master.eu/",
+   "paises": [
+    "EE"
+   ]
+  },
+  {
+   "id": "101082643",
+   "titulo": "Manufacturing 4.0 by intElligent and susTAinable technologies - META 4.0",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082643",
+   "web": "https://www.master-meta4-0.eu",
+   "paises": [
+    "NO",
+    "SI"
+   ]
+  },
+  {
+   "id": "101049855",
+   "titulo": "European Master in Migration and Intercultural Relations",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049855",
+   "web": "https://www.emmir.org/",
+   "paises": [
+    "NO",
+    "CZ",
+    "SI",
+    "ZA",
+    "IN",
+    "UG",
+    "SD"
+   ]
+  },
+  {
+   "id": "101082420",
+   "titulo": "EMJM in Global Forestry",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082420",
+   "web": "https://globalforestry.eu/",
+   "paises": [
+    "CZ",
+    "DK"
+   ]
+  },
+  {
+   "id": "101049150",
+   "titulo": "International Masters in Environmental Technology and Engineering – Consolidation phase",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049150",
+   "web": "https://www.imete.eu/",
+   "paises": [
+    "CZ"
+   ]
+  },
+  {
+   "id": "101050730",
+   "titulo": "Quantum Technologies and Engineering Erasmus Mundus Master",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050730",
+   "web": "http://www.quanteem.eu",
+   "paises": [
+    "DK"
+   ]
+  },
+  {
+   "id": "101049277",
+   "titulo": "Erasmus Mundus Master Impact Entrepreneurship",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049277",
+   "web": "https://www.emmie.uliege.be/cms/c_7950389/en/emmie",
+   "paises": [
+    "LT",
+    "HR"
+   ]
+  },
+  {
+   "id": "101050044",
+   "titulo": "Master in Astrophysics and Space Science",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101050044",
+   "web": "https://www.master-mass.eu/",
+   "paises": [
+    "RS"
+   ]
+  },
+  {
+   "id": "Erasmus Mundus Joint Master Degree in Tropical Biodiversity and Ecosystems",
+   "titulo": "Erasmus Mundus Joint Master Degree in Tropical Biodiversity and Ecosystems",
+   "proyecto": null,
+   "web": "https://www.tropimundo.eu/",
+   "paises": [
+    "CM",
+    "MG",
+    "MY",
+    "LK"
+   ]
+  },
+  {
+   "id": "101082683",
+   "titulo": "Master of Applied Cybersecurity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101082683",
+   "web": "http://cybermacs.eu/",
+   "paises": [
+    "TR",
+    "MK"
+   ]
+  },
+  {
+   "id": "101049712",
+   "titulo": "Erasmus Mundus Joint Master in Cybersecurity",
+   "proyecto": "https://erasmus-plus.ec.europa.eu/projects/search/details/101049712",
+   "web": "https://cyberus.univ-ubs.fr/en/index.html",
+   "paises": [
+    "LU"
+   ]
+  }
+ ]
+}

@@ -320,7 +320,52 @@ export function extraePorReglas(parrafos) {
   const plazo = buscaPlazo(parrafos);
   anota('fecha_limite', 'Plazo de solicitud', plazo?.fecha, plazo);
 
+  // El nivel de estudios y el destino. No son «requisitos» en el sentido
+  // de «si no lo cumples no te dan»: son **de qué va la convocatoria**, y
+  // sirven para que el estudiante filtre. Por eso van marcados como
+  // opcionales y no cuentan en el anillo.
+  const nivel = buscaNivel(parrafos);
+  anota('nivel', 'Nivel al que se puede pedir', nivel?.nivel, nivel);
+
   return requisitos;
+}
+
+/**
+ * El nivel de estudios al que se puede pedir la convocatoria.
+ *
+ * El BOE lo dice de muchas maneras: «estudiantes de Doctorado», «alumnos
+ * de Grado», «estudiantes de Máster». Se busca en ese orden —de más a
+ * menos— porque una convocatoria de doctorado también menciona el grado
+ * que hay que tener antes, y si se mirara al revés saldría «Grado» para
+ * una beca de doctorado.
+ *
+ * Devuelve el nivel **y su cita**, porque el valor tiene que aparecer
+ * dentro de la cita: ver `citaSostiene`.
+ */
+export function buscaNivel(parrafos) {
+  const patrones = [
+    { nivel: 'Doctorado', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+(?:doctorado|phd)\b/i },
+    { nivel: 'Doctorado', re: /\bprograma\s+de\s+doctorado\b/i },
+    { nivel: 'Doctorado', re: /\bformaci[óo]n\s+doctoral\b/i },
+    { nivel: 'Máster', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+(?:m[áa]ster|master)\b/i },
+    { nivel: 'Máster', re: /\bm[áa]ster\s+universitario\b/i },
+    { nivel: 'Máster', re: /\bt[íi]tulo\s+de\s+m[áa]ster\b/i },
+    { nivel: 'Grado', re: /\b(?:estudiantes?|alumnos?|becarios?)\s+de\s+grado\b/i },
+    { nivel: 'Grado', re: /\b(?:estudiantes?|alumnos?)\s+de\s+primer\s+curso\b/i },
+    { nivel: 'Grado', re: /\btitulaci[óo]n\s+de\s+grado\b/i },
+  ];
+
+  for (const { nivel, re } of patrones) {
+    for (const p of parrafos) {
+      const texto = typeof p === 'string' ? p : p?.texto ?? '';
+      if (!texto) continue;
+      const m = re.exec(texto);
+      if (m) {
+        return { nivel, cita: recortar(texto, m.index, m.index + m[0].length) };
+      }
+    }
+  }
+  return null;
 }
 
 /**

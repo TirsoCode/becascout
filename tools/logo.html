@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<!--
+  Fuente de logo.png (512×512), el logo cuadrado que declara el JSON-LD
+  `Organization`. Google pide un raster cuadrado; el favicon es SVG y no sirve.
+
+    google-chrome --headless=new --disable-gpu --no-sandbox \
+      --hide-scrollbars --force-device-scale-factor=1 \
+      --window-size=512,512 --screenshot=logo.png tools/logo.html
+-->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 512px; height: 512px; overflow: hidden; }
+  body { background: #12463A; display: grid; place-items: center; }
+  svg { width: 288px; height: 288px; color: #FBF8F3; }
+</style>
+</head>
+<body>
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</body>
+</html>

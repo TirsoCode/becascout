@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<!--
+  Fuente de og.png (1200×630). No se publica: `tools/` va en .vercelignore.
+
+  Se genera con Chrome headless, no con una librería:
+    google-chrome --headless=new --disable-gpu --no-sandbox \
+      --hide-scrollbars --force-device-scale-factor=1 \
+      --window-size=1200,630 --screenshot=og.png tools/og.html
+
+  Las tipografías se cargan de Google Fonts; si no hay red al generar, Chrome
+  cae a las del sistema y la imagen sale con otra letra, pero sale.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: #FBF8F3;
+    color: #16191B;
+    font-family: 'Outfit', system-ui, sans-serif;
+    display: flex; flex-direction: column;
+    padding: 62px 76px 56px;
+  }
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand svg { width: 36px; height: 36px; color: #12463A; }
+  .brand-name { font-size: 27px; letter-spacing: -.022em; font-weight: 300; }
+  .brand-name b { font-weight: 650; }
+  .kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    color: #8A9499; letter-spacing: .16em; text-transform: uppercase;
+  }
+  .mid { margin-top: 70px; }
+  h1 {
+    font-family: 'Instrument Serif', Georgia, serif; font-weight: 400;
+    font-size: 82px; line-height: 1.0; letter-spacing: -.022em; max-width: 980px;
+  }
+  h1 em { font-style: italic; color: #12463A; }
+  .sub {
+    font-size: 24px; font-weight: 300; color: #5E686D;
+    margin-top: 26px; max-width: 760px; line-height: 1.42;
+  }
+  .quote {
+    margin-top: auto; padding-top: 22px; border-top: 1px solid #DED5C6;
+    border-left: 3px solid #12463A; padding-left: 20px;
+  }
+  .quote .q {
+    font-family: 'JetBrains Mono', monospace; font-size: 15px;
+    color: #3A4145; line-height: 1.5;
+  }
+  .quote .src {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    color: #8A9499; margin-top: 9px;
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Becas<b>Scout</b></span>
+    </div>
+    <div class="kicker">Cada requisito, con su cita</div>
+  </div>
+
+  <div class="mid">
+    <h1>Las becas de Europa,<br>con los <em>requisitos</em> leídos.</h1>
+    <p class="sub">Leemos la convocatoria oficial y te decimos qué cumples. Cada requisito lleva el párrafo literal del que salió.</p>
+  </div>
+
+  <div class="quote">
+    <div class="q">«Nota media mínima de 8,00 puntos en los estudios por los que se solicita la beca…»</div>
+    <div class="src">Cita literal · Bases de la convocatoria · pág. 3</div>
+  </div>
+</body>
+</html>

@@ -228,6 +228,20 @@ img, svg { display: block; max-width: 100%; }
 .step h3 { font-size: 17px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 9px; }
 .step p { font-size: 14.5px; color: var(--ink-3); }
 
+/* ── Preguntas frecuentes ────────────────────────────────────────── */
+/* Sección en dos columnas —pregunta a la izquierda, respuesta a la
+   derecha— separadas por el mismo filete que el resto. No lleva el
+   bloque plegado del navegador a propósito: la respuesta tiene que
+   estar visible para quien lee y para quien la cita (una respuesta a
+   la que hay que hacer clic para leer se cuenta peor). */
+.faq { border-top: 1px solid var(--rule); }
+.faq-item {
+  display: grid; grid-template-columns: minmax(240px, 1fr) 1.7fr;
+  gap: 30px; padding: 26px 0; border-bottom: 1px solid var(--rule);
+}
+.faq-item h3 { font-family: var(--display); font-size: 20px; font-weight: 400; letter-spacing: -.015em; }
+.faq-item p { font-size: 15px; color: var(--ink-3); max-width: 66ch; }
+
 /* ── Documento legal ─────────────────────────────────────────────── */
 /* Una sola columna estrecha y mucho aire. El texto legal que se lee
    con cajas y sombras acaba sin leerse, y aquí importa leerlo. */
@@ -681,6 +695,7 @@ body.con-cartel { padding-bottom: 104px; }
   .hero-grid { grid-template-columns: 1fr; gap: 44px; }
   .hero { padding: 64px 0 56px; }
   .steps { grid-template-columns: 1fr; }
+  .faq-item { grid-template-columns: 1fr; gap: 9px; }
   .profile-bar { grid-template-columns: repeat(2, 1fr); }
   .profile-bar .btn { grid-column: 1 / -1; }
 }

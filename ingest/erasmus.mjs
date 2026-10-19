@@ -157,21 +157,76 @@ function plano(html) {
  * estudiante va a necesitar uno u otro según desde dónde empiece.
  */
 export function programas(html) {
-  const tarjetas = html.match(/<article class="ecl-card"[\s\S]*?<\/article>/g) ?? [];
+  // ── Por qué los atributos van con `\s+` y no con un espacio ─────────────
+  //
+  // El marcado de EACEA **parte los atributos en varias líneas**:
+  //
+  //   <article
+  //     class="ecl-card"
+  //     ...
+  //
+  // Con `<article class="ecl-card"` —un espacio y ya— no casa con nada. El
+  // conector no daba error: devolvía una lista vacía y la web se quedaba con
+  // los 75 programas de una pasada antigua. Un fallo silencioso que
+  // parecía un dato viejo.
+  //
+  // Por eso aquí los espacios de los atributos son `\s+`, que come el
+  // espacio, el salto de línea y los espacios que sobran. Lo mismo en el
+  // `href` del enlace.
+  const tarjetas = html.match(/<article\s+class="ecl-card"[\s\S]*?<\/article>/g) ?? [];
   const salida = [];
 
   for (const t of tarjetas) {
-    const titulo = /ecl-link__label[^>]*>([^<]{6,180})</.exec(t)?.[1]?.trim();
+    // ── Dos formas de título ──────────────────────────────────────────────
+    //
+    // En el catálogo de Joint Masters el título va en un
+    // `<span class="ecl-link__label">`, que es un enlace a la web del
+    // programa. En el de Intra-Africa va en un `<div
+    // class="ecl-content-block__title">` con el texto dentro, y sin
+    // enlace: el programa se queda sin título si solo se mira el `span`.
+    //
+    // Y el texto puede llevar un salto de línea antes del cierre, que es
+    // justo lo que pasa con los títulos largos. Por eso el `[^<]` va con
+    // `\s*` delante: sin él, cinco programas de Intra-Africa por página se
+    // perdían en silencio, sin error y sin aviso.
+    const titulo = /ecl-link__label[^>]*>\s*([^<]{6,180}?)\s*</.exec(t)?.[1]?.trim()
+      ?? /ecl-content-block__title[^>]*>\s*([^<]{6,180}?)\s*</.exec(t)?.[1]?.trim();
     if (!titulo) continue;
 
     // El href va ANTES del <span class="ecl-link__label">, no después. Buscarlo
     // al revés devuelve null en todas las tarjetas sin dar ningún error, que
     // es como se pierde una tarde: el conector «funciona» y no captura nada.
-    const web = /<a href="(https?:\/\/(?!erasmus-plus\.ec)[^"]+)"[^>]*>\s*<span class="ecl-link__label"/.exec(t)?.[1] ?? null;
+    //
+    // Y el `href` también puede partirse en varias líneas, que es lo mismo
+    // que pasó con el `class` de arriba. Por eso `\s+` en el `<a` y en el
+    // `class` del span.
+    const web = /<a\s+href="(https?:\/\/(?!erasmus-plus\.ec)[^"]+)"[^>]*>\s*<span\s+class="ecl-link__label"/.exec(t)?.[1] ?? null;
     const proyecto = /href="(https:\/\/erasmus-plus\.ec\.europa\.eu\/projects\/search\/details\/\d+)"/.exec(t)?.[1] ?? null;
-    if (!web && !proyecto) continue;
 
-    salida.push({ titulo, web, proyecto });
+    // ── El tercer enlace: el de la ficha del proyecto ─────────────────────
+    //
+    // En el catálogo de Intra-Africa el proyecto no sale en un `<a>` con
+    // `href` de proyecto: sale en un `<p>` de la descripción, con el texto
+    // del enlace y la URL escrita. Es el mismo enlace, con otra forma.
+    const proyectoTexto = /erasmus-plus\.ec\.europa\.eu\/projects\/search\/details\/(\d+)/.exec(t)?.[1] ?? null;
+    const idProyecto = proyecto?.split('/').pop() ?? proyectoTexto;
+
+    // La web del programa: en Intra-Africa va en un `<p>` con la URL
+    // suelta, y también puede ser un `http` a secas.
+    const webTexto = /<p>[^<]*<a href="(https?:\/\/[^"]+)"/.exec(t)?.[1] ?? null;
+
+    // Antes: si no había ni web ni proyecto, la tarjeta se descartaba. Con
+    // el catálogo de Intra-Africa eso tiraba cinco programas por página sin
+    // decir nada. Ahora solo se descarta si no hay título, que es lo único
+    // que de verdad no se puede enseñar.
+    if (!web && !proyecto && !webTexto && !proyectoTexto) continue;
+
+    salida.push({
+      titulo,
+      web: web ?? webTexto,
+      proyecto: proyecto ?? (proyectoTexto ? `https://erasmus-plus.ec.europa.eu/projects/search/details/${proyectoTexto}` : null),
+      idProyecto: idProyecto ?? null,
+    });
   }
   return salida;
 }
@@ -265,21 +320,66 @@ export async function refrescarBase(ruta) {
   return { registros: emjm.length, hechos: hechos.length, notas: notas.length };
 }
 
+/**
+ * Los países de cada programa.
+ *
+ * Vienen de `data/paises-erasmus.json`, que se genera con
+ * `node ingest/erasmus-paises.mjs`. El catálogo no los da en la tarjeta, y
+ * la ficha de cada programa bloquea con «Sorry», así que la única manera
+ * limpia de saberlos es cruzando el filtro de países del propio catálogo.
+ *
+ * Es un fichero aparte y no una petición en cada pasada a propósito: son 92
+ * peticiones y los países de un programa no cambian. Ver
+ * `ingest/erasmus-paises.mjs` para el porqué.
+ */
+async function mapaDePaises() {
+  try {
+    const datos = JSON.parse(await readFile(new URL('../data/paises-erasmus.json', import.meta.url), 'utf8'));
+    const mapa = new Map();
+    for (const p of datos.programas ?? []) {
+      if (p.id) mapa.set(p.id, p.paises ?? []);
+    }
+    return mapa;
+  } catch {
+    // Sin el fichero no hay países, pero los programas siguen siendo válidos:
+    // el país es un dato para filtrar, no un requisito. Que se caiga en
+    // silencio es lo que dice el resto de los conectores.
+    return new Map();
+  }
+}
+
 /** Vuelca el catálogo completo, con los hechos comunes ya citados. */
-export async function recolectar({ paginas = 9, alProgresar } = {}) {
-  // El catálogo viene en páginas de veinte. Solo con la primera salen veinte
-  // programas de más de ciento setenta, que es justo el número que hace que
-  // la web parezca vacía. El parámetro es `page`, a diferencia del de BDNS.
+export async function recolectar({ paginas = 12, alProgresar } = {}) {
+  // El catálogo viene en páginas de veinte, y son once: con nueve se perdían
+  // 38 de los 206 programas. El parámetro es `page`, a diferencia del de
+  // BDNS.
+  //
+  // Y el catálogo se lee con `fetch` y no con Chrome: el HTML plano ya trae
+  // las tarjetas, y gastarse un navegador por página era lo que hacía que
+  // esto tardara un minuto entero.
   const vistos = new Map();
   for (let p = 0; p < paginas; p++) {
-    const html = await render(p === 0 ? CATALOGO : `${CATALOGO}?page=${p}`);
+    const html = await render(p === 0 ? CATALOGO : `${CATALOGO}?page=${p}`, { chrome: false });
     const nuevos = programas(html);
     if (!nuevos.length) break;          // última página
-    nuevos.forEach((x) => vistos.set(x.titulo, x));
+    // La clave es el **id del proyecto**, no el título. Con el título se
+    // perdían programas: en la cuarta página solo salían quince nuevos de
+    // veinte, porque cinco programas de la página anterior tenían el
+    // mismo título que uno de esta —dos consorcios con el mismo nombre— y
+    // el segundo se pisaba con el primero.
+    //
+    // El id del proyecto es único y no cambia. Cuando no hay, se usa el
+    // título, que es peor pero no deja huecos.
+    nuevos.forEach((x) => {
+      const clave = x.proyecto?.split('/').pop() ?? x.titulo;
+      if (!vistos.has(clave)) vistos.set(clave, x);
+    });
     alProgresar?.({ fase: 'catalogo', pagina: p, total: vistos.size });
     if (nuevos.length < 20) break;
   }
   const lista = [...vistos.values()];
+
+  const paisesPorId = await mapaDePaises();
 
   // Los hechos comunes se comprueban contra las páginas oficiales antes de
   // pegarlos a los programas. Si mañana la Comisión cambia la cuantía, el
@@ -293,20 +393,29 @@ export async function recolectar({ paginas = 9, alProgresar } = {}) {
     notas = v.notas;
   } catch { /* se queda con los de partida */ }
 
-  return lista.map((p, i) => ({
-    id: `EMJM-${i + 1}-${p.titulo.slice(0, 24).replace(/\W+/g, '-').toLowerCase()}`,
-    titulo: p.titulo,
-    organizador: 'Erasmus Mundus Joint Master (consorcio)',
-    ambito: 'europeo',
-    fuente: 'erasmus-mundus',
-    // El importe es el de la beca, no el presupuesto total de la convocatoria,
-    // que es un orden de magnitud mayor. No se mezclan.
-    presupuesto: null,
-    requisitos: hechos.map((h) => ({ ...h, extractor: 'oficial' })),
-    notas: notas.map((n) => ({ ...n, extractor: 'oficial' })),
-    url: p.proyecto ?? p.web,
-    url_programa: p.web,
-    cierra: null,   // cada programa tiene el suyo; no hay uno común
-    pagina: null,
-  }));
+  return lista.map((p, i) => {
+    // El id del proyecto es la clave con la que se cruzan los países. El
+    // título no sirve: dos consorcios pueden llamarse igual.
+    const idProyecto = p.proyecto?.split('/').pop() ?? null;
+    const paises = idProyecto ? (paisesPorId.get(idProyecto) ?? []) : [];
+    return {
+      id: `EMJM-${i + 1}-${p.titulo.slice(0, 24).replace(/\W+/g, '-').toLowerCase()}`,
+      titulo: p.titulo,
+      organizador: 'Erasmus Mundus Joint Master (consorcio)',
+      ambito: 'europeo',
+      fuente: 'erasmus-mundus',
+      // Los países del consorcio. Un programa de Erasmus son tres o más, y
+      // por eso el filtro de destino los enseña todos y no solo el primero.
+      paises,
+      // El importe es el de la beca, no el presupuesto total de la convocatoria,
+      // que es un orden de magnitud mayor. No se mezclan.
+      presupuesto: null,
+      requisitos: hechos.map((h) => ({ ...h, extractor: 'oficial' })),
+      notas: notas.map((n) => ({ ...n, extractor: 'oficial' })),
+      url: p.proyecto ?? p.web,
+      url_programa: p.web,
+      cierra: null,   // cada programa tiene el suyo; no hay uno común
+      pagina: null,
+    };
+  });
 }

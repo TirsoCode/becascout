@@ -89,7 +89,34 @@ const PALABRAS_BECA = [
  * de dinero**. «Se convocan ayudas» ✓. «Convocatoria de Junta» ✗.
  */
 const DINERO = 'becas?|becarios?|becarias?|bolsas? de (?:estudio|investigaci[óo]n)|ayudas?|subvenciones?|premios?|dotaciones?';
-const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convocan|se abre el plazo|plazo de presentaci[óo]n|presentar solicitudes?|bases reguladoras|se conceden?|se otorgan?';
+const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convocan|se abre el plazo|plazo de presentaci[óo]n|presentar solicitudes?|bases reguladoras';
+
+/**
+ * Las mismas palabras de llamada, sin exigir que haya dinero cerca.
+ *
+ * Sirve para la excepción: un documento que dice «se conceden» no es una
+ * convocatoria, **salvo que también diga que convoca**. Y para eso no hace
+ * falta que la palabra de dinero esté al lado: con que aparezca una llamada
+ * en el título, el documento está llamando a alguien.
+ */
+const LLAMADA_SOLA = new RegExp(LLAMADA, 'i');
+
+/**
+ * El verbo de la decisión ya tomada.
+ *
+ * ── Por qué esto no es un juicio sobre la beca ───────────────────────────
+ *
+ * «Se conceden los Premios Nacionales de Investigación» no es una beca mala:
+ * es un documento que **da fe de un premio que ya se ha entregado**. La
+ * convocatoria de esos premios se publicó otro día, y ese día también salió
+ * aquí.
+ *
+ * Esto no decide si una beca es buena o mala. Decide si el documento delante
+ * está llamando a alguien o si ya está todo resuelto, y es la misma pregunta
+ * que ya hace el veto de los nombramientos y las ceses. La diferencia entre
+ * un premio y una beca nunca se juzga: lo que se mira es el verbo.
+ */
+const DECIDE = /\bse (concede|conceden|otorgan|otorgan|concedido|otorgado)\b/i;
 
 /**
  * La forma que tiene una convocatoria de dinero en el título del BOE.
@@ -310,6 +337,16 @@ const RUIDO = [
   // hecho —una concesión de puerto, un acuerdo, un pliego— y lo publica para
   // que se pueda recurrir. No está llamando a nadie.
   /se hace p[uú]blico/i,
+  // El mismo caso, escrito de otra manera: «Anuncio de la Comisaría de Aguas
+  // de la Confederación Hidrográfica del Ebro sobre la resolución del
+  // expediente de concesión de aguas». El expediente está resuelto y lo que
+  // se publica es el resultado. Con el epígrafe «Ayudas» que le pone el
+  // BOE, esto se colaba.
+  /resoluci[óo]n del expediente/i,
+  // Un procedimiento que ha quedado desierto: no se ha concedido nada.
+  /desiert[oa]/i,
+  // El otorgamiento de una concesión, que es un acto administrativo ya hecho.
+  /otorgamiento/i,
 ];
 
 /**
@@ -392,6 +429,11 @@ export function motivoDescarte(anuncio) {
 
   // Norma y no convocatoria, salvo que el título diga que convoca.
   if (REGULA.test(t) && !CONVOCA.test(t)) return 'ruido';
+
+  // Decisión ya tomada y no convocatoria, salvo que el título diga que convoca.
+  // «Se conceden los Premios Nacionales de Investigación» da fe de un premio
+  // ya entregado; la convocatoria de esos premios se publicó otro día.
+  if (DECIDE.test(t) && !LLAMADA_SOLA.test(t)) return 'ruido';
 
   // ── 2. Señal positiva del BOE ───────────────────────────────────────────
   //

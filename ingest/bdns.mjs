@@ -59,7 +59,41 @@ const CANDIDATOS = [
  * (sin JS no hay datos) y está detrás de un WAF (sin JS también no hay
  * datos). Un solo camino que funciona vale más que dos que fallan.
  */
-export async function render(url, { timeout = TIMEOUT_MS } = {}) {
+export async function render(url, { timeout = TIMEOUT_MS, chrome = true } = {}) {
+  // ── Por qué algunos catálogos no necesitan Chrome ──────────────────────
+  //
+  // El navegador se usa porque la BDNS es una SPA detrás de un WAF: sin
+  // JavaScript no hay datos. Pero **no todas** las fuentes lo necesitan, y
+  // pagar un proceso de Chrome —dos segundos y 150 MB— por cada página de
+  // un catálogo que ya viene en HTML plano es un desperdicio.
+  //
+  // El catálogo de EACEA es ese caso: su HTML trae las tarjetas. Con `fetch`
+  // y las cabeceras de un navegador, la misma página sale en milisegundos.
+  // Antes esto costaba once procesos de Chrome por pasada; ahora son once
+  // peticiones de red.
+  //
+  // La diferencia se nota en la eleventh página del catálogo, que antes
+  // tardaba lo que tardara Chrome en arrancar.
+  if (!chrome) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeout);
+    try {
+      const res = await fetch(url, {
+        signal: ctrl.signal,
+        headers: {
+          'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'accept-language': 'en-US,en;q=0.9',
+        },
+      });
+      return await res.text();
+    } catch {
+      return '';
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
   const perfil = await mkdtemp(join(tmpdir(), 'bs-'));
   try {
     const { stdout } = await exec(CHROME, [

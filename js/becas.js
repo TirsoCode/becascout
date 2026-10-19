@@ -18,6 +18,7 @@
  */
 
 import { sesion, haySesion, pedirAcceso, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
+import { CODIGOS, NOMBRES, nombreDe } from './paises.js';
 
 const R = 34;                  // radio del anillo
 const CIRC = 2 * Math.PI * R;
@@ -54,6 +55,7 @@ async function cargar() {
       </div>`;
     return;
   }
+  llenarPaises();
   rellenarPerfil();
   pintar();
 }
@@ -64,6 +66,46 @@ function rellenarPerfil() {
   $('#edad').value = p.edad ?? '';
   $('#nivel').value = p.nivel ?? '';
   $('#pais').value = p.pais ?? '';
+}
+
+/**
+ * Pone los países en el desplegable de destino.
+ *
+ * La lista sale de `js/paises.js`, que es la misma que usa el conector de
+ * la ingesta. Si el desplegable tuviera su propia lista, se desincronizarían
+ * y el estudiante elegiría un país que ningún conector escribe nunca.
+ *
+ * Los que no tienen ninguna convocatoria **no se enseñan**: un destino que
+ * no tiene nada es ruido en un desplegable, y lo que el estudiante quiere es
+ * ver que hay algo. Los que sí hay, con el nombre en castellano.
+ */
+function llenarPaises() {
+  const sel = $('#pais');
+  if (!sel || sel.dataset.lleno === '1') return;
+  sel.dataset.lleno = '1';
+
+  const conBeca = new Set();
+  for (const b of becas) {
+    for (const c of b.paises ?? []) conBeca.add(c);
+  }
+
+  const frag = document.createDocumentFragment();
+  for (const cod of CODIGOS) {
+    if (!conBeca.has(cod)) continue;
+    const o = document.createElement('option');
+    o.value = cod;
+    o.textContent = NOMBRES[cod] ?? cod;
+    frag.append(o);
+  }
+  sel.append(frag);
+
+  // Si el perfil tenía un país que ya no está —porque su convocatoria se
+  // cerró y salió de la ventana—, se deja en «cualquiera» en vez de dejar
+  // un valor que no está en la lista y que no filtra nada.
+  const elegido = sel.value;
+  if (elegido && ![...sel.options].some((o) => o.value === elegido)) {
+    sel.value = '';
+  }
 }
 
 /* ── Cabecera de sesión ─────────────────────────────────────────────────── */
@@ -221,16 +263,59 @@ async function pintar() {
     return (a.cierra ?? '9999').localeCompare(b.cierra ?? '9999');
   });
 
-  const conReq = orden.filter((b) => b.requisitos.length).length;
+  // ── Los filtros que el estudiante pide ─────────────────────────────────
+  //
+  // El destino y el nivel se guardaban en el perfil y **no se usaban para
+  // nada**: la lista salía entera siempre, y el botón «Comprobar» solo
+  // volvía a pintar lo mismo. Un filtro que no filtra es peor que no
+  // tenerlo, porque el estudiante cree que ha filtrado y lo que ve es otra
+  // cosa.
+  //
+  // El destino se guarda como **código ISO**, no como nombre: el nombre
+  // cambia y el código no, y los datos vienen con el código.
+  //
+  // Y hay una decisión que conviene que sea explícita: **una convocatoria
+  // sin destino conocido no se esconde.** Se quedan todas y se avisa de
+  // cuántas son. El motivo es el de siempre: si el filtro aparta algo que
+  // sí valía, quien lo buscaba no ve el hueco y no sabe que faltaba.
+  // Enseñar de más cuesta un clic; quitar de más pierde la beca sin dejar
+  // rastro.
+  const p = perfil.leer();
+  const paisElegido = p.pais ?? '';
+  const nivelElegido = p.nivel ?? '';
+
+  const filtradas = orden.filter((b) => {
+    const paises = b.paises ?? [];
+    // Sin destino conocido, la convocatoria se queda.
+    if (paisElegido && paises.length && !paises.includes(paisElegido)) return false;
+    // El nivel solo aparta cuando lo sabemos. Si no lo sabemos, se queda.
+    if (nivelElegido && b.nivel && b.nivel !== nivelElegido) return false;
+    return true;
+  });
+
+  // Cuántas de las que salen son de las que no dicen dónde. Se enseña,
+  // porque si no el estudiante cree que la lista entera es de ese país.
+  const sinPaisConocido = paisElegido
+    ? filtradas.filter((b) => !(b.paises?.length)).length
+    : 0;
+
+  const conReq = filtradas.filter((b) => b.requisitos.length).length;
 
   // Cada cifra va en su `<span>`. Sueltas en el flujo, el punto separador
   // «·» es un nodo de texto más y en móvil el navegador lo deja colgando al
   // principio de la línea siguiente. Con los `<span>` los tres datos son
   // bloques que bajan enteros.
-  $('#counts').innerHTML =
-    `<span><b>${orden.length}</b> convocatorias</span>
-     <span><b>${conReq}</b> con requisitos</span>
-     <span><b>${orden.length - conReq}</b> sin requisitos aún</span>`;
+  const cuenta = [
+    `<span><b>${filtradas.length}</b> ${filtradas.length === 1 ? 'convocatoria' : 'convocatorias'}</span>`,
+    `<span><b>${conReq}</b> con requisitos</span>`,
+    `<span><b>${filtradas.length - conReq}</b> sin requisitos aún</span>`,
+  ];
+  // Y el aviso de las que no dicen dónde, que es la parte honesta: si no
+  // se dice, el estudiante cree que la lista entera es de ese país.
+  if (sinPaisConocido) {
+    cuenta.push(`<span><b>${sinPaisConocido}</b> sin destino conocido (también salen)</span>`);
+  }
+  $('#counts').innerHTML = cuenta.join('\n     ');
 
   if (!orden.length) {
     $('#zona-lista').innerHTML = `
@@ -347,8 +432,11 @@ function tarjeta(b) {
         ${b.cierra ? pillPlazo(b.cierra) : '<span class="pill">Plazo no extraído</span>'}
         ${b.presupuesto ? `<span class="pill brand mono">${euros(b.presupuesto)}</span>` : ''}
         ${b.fuente === 'erasmus-mundus' ? '<span class="pill brand">Erasmus Mundus</span>' : ''}
+        ${b.fuente === 'daad' ? '<span class="pill brand">DAAD</span>' : ''}
+        ${b.fuente === 'ue' ? '<span class="pill brand">UE</span>' : ''}
         ${b.id.startsWith('BDNS') ? '<span class="pill mono">BDNS</span>' : ''}
         ${b.pagina ? `<span class="pill mono">BOE p. ${b.pagina}</span>` : ''}
+        ${pillDestino(b)}
       </div>
 
       <div class="reqs">
@@ -433,6 +521,22 @@ function pillPlazo(cierra) {
   const cls = dias <= 15 ? 'amber' : '';
   const txt = dias === 0 ? 'Vence hoy' : dias === 1 ? 'Vence mañana' : `${dias} días`;
   return `<span class="pill ${cls}">${txt}</span>`;
+}
+
+/**
+ * El destino, en una píldora.
+ *
+ * Solo si el dato existe. Una convocatoria sin destino conocido no
+ * inventa uno: no se pone «Europa» ni «Países de la UE», que sería
+ * rellenar el hueco con una suposición. Y si son varios —un consorcio de
+ * Erasmus son tres— se enseñan todos, porque elegir uno escondería los
+ * otros dos.
+ */
+function pillDestino(b) {
+  const paises = b.paises ?? [];
+  if (!paises.length) return '';
+  const nombres = paises.map((c) => nombreDe(c)).join(', ');
+  return `<span class="pill mono" title="Destino">${esc(nombres)}</span>`;
 }
 
 /* ── Utilidades ─────────────────────────────────────────────────────────── */

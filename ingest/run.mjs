@@ -13,8 +13,11 @@
 
 import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { recolectar, textoCompleto } from './boe.mjs';
+import { codigosEn } from '../js/paises.js';
 import { idDesdeBoe, render, aRegistro as aRegistroBdns } from './bdns.mjs';
 import { recolectar as recolectarErasmus } from './erasmus.mjs';
+import { recolectar as recolectarDaad } from './daad.mjs';
+import { recolectar as recolectarUe } from './ue.mjs';
 import { parrafosConOrigen, extrae } from './extract.mjs';
 import { idAnuncio, ensambla, faltan } from './ensamblar.mjs';
 
@@ -37,6 +40,7 @@ function aRegistro(ficha, requisitos) {
   const importe = requisitos.find((r) => r.tipo === 'importe')?.valor ?? null;
   const nota = requisitos.find((r) => r.tipo === 'nota_minima')?.valor ?? null;
   const edad = requisitos.find((r) => r.tipo === 'edad_max')?.valor ?? null;
+  const nivel = requisitos.find((r) => r.tipo === 'nivel')?.valor ?? null;
 
   return {
     id: ficha.id,
@@ -56,6 +60,12 @@ function aRegistro(ficha, requisitos) {
     importe,
     nota_minima: nota,
     edad_max: edad,
+    // El nivel de estudios, para el filtro. Lo dice el documento.
+    nivel,
+    // Los países de destino. Los dice el documento, y solo se guardan los
+    // que se han podido confirmar: una convocatoria sin destino conocido
+    // se queda sin destino, y el filtro la enseña igualmente.
+    paises: paisesDe(ficha, requisitos),
     url: ficha.url,
     eli: ficha.eli,
     // Los requisitos sin cita no entran. Ver AGENTS.md.
@@ -63,6 +73,63 @@ function aRegistro(ficha, requisitos) {
     texto_len: ficha.texto.length,
     // El texto entero no viaja al front: pesa y no se muestra.
   };
+}
+
+/**
+ * Los países de destino de una convocatoria.
+ *
+ * ── Por qué casi todas son España ────────────────────────────────────────
+ *
+ * El BOE es el boletín del Estado: lo que publica son ayudas de la
+ * Administración General, de las comunidades y de las universidades
+ * españolas. Casi todas son para estudiar **en España**, y esa es la
+ * lectura por defecto.
+ *
+ * Pero no todas. Hay becas de movilidad, de intercambio, de prácticas en
+ * el extranjero, y ahí el destino es otro país —a veces varios, y a veces
+ * «cualquier país de la UE»—. Para esas, el destino se busca en el texto.
+ *
+ * ── La regla que decide ──────────────────────────────────────────────────
+ *
+ * Se mira el texto de la convocatoria y se busca un país **junto a una
+ * palabra de destino**: «destino», «país de destino», «universidad de
+ * destino», «estancia en», «movilidad en», «permanencia en».
+ *
+ * La palabra de destino es lo que evita el error grande: sin ella, un
+ * documento que menciona «Francia» en una lista de países con los que
+ * hay acuerdo would dejaría a todas las becas como Idleonas. Con ella, el
+ * país solo cuenta si el documento dice que ahí se estudia.
+ *
+ * ── Lo que no se hace ────────────────────────────────────────────────────
+ *
+ * No se deduce el destino de quien convoca. Que lo convoque la
+ * «Consejería de Educación de Andalucía» no significa que la beca sea
+ * para Andalucía: el BOE es el mismo para todo el Estado.
+ */
+function paisesDe(ficha, requisitos) {
+  const texto = String(ficha.texto ?? '');
+
+  // Las palabras quereddicen «aquí se estudia».
+  const senales = /(?:pa[ií]s|universidad|instituto|centro)\s+de\s+destino|destino\s+(?:en|de|para)|estancias?\s+en|movilidad\s+en|permanencia\s+en|estudios\s+en|se\s+destinan\s+a|destinatarios?\s+en/i;
+
+  const encontrados = new Set();
+
+  // Se parte el texto en frases, para que la palabra de destino y el país
+  // tienen que estar en la misma frase y no a dos páginas de distancia.
+  for (const frase of texto.split(/[.;:]\s+/)) {
+    if (!senales.test(frase)) continue;
+    for (const cod of codigosEn(frase)) {
+      // España sale siempre: es el Estado. Los demás solo si la frase dice
+      // que el destino está allí.
+      if (cod === 'ES') continue;
+      encontrados.add(cod);
+    }
+  }
+
+  // Si el texto nombra un destino fuera de España, ese es el destino. Si
+  // no, es España.
+  if (encontrados.size) return [...encontrados];
+  return ['ES'];
 }
 
 const desde = arg('desde', diasAtras(arg('dias', 21)));
@@ -352,6 +419,51 @@ if (!process.argv.includes('--sin-erasmus')) {
     registros.push(...em);
   } catch (err) {
     console.warn(`  Erasmus Mundus falló (${err.message}); se sigue sin él.`);
+  }
+}
+
+// ── Las fuentes de fuera de España ───────────────────────────────────────
+//
+// El BOE es el boletín del Estado: España. Y el producto promete «becas de
+// Europa», así que sin más fuentes la promesa es falsa. Estas tres son las
+// que se han podido montar sin clave y con datos citables:
+//
+//   - **Erasmus Mundus**: programas de máster de consorcios europeos. Ya
+//     estaba, y ahora trae los países de cada consorcio.
+//   - **DAAD**: el catálogo oficial de becas de Alemania. Es el país con
+//     más programas de los que se pueden pedir en nombre propio.
+//   - **La Comisión (SEDIA)**: las convocatorias de la UE que se piden en
+//     nombre propio — MSCA, que son las de doctorado y postdoctorado.
+//
+// Las tres van **al final y aparte**, y cada una avisa por log si falla:
+// una fuente caída no puede tumbar la pasada. Y ninguna entra si el
+// fichero ya las tiene: el catálogo de DAAD y el de Erasmus son los
+// mismos mañana, y volver a bajarlos dos veces al día es tirar ancho de
+// banda a cambio de nada.
+const fuentes = [
+  {
+    nombre: 'DAAD',
+    flag: '--sin-daad',
+    fn: recolectarDaad,
+    esEstable: true,
+  },
+  {
+    nombre: 'UE (SEDIA)',
+    flag: '--sin-ue',
+    fn: recolectarUe,
+    esEstable: true,
+  },
+];
+
+for (const fuente of fuentes) {
+  if (process.argv.includes(fuente.flag)) continue;
+  try {
+    const antes = registros.length;
+    const nuevos = await fuente.fn();
+    registros.push(...nuevos);
+    console.log(`  ${fuente.nombre}: ${nuevos.length} convocatorias`);
+  } catch (err) {
+    console.warn(`  ${fuente.nombre} falló (${err.message}); se sigue sin él.`);
   }
 }
 
