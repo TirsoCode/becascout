@@ -40,14 +40,73 @@ const MATERIAS_EDUCACION = [
  * no como expresión regular: el BOE escribe «BECAS», «Becas» y «becas» en el
  * mismo día, y escapar cada variante en un patrón es una fuente de fallos
  * silenciosos que no vale la pena.
+ *
+ * ── Por qué esta lista es más corta que la del 18 de octubre de 2026 ──────
+ *
+ * Antes llevaba «estancia», «movilidad», «prácticas», «intercambio» y
+ * «beneficiari». Cada una de esas palabras matchea en un documento que no
+ * convoca a nadie:
+ *
+ * - «movilidad» está en «Ministerio de Transportes y **Movilidad** Sostenible»,
+ *   que aparece en el título de casi todas sus resoluciones.
+ * - «estancia» está dentro de «const**ancia**», que sale en cualquier texto
+ *   que hable de un acuerdo anterior.
+ * - «prácticas» matchea con cualquier «prácticas de empresa» o «prácticas
+ *   de empresa» de un acuerdo delgado.
+ * - «beneficiari» matchea con la palabra que aparece en la *resolución* de un
+ *   premio, donde ya se han elegido los beneficiarios.
+ *
+ * Con esas palabras dentro, el filtro dejaba pasar el «Real Decreto … por el
+ * que se regula la concesión directa de subvenciones en materia de vivienda»
+ * y media docena de(layeretes. La lista se ha quedado con lo que de verdad
+ * nombra dinero para el destinatario, y el resto de la decisión la toma
+ * `CONVOCA`.
  */
 const PALABRAS_BECA = [
   'beca', 'becas', 'becario', 'becaria', 'bolsa de', 'bolsas de estudio',
-  'ayuda al estudio', 'ayudas al estudio', 'ayudas para estudiar', 'ayudas',
-  'subvenci', 'dotaci', 'premio', 'estancia', 'movilidad', 'intercambio',
-  'erasmus', 'practical', 'prácticas', 'proyectos de cooperación',
-  'becas de investigación', 'beneficiari',
+  'ayuda al estudio', 'ayudas al estudio', 'ayudas para estudiar',
+  'subvenci', 'dotaci', 'premio', 'erasmus',
 ];
+
+/**
+ * Lo que se reparte, y lo que significa «estás llamando a alguien».
+ *
+ * ── Por qué van en dos listas y no en una ─────────────────────────────────
+ *
+ * La palabra «convocatoria» no significa «convocatoria de dinero». El BOE la
+ * usa para todo: la convocatoria de una ayuda y la convocatoria de una junta
+ * de regantes son la misma palabra en el mismo boletín. Lo que las
+ * distingue no es el verbo, es el objeto: a quién o a qué se llama.
+ *
+ * Y el objeto importa porque el ruido de este boletín es enorme: de cada
+ * veinte anuncios que trae el sumario, uno es una ayuda y los otros diecinueve
+ * son Confederaciones Hidrográficas, subastas y juntas de regantes. La
+ * «convocatoria de Junta General ordinaria» de una Comunidad de Regantes salió
+ * en la lista como beca con el filtro del 18 de octubre de 2026, y no tiene
+ * nada que ver con estudiar.
+ *
+ * Por eso la señal de convocatoria solo cuenta si va **cerca de una palabra
+ * de dinero**. «Se convocan ayudas» ✓. «Convocatoria de Junta» ✗.
+ */
+const DINERO = 'becas?|becarios?|becarias?|bolsas? de (?:estudio|investigaci[óo]n)|ayudas?|subvenciones?|premios?|dotaciones?';
+const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convocan|se abre el plazo|plazo de presentaci[óo]n|presentar solicitudes?|bases reguladoras|se conceden?|se otorgan?';
+
+/**
+ * La forma que tiene una convocatoria de dinero en el título del BOE.
+ *
+ * Se construye con dos direcciones —llamada antes de dinero, o dinero antes
+ * de llamada— porque el BOE las usa las dos: «por la que se convocan las
+ * ayudas» y «ayudas para el incentivo a la lectura: convocatoria 2026».
+ *
+ * La ventana son 110 caracteres, que es aproximadamente una línea de título
+ * del BOE. Se cruzan los puntos, no las frases: la llamada y el dinero tienen
+ * que estar en la misma proposición, no en el mismo documento.
+ */
+const CONVOCA = new RegExp(
+  `(?:${LLAMADA})(?=.{0,110}?(?:${DINERO}))` +
+  `|(?:${DINERO})(?=.{0,110}?(?:${LLAMADA}))`,
+  'is',
+);
 
 /**
  * Epígrafes con los que el propio BOE clasifica una convocatoria de dinero.
@@ -222,7 +281,46 @@ const RUIDO = [
   /condecoraci|t[ií]tulos nobiliarios|indulto|gran cruz|collar de la orden/i,
   /inconstitucionalidad|conflicto (positivo|de competencia)|fiscalizaci[óo]n/i,
   /carta de servicios|delegaci[óo]n de firmas|estructura org[aá]nica/i,
+
+  // ── Lo que faltaba: las leyes y los decretos que conceden por su cuenta ──
+  //
+  // Una ley no convoca a nadie: dice lo que va a pasar. Y un «Real Decreto …
+  // por el que se regula la concesión directa de una subvención al Obispado
+  // de …» reparte el dinero sin que haya convocatoria, porque no hay a quién
+  // ).
+  //
+  // «Ley del Principado de Asturias 6/2026, de 10 de septiembre, de
+  // modificación de la Ley 3/2021, de 30 de junio …» salió en la lista como
+  // beca el 18 de octubre de 2026. Es exactamente el caso del que se quejó
+  // el usuario: «salen noticias o leyes y aparecen como becas».
+  //
+  // El patrón es «^ley», no «ley»: una convocatoria de verdad puede citar la
+  // ley que la habilita («ayudas al amparo de la Ley 8/2025»), y vetar eso
+  // sería tirar una beca de verdad.
+  /^ley\b/i,
+  /^leyes\b/i,
+  /decreto-ley/i,
+  // Concesión directa: la administración decide a quién se le da el dinero.
+  // No hay plazo, no hay solicitud, no hay candidata.
+  /concesi[óo]n directa/i,
+  // El gasto que se autoriza, que es como el BOE titula los de correos y los
+  // que se paga a un tercero. No es una convocatoria de nada.
+  /se autoriza el gasto|sellos de correo/i,
+  // «Se hace público»: el BOE publica el resultado de algo que ya está
+  // hecho —una concesión de puerto, un acuerdo, un pliego— y lo publica para
+  // que se pueda recurrir. No está llamando a nadie.
+  /se hace p[uú]blico/i,
 ];
+
+/**
+ * Documentos que fijan una norma en vez de convocar a alguien.
+ *
+ * Va aparte de `RUIDO` por una razón concreta: «Resolución … por la que se
+ * modifica la convocatoria de ayudas» es una convocatoria modificada, y vetarla
+ * sería tirar una beca de verdad. En cuanto el título dice que convoca, deja
+ * de ser una norma.
+ */
+const REGULA = /\bse (regula|regulan|modifica|modifican|establece|establecen|inscribe|inscriben)\b/i;
 
 /**
  * ¿Es este anuncio una convocatoria de becas, ayudas o subvenciones?
@@ -251,18 +349,70 @@ const RUIDO = [
  * orquestador **cuenta y enseña lo descartado por motivo** en cada pasada. Un
  * descarte con volumen raro se ve en el log y se revisa; un descarte mudo, no.
  */
-export function esBeca(anuncio) {
+/**
+ * Por qué este anuncio NO es una convocatoria. `null` si lo es.
+ *
+ * ── Por qué el motivo va aquí y no solo el sí o el no ─────────────────────
+ *
+ * `esBeca` devuelve un booleano y con eso no se puede revisar nada: si una
+ * pasada deja 2.488 anuncios fuera, no hay forma de saber si eran noticias
+ * administrativas —que es lo que tienen que ser— o si el filtro se comió
+ * media docena de becas de verdad. El descarte con motivo se ve en el log y
+ * se revisa; el descarte mudo no.
+ *
+ * Los dos motivos se distinguen a propósito:
+ *
+ *   · `ruido` — el título dice que el documento da fe de algo ya ocurrido o
+ *     que regula. No es una duda sobre el filtro: es una categoría.
+ *   · `sin señal` — el título no dice ni que es una convocatoria ni que no
+ *     es. Aquí el filtro está opinando, y es donde hay que mirar.
+ */
+export function motivoDescarte(anuncio) {
   const t = String(anuncio?.titulo ?? '').toLowerCase();
   const ep = String(anuncio?.epigrafe ?? '');
 
+  // ── 1. El veto, PRIMERO ────────────────────────────────────────────────
+  //
+  // El orden importa y estaba al revés. Antes el epígrafe se miraba antes que
+  // la lista de ruido, así que un documento bajo el epígrafe «Premios» o
+  // «Subvenciones» se colaba siempre, ruido o no:
+  //
+  //   «Orden CLT/1014/2026 … por la que se designa el jurado para la concesión
+  //    del Premio de Literatura en …» —epígrafe «Premios»— y no es una
+  //    convocatoria: se designa el jurado de un premio que ya está fallado.
+  //
+  //   «Real Decreto 762/2026 … por el que se regula la concesión directa de
+  //    una subvención al Obispado de …» —epígrafe «Subvenciones»— y tampoco:
+  //    el dinero ya está repartido, no hay a nadie que se postule.
+  //
+  // El epígrafe del BOE dice de qué tema va el documento, no de qué clase es.
+  // La lista de ruido dice de qué clase es. Cuando las dos se contradicen, la
+  // que describe el documento gana.
+  if (RUIDO.some((r) => r.test(t))) return 'ruido';
+
+  // Norma y no convocatoria, salvo que el título diga que convoca.
+  if (REGULA.test(t) && !CONVOCA.test(t)) return 'ruido';
+
+  // ── 2. Señal positiva del BOE ───────────────────────────────────────────
+  //
   // El BOE ya lo clasificó como convocatoria de dinero: manda su criterio.
-  if (EPIGRAFES_CONVOCATORIA.test(ep)) return true;
+  if (EPIGRAFES_CONVOCATORIA.test(ep)) return null;
 
-  // Documentos que dan fe de algo ya ocurrido o que regulan: nunca convocan.
-  if (RUIDO.some((r) => r.test(t))) return false;
+  // ── 3. Señal positiva del título ───────────────────────────────────────
+  //
+  // «se convocan», «convocatoria», «bases reguladoras»: la forma que tiene
+  // una convocatoria en el BOE, que es media de los extractos.
+  if (CONVOCA.test(t)) return null;
 
-  // Señal positiva en el título: convoca a pedir algo.
-  return PALABRAS_BECA.some((p) => t.includes(p));
+  // Y las palabras que nombran el dinero: beca, bolsa de estudio, subvención.
+  if (PALABRAS_BECA.some((p) => t.includes(p))) return null;
+
+  return 'sin señal de convocatoria';
+}
+
+/** ¿Es este anuncio una convocatoria de becas, ayudas o subvenciones? */
+export function esBeca(anuncio) {
+  return motivoDescarte(anuncio) === null;
 }
 
 /**
@@ -326,11 +476,23 @@ export async function textoCompleto(anuncio) {
  * cada anuncio es una petición por ficha, y en una ventana de seis meses son
  * decenas de miles. El BOE es inmutable, así que un anuncio que ya está
  * guardado no hay que volver a bajarlo nunca.
+ *
+ * ── Lo que devuelve, y por qué importa ────────────────────────────────────
+ *
+ * `omitidas` son los anuncios que la caché perdonó: están en la ventana, han
+ * pasado el filtro y **no se han vuelto a bajar**. No vienen en `fichas`, así
+ * que quien escribe el fichero tiene que sacarlos de la caché. Si no, se
+ * pierden: el 19 de octubre de 2026 la base pasó de 2.626 fichas a 76 porque
+ * el conector se saltó 62 anuncios y nadie los volvió a poner.
+ *
+ * `descartes` son los anuncios que no pasaron el filtro, con su motivo.
  */
 export async function recolectar(desde, hasta, { concurrencia = 4, alProgresar, omitir } = {}) {
   const dias = diasRango(desde, hasta);
   const fuera = omitir ?? new Set();
   const out = [];
+  const omitidas = new Set();
+  const descartes = new Map();
   let vistos = 0;
   let saltados = 0;
 
@@ -339,7 +501,17 @@ export async function recolectar(desde, hasta, { concurrencia = 4, alProgresar, 
     const sumarios = await Promise.all(
       tanda.map((d) => sumario(d).catch(() => [])),
     );
-    const candidatos = sumarios.flat().filter(esBeca);
+
+    // El descarte se cuenta aquí, con su motivo, antes de filtrar. Es el
+    // número que hay que mirar cuando el filtro se equivoca: si de un día
+    // salen 300 anuncios de «ruido» y de otro salen 3, algo cambió en el BOE
+    // o en las reglas, y tiene que verse sin tener que diffear el log.
+    const todos = sumarios.flat();
+    for (const c of todos) {
+      const m = motivoDescarte(c);
+      if (m) descartes.set(m, (descartes.get(m) || 0) + 1);
+    }
+    const candidatos = todos.filter(esBeca);
     alProgresar?.({ fase: 'indice', dia: tanda[0], candidatos: candidatos.length });
 
     // Esto también va en pool. Antes era un `for` con `await` y, con la
@@ -348,7 +520,11 @@ export async function recolectar(desde, hasta, { concurrencia = 4, alProgresar, 
     for (let j = 0; j < candidatos.length; j += concurrencia) {
       const grupo = candidatos.slice(j, j + concurrencia);
       const fichas = await Promise.all(grupo.map(async (c) => {
-        if (fuera.has(c.id)) { saltados++; return null; }
+        if (fuera.has(c.id)) {
+          saltados++;
+          omitidas.add(c.id);
+          return null;
+        }
         return textoCompleto(c).catch(() => null);
       }));
       for (const f of fichas) {
@@ -359,5 +535,5 @@ export async function recolectar(desde, hasta, { concurrencia = 4, alProgresar, 
     vistos += tanda.length;
     alProgresar?.({ fase: 'texto', avance: vistos, total: dias.length, saltados });
   }
-  return { fichas: out, saltados };
+  return { fichas: out, saltados, omitidas, descartes };
 }

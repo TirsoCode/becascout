@@ -51,7 +51,20 @@ qué no se puede evitar.
 ```
 index.html            portada. No enseña ni una beca
 becas.html            buscador. Contenido pixelado hasta tener cuenta
+sobre.html            qué es esto, cómo se extrae y con qué reglas. Indexable
+privacidad.html       política de privacidad
+cookies.html          política de cookies
+404.html              cuando la URL no existe. Vercel la sirve con estado 404
 styles.css            sistema de diseño
+robots.txt            quién puede rastrear. Los bots de IA, permitidos a propósito
+sitemap.xml           las páginas indexables (la portada y sobre.html)
+llms.txt              resumen del sitio para modelos, formato de llmstxt.org
+.well-known/ai.txt    dónde buscan los agentes: apunta a los dos de abajo
+ai/summary.json       quién es BecasScout, en JSON, para asistentes de IA
+ai/faq.json           las preguntas frecuentes, en JSON, para asistentes de IA
+og.png, logo.png      tarjeta social y logo cuadrado del JSON-LD. Salen de tools/
+vercel.json           redirección de /index.html, cabeceras de seguridad y CSP
+tools/                HTML que Chrome headless convierte en los dos PNG. No se despliega
 serve.mjs             servidor estático para desarrollo
 js/
   landing.js          portada
@@ -170,22 +183,76 @@ siga bajando. Va en la retícula editorial y no como marco, y por eso es un
 Al añadir un conector nuevo, que degrade en silencio: si el portal cambia,
 que devuelva vacío y avise por log, pero que no rompa la web.
 
+## El filtro: qué es una beca y qué no
+
+El BOE publica cada día unas 230 noticias y unas 5 convocatorias. Sin filtro,
+la base es un periódico. El filtro vive en `ingest/boe.mjs` (`motivoDescarte`)
+y se aplica **antes de bajar el texto**, que es una petición por anuncio.
+
+Tres reglas, y **en este orden**:
+
+1. **El veto.** Si el título dice que el documento da fe de algo ya ocurrido o
+   que fija una norma, no es una convocatoria. Se acabó el 19 de octubre de
+   2026.
+2. **La señal del BOE.** El sumario agrupa cada anuncio bajo un `epígrafe`
+   («Becas», «Ayudas», «Subvenciones», «Premios»). Es la clasificación del
+   propio boletín, y manda.
+3. **La señal del título.** «se convocan», «convocatoria», «bases reguladoras»
+   —pero solo si van **cerca de una palabra de dinero**.
+
+Tres cosas que no hay que deshacer:
+
+- **El veto va antes que el epígrafe.** Estaba al revés y por eso entraban
+  «Orden … por la que se designa el jurado para la concesión del Premio de
+  Literatura» (epígrafe «Premios») y los «Real Decreto … por el que se regula
+  la concesión directa de una subvención al Obispado de …» (epígrafe
+  «Subvenciones»). El epígrafe dice de qué tema va el documento, no de qué
+  clase es; la lista de ruido dice de qué clase es. Cuando las dos se
+  contradicen, gana la segunda.
+- **«Convocatoria» sola no significa «convocatoria de dinero».** El BOE la
+  usa también para las juntas de regantes, y en la ventana de 21 días hubo 93
+  «convocatoria de Junta General ordinaria» de comunidades de regantes. Por eso
+  la señal de llamada solo cuenta si a menos de 110 caracteres hay una palabra
+  de dinero. «Se convocan ayudas» sí; «convocatoria de Junta» no.
+- **La lista de palabras del título es corta a propósito.** Antes llevaba
+  «movilidad» (que está en «Transportes y **Movilidad** Sostenible»), «estancia»
+  (dentro de «const**ancia**») y «prácticas». Cada una de esas matchea en un
+  documento que no convoca a nadie. Lo que decide es la forma de la
+  convocatoria, no un sustantivo suelto.
+
+**Las leyes también se descartan**, y con un patrón anclado: `^ley`, no
+`ley`. Una convocatoria de verdad puede citar la ley que la habilita («ayudas
+al amparo de la Ley 8/2025»), y vetar eso sería tirar una beca.
+
+Cada descarte se cuenta **con su motivo** en el log de la pasada (`[ruido: N]`,
+`[sin señal de convocatoria: N]`). Un descarte con volumen raro se ve ahí y se
+revisa; un descarte mudo, no. Los 1.364 descartados de la ventana del 19 de
+octubre de 2026 se revisaron uno a uno: 93 juntas de regantes, levantamientos
+de actas y dos casos más. **Ninguna beca perdida.**
+
 ## Comprobaciones
 
 ```bash
 node ingest/run.mjs --desde 2025-09-01 --hasta 2025-09-30   # ingesta real
 node test/store.mjs                                            # cuentas, sin red
+node test/extract.mjs                                          # reglas de extracción
 ```
 
-`test/store.mjs` es la única prueba que hay. Levanta un Supabase de mentira y
-comprueba que el almacén forma bien las peticiones REST; si algún día se cambia
-una consulta, esa es la red que lo pilla. Corre sin conexión y sin claves.
+`test/store.mjs` levanta un Supabase de mentira y comprueba que el almacén
+forma bien las peticiones REST; si algún día se cambia una consulta, esa es la
+red que lo pilla. Corre sin conexión y sin claves.
 
-**`test/extract.mjs` y el test de `xml.mjs` que se anunciaban aquí no existen.**
-Se documentaron y no se escribieron. Son el siguiente paso natural: las reglas
-de extracción son justo lo que más se ha tocado y lo que menos se ha probado, y
-el requisito de que cada uno lleve su cita es la regla que sostiene el producto.
-Salen de un XML embebido, sin red.
+`test/extract.mjs` sí existe (desde el 19 de octubre de 2026; antes se
+anunciaba aquí y no estaba escrito). Comprueba las reglas de extracción sobre
+un XML embebido, sin red, y que la base publicada no tenga requisitos sin cita
+ni confunda un presupuesto con el importe de una beca. Es la prueba que
+sostiene la regla de que **ningún requisito se muestra sin su cita**.
+
+Lo que **no** hay todavía es un test del **filtro** (`motivoDescarte` en
+`ingest/boe.mjs`). Hoy se comprueba a mano, mirando el log de la pasada y
+revisando la carpeta «sin señal de convocatoria» uno a uno. Es el siguiente
+paso natural: las reglas del filtro son las que más se han tocado, y las que
+deciden qué ve el estudiante.
 
 ### Desplegar
 
@@ -198,6 +265,68 @@ Las claves van aparte y una sola vez, con `vercel env add … production`. Cada
 cambio de entorno **exige un redesplie**: Vercel no las injecta en caliente, y
 una función que se desplegó sin ellas sigue sin ellas dando 503 aunque las
 añadas después. Para reventar una clave: `vercel env rm CLAVE production`.
+
+## SEO: lo que se decidió y por qué
+
+El sitio no tiene build, así que el SEO vive en ficheros estáticos: `robots.txt`,
+`sitemap.xml`, `llms.txt` y las etiquetas de dentro de cada `.html`. Cuatro cosas
+que no son obvias y conviene no deshacer.
+
+**La base canónica es `https://becascout.vercel.app`.** El `rel="canonical"`, el
+`og:url` y el `og:image` de las cinco páginas la llevan escrita a mano, porque no
+hay motor de plantillas que la rellene. **Si algún día el sitio pasa a un dominio
+propio, hay que cambiar esas URLs en las cinco páginas el mismo día**: un
+canonical que siga apuntando a vercel.app le dice a Google que el dominio bueno
+es el viejo.
+
+**`/index.html` redirige a `/` con un 301** (`vercel.json`), en vez de servirse
+las dos. Hasta el 18 de octubre de 2026 el mismo contenido respondía en las dos
+direcciones, con el mismo título y la misma descripción: dos copias de la portada
+compitiendo entre sí.
+
+**Solo la portada y `sobre.html` son indexables.** `becas.html` va con `noindex`
+porque la lista se lee con cuenta —dejarla indexar sería publicar en Google una
+lista borrosa, justo lo contrario de lo que enseña la página—, y las de
+privacidad y cookies son utilidad, no contenido que deba competir. Por eso el
+`sitemap.xml` solo lista esas dos: un sitemap que anuncia URLs `noindex` se
+contradice solo.
+
+**Los bots de búsqueda de IA se permiten a propósito**, uno a uno, aunque la
+regla general ya los cubra: aparecer citado en una respuesta de ChatGPT o
+Perplexity es el objetivo, no el riesgo. Los de entrenamiento también pasan hoy;
+para cerrarlos hay un bloque comentado al final de `robots.txt`.
+
+La tarjeta `og.png` y el logo `logo.png` se generan con Chrome headless desde el
+HTML de `tools/` (que no se despliega). No es una dependencia en tiempo de
+ejecución: es una tarea manual, y si se rediseña la cabecera hay que relanzarla.
+
+**La CSP obliga a que no haya JavaScript inline.** `vercel.json` manda una
+`Content-Security-Policy` con `script-src 'self'`; por eso el guion de
+`auth/callback.html` vive en `auth/callback.js` y no dentro de un `<script>` en
+la página. Un bloque inline justo en la que cierra el login se bloquea sin
+avisar y el usuario se queda fuera sin ver ningún error. El único inline que
+queda es el JSON-LD, que no es código y la CSP no lo toca. Si algún día hay que
+añadir otro origen externo (un CDN, un formulario), se añade a la CSP **antes**
+de usarlo o deja de funcionar en silencio.
+
+**Las fechas se cambian a mano.** `dateModified` en el JSON-LD y la fecha del pie
+de la portada no las calcula nadie: no hay build. Al tocar la portada o
+`sobre.html` hay que subir las dos, o el sitio se declara más viejo de lo que es.
+
+## Como configurar Supabase en Vercel
+
+El sitio puede funcionar sin Supabase (la portada y el buscador con cuentas
+registradas), pero la cuenta con correo y contraseña no se guarda. Para que el flujo de registro
+funcione, hay que añadir tres variables en Vercel (en `vercel.com` → Tu proyecto
+→ Variables de entorno → Añadir):
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Después de añadirlas, la aplicación podrá confirmar automáticamente una cuenta al
+registrarse y mantener las sesiones. Mientras no estén puestas, la página
+supabase-config.html se enseña al que llega.
 
 ## Lo que no se hace
 
@@ -274,14 +403,30 @@ texto, que es lo caro. Una pasada de tres días bajaba 577 XML cada vez. Ahora:
 - La caché se carga **antes** de `recolectar` y se le pasa como `omitir`, para
   que el conector no baje lo que ya tiene. Si se cargara después no habría
   forma de saltarse nada.
-- Se indexa por `boeIdBases ?? id`, no por `id`. Al enriquecer con BDNS el
-  registro pasa a llamarse `BDNS-910610` aunque venga del anuncio
-  `BOE-A-2026-8122`, así que con la clave anterior la caché no acertaba nunca:
-  **de 577 fichas, 0 reutilizadas.**
-- Lo que ya estaba guardado y cae fuera de la ventana **se arrastra**. Por eso
-  `--dias` decide qué se mira hoy, no qué sobrevive, y una única pasada
-  profunda rellena el archivo entero para siempre. Sin esto habría que repetir
-  la pasada de seis meses cada día para no perder nada.
+- Se indexa por el **id del anuncio del BOE**, no por el del registro. Al
+  enriquecer con BDNS el registro pasa a llamarse `BDNS-910610` aunque venga
+  del anuncio `BOE-A-2026-8122`, así que con la clave anterior la caché no
+  acertaba nunca: **de 577 fichas, 0 reutilizadas.** Y `boeIdBases` es el id
+  del documento de Bases, que no es el anuncio que recorre el sumario.
+- **Lo que la caché perdona vuelve al fichero.** El conector no baja los
+  anuncios que ya tiene, así que esas fichas no pasan por `procesar` y no
+  están en `registros`: si al escribir solo se escriben las de `registros`,
+  la caché se come las fichas. El 19 de octubre de 2026 pasó —la base pasó
+  de 2.626 fichas a 76 y la web se quedó con el 3 % de lo que tenía— y el
+  paso siguiente salió en verde. `recolectar` devuelve ahora `omitidas` (los
+  ids que la caché perdonó) y `run.mjs` los vuelve a poner, con `cerrada`
+  recalculada, porque el de la caché tiene la fecha del día en que se extrajo.
+- **`data/becas.json` es la foto de la ventana, no un archivo.** Contiene lo
+  publicado en los últimos `--dias` días, más el catálogo de Erasmus Mundus.
+  Lo que se sale de la ventana, fuera. La razón es el filtro: hasta el 18 de
+  octubre de 2026 el sumario se publicaba entero y la base tenía 2.400
+  noticias administrativas mezcladas con las becas, y arrastrarlas hacia
+  delante las habría dejado para siempre.
+- Hay un **invariante**: toda convocatoria que el BOE ha publicado en la
+  ventana y ha pasado el filtro tiene que estar en el fichero. Si el BOE da N
+  y en el fichero hay menos, `run.mjs` sale con error y **no escribe el
+  fichero**: la web sigue con el último `becas.json` bueno. Un base a la que
+  se le caen fichas sin avisar es lo que hay que evitar a toda costa.
 
 ### Cobertura: lo que hay y lo que no
 
@@ -307,12 +452,19 @@ Es la razón por la que alguien daría su correo, y no está hecho. Necesita
 tabla `avisos`, cron diario y envío de correo (Resend o SES). Solo tiene
 sentido cuando haya plazos reales en la base, que depende del punto 1.
 
-### 5. Limpiar las cuentas de prueba
+### 5. Limpiar las cuentas de prueba — resuelto dos veces
 
-Resuelto. `data/usuarios.json` y `data/sesiones.json` están en el `.gitignore`,
-igual que sus `.tmp.json`. Los ficheros con cuentas de prueba que había se
-borraron al migrar a Postgres: ahora las cuentas de verdad viven en
-Supabase, y en la base solo hay lo que alguien se ha registrado de verdad.
+Se dio por resuelto el 17 de octubre de 2026 metiendo `data/usuarios.json` y
+`data/sesiones.json` en el `.gitignore`… y no lo estaba. El `.gitignore` protege
+del git, **no del despliegue**: quien decide qué sube a Vercel es `.vercelignore`,
+y esos dos ficheros seguían subiéndose. El 18 de octubre de 2026 resultó que
+`https://becascout.vercel.app/data/sesiones.json` se servía en abierto, con las
+sesiones de las cuentas de prueba dentro.
+
+Arreglado en `.vercelignore` (las cuatro variantes, más `test/`), que es el
+fichero que de verdad manda al desplegar. La regla que se queda: **todo lo que no
+deba leerse por URL va en `.vercelignore`; el `.gitignore` no lo cubre.** Son dos
+listas distintas y una no sustituye a la otra.
 
 ### 6. `SPEC.md` y `AGENTS.md` estaban desfasados
 

@@ -184,7 +184,7 @@ console.log(`Caché:     ${cache.size} fichas ya bajadas de una pasada anterior`
 // saber si la caché funcionaba.
 let reutilizadas = 0;
 
-const { fichas } = await recolectar(desde, hasta, {
+const { fichas, omitidas, descartes } = await recolectar(desde, hasta, {
   concurrencia: CONCURRENCIA,
   omitir: new Set(cache.keys()),
   alProgresar: ({ fase, avance, total, dia, saltados: s }) => {
@@ -195,6 +195,11 @@ const { fichas } = await recolectar(desde, hasta, {
 });
 process.stdout.write('\n');
 
+// Las que la caché ha perdonado: están en la ventana, han pasado el filtro y
+// no se han vuelto a bajar. Vuelven al fichero al final, desde la caché.
+console.log(`  ${fichas.length} nuevas · ${omitidas.size} reutilizadas · ${[...descartes.values()].reduce((a, b) => a + b, 0)} descartadas por el filtro`);
+for (const [m, n] of descartes) console.log(`    [${m}: ${n}]`);
+
 /**
  * ── Por qué esto va en pool y no en un `for` con `await` ─────────────────
  *
@@ -203,6 +208,7 @@ process.stdout.write('\n');
  */
 
 /** Una ficha, de principio a fin. Devuelve su registro. */
+
 async function procesar(f) {
   const previa = cache.get(f.id);
   if (previa) {
@@ -302,55 +308,33 @@ for (let i = 0; i < fichas.length; i += CONCURRENCIA) {
 process.stdout.write('\n');
 
 /**
- * Filtra qué registros se publican y cuántas fichas se descartan por motivo,
- * para que el descarte no sea invisible.
+ * ── Lo que se publica, y lo que no ───────────────────────────────────────
  *
- * ── Por qué aquí y no al recolectar ───────────────────────────────────────
+ * Antes esto era un filtro: «solo lo que traiga ficha de BDNS o requisitos
+ * extraídos», y el resto se descartaba por ruido. Se quitó por dos razones
+ * que conviene leer.
  *
- * `esBeca()` descarta por el título y el epígrafe del sumario, pero hay
- * anuncios que pasan ese filtro y no son becas: el epígrafe es solo una pista
- * y el título de un extracto de BDNS no siempre dice «beca» («ayudas»,
- * «subvención» del Servicio de Títulos…). La certeza última es el texto
- * descargado: si extraer requisitos no saca nada y no hay ficha de BDNS ni
- * Bases localizadas, el documento no convoca a nadie a pedir dinero y no se
- * publica.
+ * La primera es de criterio: una convocatoria no es ruido porque el título no
+ * encaje con lo que yo esperaba. Puede ser una beca de investigación, una
+ * ayuda a una asociación o un programa raro, y quien la busca por su cuenta
+ * sabe lo que busca. Filtrar por palabras del título es sustituir el criterio
+ * del estudiante por el mío.
  *
- * ── Qué se publica ────────────────────────────────────────────────────────
+ * La segunda es práctica: un filtro que se equivoca es invisible. Si quita de
+ * más, quien busca no ve el hueco y no sabe que faltaba algo. Enseñar de más
+ * cuesta un clic; quitar de más pierde la beca sin dejar rastro.
  *
- * Solo se publica lo que tiene requisitos con cita, o ficha de BDNS, o
- * presupuesto, o Bases localizadas. El resto se descarta del fichero:
- * es un anuncio del BOE revisado y descartado, no una beca que enseñar.
+ * Lo que sí se mantiene es el filtro de verdad —el del sumario, por epígrafe
+ * y por título, que vive en `boe.mjs` y se cuenta por motivo en cada
+ * pasada— y la etiqueta. Cada registro dice de dónde viene y qué se ha
+ * podido sacar, para que nadie confunda una convocatoria completa con una de
+ * la que solo tenemos el título.
  */
-function motivoDescartado(r) {
-  const t = String(r?.titulo ?? '').toLowerCase();
-  if (!r.esEducacion) return 'no es materia de educacion';
-  if (/jubilaci|nombramiento|\bcese\b|proceso selectiv|oposici|provisi[oó]n de puesto|subasta|informaci[oó]n p[uú]blica|convenio|correcci[oó]n de errores/i.test(t)) return 'no es convocatoria';
-  return 'sin requisitos ni ficha';
+
+/** ¿La ficha trae algo que se pueda enseñar aparte del título? */
+function conAlgoQueEnseñar(r) {
+  return Boolean(r.requisitos.length || r.presupuesto != null || r.boeIdBases);
 }
-
-function publicable(r) {
-  if (r.requisitos.length > 0) return true;
-  if (r.boeIdBases) return true;      // las Bases estan en el BOE, se pueden leer
-  if (String(r.id).startsWith('BDNS')) return true;   // hay ficha oficial de BDNS
-  if (r.presupuesto != null) return true;   // BDNS relleno el presupuesto
-  return false;
-}
-
-let publicadas = 0;
-const descartadas = new Map();
-for (const r of registros) {
-  if (publicable(r)) { publicadas++; continue; }
-  const m = motivoDescartado(r);
-  descartadas.set(m, (descartadas.get(m) || 0) + 1);
-}
-
-process.stdout.write(`  ${publicadas} publicables · ${registros.length - publicadas} descartadas   `);
-for (const [m, n] of descartadas) process.stdout.write(`[${m}: ${n}] `);
-process.stdout.write('\n');
-
-// No se arrastra ninguna ficha de pasadas anteriores.
-// `data/becas.json` solo contiene lo que el bot ha encontrado en esta ventana.
-const vistos = new Set();
 
 // Esto se añadió después de que pasara. Un `catch` que publica «sin
 // requisitos» es lo correcto —una ficha rota no puede tirar la pasada— y a la
@@ -410,21 +394,90 @@ if (!process.argv.includes('--sin-erasmus')) {
 // todavía no se sabía nada de los 75 de Erasmus. El resultado eran 727 fichas
 // con 75 repetidas dos veces, que en la web son dos tarjetas idénticas seguidas.
 //
-// Aquí ya están todas las fuentes, así que esta comprobación las pilla a
-// todas. Y donde se hace es el sitio donde tiene que estar de verdad: añadir una
-// fuente nueva no debería poder volver a colar duplicados.
-const unicos = new Map();
+// ── El fichero ────────────────────────────────────────────────────────────
+//
+// Aquí es donde se decide qué se escribe, y es el punto donde el 19 de
+// octubre de 2026 se perdió la base.
+//
+// La caché no es solo un ahorro de tiempo: el conector **no baja** los
+// anuncios que ya tiene guardados, así que esas fichas no pasan por
+// `procesar` y nunca están en `registros`. Si al escribir solo se escriben
+// las de `registros`, la caché se come las fichas.
+//
+// Eso es lo que pasó: se quitó el arrastre de las fichas viejas, el
+// conector se saltó 62 anuncios de la ventana por estar en la caché, y el
+// fichero pasó de 2.626 fichas a 76. La web se quedó con el 3 % de lo que
+// tenía, el paso siguiente salió en verde y nadie se enteró.
+//
+// La regla que sale de ahí, y que el invariante de abajo vigila: **todo
+// anuncio que el BOE ha publicado en esta ventana y ha pasado el filtro
+// tiene que estar en el fichero**, o se acaba de descargar o sale de la
+// caché. Lo que se salga de la ventana, fuera.
+const salida = new Map();
+
+// 1. Lo que la caché perdonó. Va primero para que la posición de cada ficha
+//    no cambie de una pasada a otra.
+for (const id of omitidas) {
+  const previa = cache.get(id);
+  if (!previa) continue;
+  // `cerrada` se recalcula: el de la caché tiene la fecha del día en que se
+  // extrajo, y un plazo puede haber vencido desde entonces. Sin esto, una
+  // convocatoria cerrada hacía tres semanas seguía enseñándose como abierta.
+  salida.set(id, {
+    ...previa,
+    cerrada: previa.cierra ? new Date(previa.cierra) < new Date() : false,
+  });
+}
+
+// 2. Lo recién bajado, que pisa a lo de la caché: es el mismo anuncio, pero
+//    con la extracción de hoy. Y las fichas de Erasmus, que se suman al
+//    final y no pasan por la caché.
+//
+// La clave es el id del anuncio del BOE y no el del registro: al enriquecer
+// con BDNS el registro se renombra a `BDNS-…` y el id del anuncio deja de
+// estar suelto. Con la clave equivocada, la misma convocatoria entra dos
+// veces en el fichero.
 let repetidas = 0;
 for (const r of registros) {
-  // Se queda la última: si una fuente y la caché dicen lo mismo, la recién
-  // bajada es la buena.
-  if (unicos.has(r.id)) repetidas++;
-  unicos.set(r.id, r);
+  const clave = idAnuncio(r);
+  if (salida.has(clave)) repetidas++;
+  salida.set(clave, r);
 }
-const publicables = [...unicos.values()];
 if (repetidas) {
   console.log(`  ${repetidas} fichas repetidas, eliminadas al escribir.`);
 }
+
+// ── El invariante ────────────────────────────────────────────────────────
+//
+// Ni una menos. Si el BOE ha dado N convocatorias en esta ventana y en el
+// fichero hay menos, se ha perdido alguna, y no se escribe: una base a la
+// que se le caen fichas sin que nadie se entere es justo lo que vació la
+// base el 19 de octubre de 2026, y se salió porque el paso terminó en
+// verde.
+//
+// El paso se para con un error y el fichero no se escribe. La web sigue
+// sirviendo el último `becas.json` bueno, que es justo para lo que está.
+const esperadas = fichas.length + omitidas.size;
+const emitidas = [...salida.values()].filter((r) => r.fuente !== 'erasmus-mundus').length;
+if (emitidas !== esperadas) {
+  console.error(`\n  FALTAN FICHAS: el BOE ha dado ${esperadas} convocatorias en la ventana y en el fichero hay ${emitidas}.`);
+  console.error('  No se escribe data/becas.json. Revisa el log antes de fiarte de la pasada.\n');
+  process.exit(1);
+}
+
+// ── El orden del fichero ─────────────────────────────────────────────────
+//
+// Por fecha de publicación y, a igualdad, por identificador. El motivo no
+// es que se vea mejor —la web los ordena por su cuenta— sino el diff: el
+// fichero se commitea dos veces al día, y uno que reordena sus filas cada
+// vez no dice nada de qué ha cambiado. Con este orden, una ficha nueva entra
+// en su sitio, una que se sale de la ventana se va, y el resto no se mueve.
+const publicables = [...salida.values()].sort((a, b) => {
+  const pa = a.publicada ?? '';
+  const pb = b.publicada ?? '';
+  if (pa !== pb) return pb.localeCompare(pa);
+  return String(a.id).localeCompare(String(b.id));
+});
 
 await mkdir(new URL('../data/', import.meta.url), { recursive: true });
 await writeFile(
@@ -436,8 +489,9 @@ const conReq = publicables.filter((r) => r.requisitos.length > 0).length;
 const totalReq = publicables.reduce((n, r) => n + r.requisitos.length, 0);
 const conCita = publicables.every((r) => r.requisitos.every((x) => Boolean(x.cita)));
 
-console.log(`\n  ${publicables.length} publicadas · ${registros.length - publicables.length} descartadas`);
+console.log(`\n  ${publicables.length} publicadas · ${esperadas} del BOE + ${publicables.length - esperadas} de Erasmus`);
 console.log(`  ${conReq} con requisitos · ${totalReq} requisitos en total`);
+console.log(`  ${publicables.filter((r) => conAlgoQueEnseñar(r)).length} con algo que enseñar aparte del título`);
 console.log(`  ${publicables.filter((r) => r.boeIdBases).length} con Bases localizadas en el BOE`);
 console.log(`  ${reutilizadas} reutilizadas de la pasada anterior`);
 console.log(`  todos con cita: ${conCita ? 'sí' : 'NO — revisar'}`);

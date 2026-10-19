@@ -1,6 +1,6 @@
 name: Ingesta
 
-# Cuándo corre sin que nadie pulse nada. **Dos pasadas al día**, y se Bajaron
+# Cuándo corre sin que nadie pulse nada. **Dos pasadas al día**, y se bajaron
 # de cuatro el 17 de octubre de 2026.
 #
 # El BOE publica dos ediciones diarias —una por la mañana y otra por la tarde—
@@ -13,7 +13,7 @@ name: Ingesta
 # gratuitos. Hay avisos de 8 a 14 horas de retraso, e incluso días que no se
 # ejecutan. Está documentado en la conversación #156282 y #201738. Por eso
 # el resultado se COMMITE dentro del repo y no se manda a ningún sitio: si
-# una pasada se retrada o se cae, la web sigue sirviendo el último
+# una pasada se retrasa o se cae, la web sigue sirviendo el último
 # becas.json bueno que haya, en vez de quedarse con datos viejos o vacíos.
 on:
   schedule:
@@ -49,10 +49,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # El historial entero, y no solo el último commit. El `Commit` de
+          # abajo rebasa sobre `origin/main` antes de subir, y con un clon
+          # superficial —que es lo que trae `fetch-depth: 1`— no hay historial
+          # con el que rebasar: el rebase fallaría y el push se rechazaría.
+          # Esto ya pasó: el 18 de octubre de 2026 el push se quedó en
+          # «! [rejected] main -> main (fetch first)» y la pasada se perdió.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Node 20 está fuera de soporte desde abril de 2026 y el propio
+          # runner avisa de ello. Vercel ya va por 24 y en local es 24.
+          node-version: '24'
           cache: 'npm'
 
       # ── El punto bueno de GitHub Actions ──────────────────────────────
@@ -68,6 +78,14 @@ jobs:
 
       - name: Ingesta
         run: |
+          # `pipefail` no es un detalle. Sin él, el código de salida de este
+          # paso es el de `tee`, que siempre es cero: una ingesta que revienta
+          # —un `TypeError` en el extractor, un Chrome que no arranca— salía
+          # en verde, y el paso de Commit subía el `becas.json` de antes como
+          # si fuera el de ahora. Con `pipefail`, una ingesta caída para el
+          # paso y el fichero viejo se queda donde está.
+          set -o pipefail
+
           # `--dias 21` mira hacia atrás tres semanas: la ventana que
           # cubre desde la última pasada con margen para una que se haya
           # retrasado, que es el fallo conocido de este sistema.
@@ -86,14 +104,21 @@ jobs:
         run: |
           echo "### Convocatorias en la base" >> $GITHUB_STEP_SUMMARY
           if [ -f data/becas.json ]; then
+            # Qué tenía el fichero antes de esta pasada. Sin esta línea, una
+            # base que se queda en la cuarta parte se ve como un número más y
+            # no hay forma de saber que se ha perdido la base entera.
+            git show HEAD:data/becas.json > /tmp/antes.json 2>/dev/null \
+              || echo '{"becas":[]}' > /tmp/antes.json
             node -e "
               const d = require('./data/becas.json');
               const b = d.becas;
-              const req = b.filter(x => x.requisitos.length).length;
-              const citas = b.reduce((n, x) => n + x.requisitos.length, 0);
+              const req = b.filter(x => (x.requisitos || []).length).length;
+              const citas = b.reduce((n, x) => n + (x.requisitos || []).length, 0);
+              const antes = require('/tmp/antes.json').becas.length;
               console.log('| Métrica | Valor |');
               console.log('| --- | --- |');
               console.log('| Convocatorias | ' + b.length + ' |');
+              console.log('| Antes de esta pasada | ' + antes + ' |');
               console.log('| Con requisitos | ' + req + ' |');
               console.log('| Requisitos con cita | ' + citas + ' |');
               console.log('| Rango | ' + d.rango.desde + ' → ' + d.rango.hasta + ' |');
@@ -121,11 +146,71 @@ jobs:
           # cambia de dueño, cambia también aquí.
           git config user.name  'BecasScout'
           git config user.email '284927969+TirsoCode@users.noreply.github.com'
-          git add data/becas.json data/usuarios.json 2>/dev/null || true
-          git add -A data/
+
+          # Solo `data/becas.json`. Ni una línea más: en esta carpeta también
+          # vive el almacén de respaldo con correos y sesiones, y aunque
+          # `.gitignore` lo tapa, `.gitignore` no es lo que decide qué se
+          # sube. Ese fichero es `.vercelignore`.
+          git add data/becas.json
+
+          # Un fichero sin fichas no es un resultado: es un fallo con forma de
+          # fichero. No se publica, y el paso falla para que se vea.
+          fichas=$(node -e "console.log(require('./data/becas.json').becas.length)")
+          if [ "$fichas" -lt 1 ]; then
+            echo "data/becas.json no tiene ninguna ficha. No se publica nada."
+            exit 1
+          fi
+
           if git diff --staged --quiet; then
             echo "Sin cambios: la base ya estaba al día."
             exit 0
           fi
-          git commit -m "data: ${GITHUB_RUN_NUMBER} ⋅ $(date -u +%Y-%m-%d %H:%M) UTC"
-          git push
+
+          # El formato de `date` va entre comillas. Sin ellas, `%Y-%m-%d` y
+          # `%H:%M` llegan como dos operandos y `date` contesta «extra operand
+          # '%H:%M'»: el mensaje se quedaba sin fecha («data: 2 ⋅  UTC») y
+          # dos commits distintos parecían el mismo.
+          git commit -m "data: ${GITHUB_RUN_NUMBER} ⋅ $(date -u '+%Y-%m-%d %H:%M') UTC"
+
+          # ── Por qué hay un rebase aquí ──────────────────────────────────
+          #
+          # El runner hace el checkout de un commit concreto. Si `main` ha
+          # avanzado desde entonces —porque alguien ha subido algo, o porque
+          # ha corrido otra pasada— el push se rechaza entero:
+          #
+          #   ! [rejected]        main -> main (fetch first)
+          #   error: failed to push some refs to '…'
+          #
+          # Pasó el 18 de octubre de 2026 y la pasada se perdió: la base se
+          # quedó con lo que hubiera, sin la ventana nueva, y el paso salió
+          # en rojo sin que nadie entendiera por qué. Rebasar antes de
+          # subir deja el commit de datos encima de lo que haya ahora, y como
+          # lo único que toca es `data/becas.json`, el conflicto —si lo hay—
+          # se resuelve sin perder nada de nadie.
+          git fetch origin main
+          git rebase origin/main || {
+            # Los dos lados tocamos `data/becas.json`. Gana esta pasada, que
+            # es la que acaba de leer el BOE y la que cumple el invariante de
+            # `ingest/run.mjs`.
+            git checkout --theirs -- data/becas.json || true
+            git add data/becas.json
+            GIT_EDITOR=true git rebase --continue || true
+          }
+
+          # Y si alguien empuja entre el `fetch` y el `push`, se reintenta:
+          # son tres intentos y sale. Un rebase por intento, porque el remoto
+          # puede haber avanzado otra vez.
+          for intento in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "El push se ha rechazado (intento $intento). Se reintenta."
+            git fetch origin main
+            git rebase origin/main || {
+              git checkout --theirs -- data/becas.json || true
+              git add data/becas.json
+              GIT_EDITOR=true git rebase --continue || true
+            }
+          done
+          echo "No se ha podido subir la base tras tres intentos."
+          exit 1
