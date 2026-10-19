@@ -21,3 +21,9 @@ _u.html
 *.png
 /movil*.mjs
 /ancho*.mjs
+
+# …salvo las dos imágenes que sí son parte del sitio: la tarjeta Open Graph y
+# el logo cuadrado que declara el JSON-LD. Se generan desde tools/*.html con
+# Chrome headless, pero el PNG es lo que se sirve y va en el repositorio.
+!og.png
+!logo.png
