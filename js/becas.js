@@ -33,6 +33,7 @@ const ETIQUETA = {
   importe: 'Importe',
   presupuesto: 'Presupuesto de la convocatoria',
   fecha_limite: 'Plazo',
+  plazo: 'Plazo de solicitud',
   duracion_max: 'Duración máxima',
   ects: 'ECTS',
 };

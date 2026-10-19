@@ -13,9 +13,26 @@ SPEC.md
 serve.mjs
 ingest/
 supabase/
+
+# El HTML fuente de og.png y logo.png. Los PNG sí se sirven; el fuente que los
+# genera, no tiene por qué.
+tools/
 .github/
 .vercel/
 node_modules/
+
+# El almacén de respaldo del servidor deja ficheros con correos y tokens de
+# sesión dentro de `data/`. Se descubrió el 18 de octubre de 2026 que
+# `https://becascout.vercel.app/data/sesiones.json` se servía en abierto, con
+# las sesiones dentro: cualquiera que lo descargara se las llevaba. `data/becas.json`
+# SÍ va: el buscador lo pide desde el navegador y es el producto.
+data/usuarios.json
+data/usuarios.tmp.json
+data/sesiones.json
+data/sesiones.tmp.json
+
+# Las pruebas corren en local; no hay motivo para servirlas.
+test/
 
 # La contraseña de la base de datos y las claves viven aquí. Vercel no las
 # sube nunca: se meten con `vercel env add`. Este fichero es la razón por la

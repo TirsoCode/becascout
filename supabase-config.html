@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurar — BecasScout</title>
+<meta name="description" content="Por favor, introduce tus claves de Supabase en Vercel. Los campos son `SUPABASE_URL`, `SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY`.">
+<meta name="theme-color" content="#12463A">
+<!-- Este es un mensaje puramente informativo. Si estás viendo esto, es que falta la configuración de Supabase en Vercel. El resto del sitio funciona (la portada y el buscador con cuenta registrada). -->
+<!-- `noindex` porque es una pantalla de error, no contenido: si un buscador se la
+     encuentra, no tiene nada que ofrecer a quien la busca y solo ocupa sitio en
+     el índice. El canonical apunta igualmente a esta misma URL para que quede
+     claro cuál es su dirección y no se traten sus parámetros como páginas
+     distintas. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://becascout.vercel.app/supabase-config.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body style="background:#fff;color:#16191B;font-family:'Outfit',system-ui,sans-serif;">
+
+<main class="doc" style="max-width:480px;margin:96px auto 24px;padding:0 24px">
+  <h1 style="font-size:32px;margin-bottom:20px">Falta la configuración de Supabase</h1>
+
+  <div class="callout" style="margin-bottom:32px">
+    <p>El sitio funciona sin su base de datos (la portada y el buscador con cuentas registradas), pero la cuenta con correo y contraseña no se guarda: por eso ves esta nota.
+
+    Para que la aplicación pueda registrar correos, cerrar sesiones y mantener las sesiones en funcionamiento, hay que poner tres claves en Vercel (ver <a href="https://vercel.com/docs/environment-variables" style="color:inherit;text-decoration:underline">Environment Variables</a>):</p>
+
+    <ul style="margin-top:12px;padding-left:22px;font-size:15px;line-height:1.72">
+      <li><code style="background:#f2f2f2;padding:2px 6px;border-radius:4px">SUPABASE_URL</code></li>
+      <li><code style="background:#f2f2f2;padding:2px 6px;border-radius:4px">SUPABASE_ANON_KEY</code></li>
+      <li><code style="background:#f2f2f2;padding:2px 6px;border-radius:4px">SUPABASE_SERVICE_ROLE_KEY</code></li>
+    </ul>
+  </div>
+
+  <p style="margin-top:32px;font-size:15px;color:#5E686D">Puedes añadirlas desde <code>vercel.com</code> → <em>Tu proyecto</em> → <em>Variables de entorno</em> → <em>Añadir</em>.</p>
+  <p style="margin-top:8px;font-size:15px;color:#5E686D">El botón <strong>Crear cuenta</strong> de la cabecera se mantiene: al hacer clic en él se crea una cuenta sin contraseña (flujo sin Supabase). Si tienes las claves, la cuenta se confirma automáticamente y no tendrás que registrarte de nuevo.</p>
+
+  <p style="margin-top:24px;font-size:15px">
+    <strong>Por qué la separación.</strong> La aplicación usa una cookie <code>bs.cookie</code> firmada y JWTs firmados en el servidor; las claves en el código no pueden guardarse. Al moverlas a Vercel, su protección es otra responsabilidad del que mantiene el despliegue.
+  </p>
+
+  <p style="margin-top:24px;font-size:13px;color:#8A9499">Siempre puedes contactar conmigo: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a></p>
+</main>
+
+<footer class="foot" style="border-top:1px solid var(--rule);padding:24px 0;margin-top:40px">
+  <div class="shell foot-in" style="max-width:960px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+    <div class="foot-links" style="margin-left:auto;display:flex;gap:20px">
+      <a href="becas.html">Buscar becas</a>
+      <a href="sobre.html">Sobre</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="cookies.html">Cookies</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

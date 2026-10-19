@@ -1,0 +1,36 @@
+# BecasScout
+
+> Buscador de becas europeas que lee la convocatoria oficial (BOE y otros boletines) y devuelve los requisitos como lista comprobable, cada uno con la cita literal del párrafo del documento del que salió.
+
+BecasScout no tramita solicitudes, no cobra comisión y no es ningún organismo oficial. Lee convocatorias publicadas por otros y las resume, siempre con enlace a la fuente original. No da porcentajes de éxito: no existen datos de adjudicaciones, así que cualquier cifra sería inventada.
+
+## Páginas
+
+- [Inicio](https://becascout.vercel.app/): qué hace BecasScout, cómo funciona y de dónde sale cada dato.
+- [Becas Erasmus Mundus](https://becascout.vercel.app/erasmus-mundus.html): cuantía de la beca, requisitos y la lista de los 75 programas del catálogo oficial, con la cita de la Comisión Europea.
+- [Método y quién está detrás](https://becascout.vercel.app/sobre.html): cómo se extraen los requisitos y por qué la cita es obligatoria.
+- [Buscador de becas](https://becascout.vercel.app/becas.html): comparador de requisitos por perfil (la lista completa se lee con cuenta; la página no se indexa).
+- [Feed RSS](https://becascout.vercel.app/feed.xml): las convocatorias de la base, con su importe y su cita.
+
+## Conceptos clave
+
+- Requisito: una condición de la convocatoria (nota mínima, edad, idioma, plazo, importe).
+- Cita: fragmento literal del documento oficial del que sale cada requisito. Sin cita, un requisito no se guarda ni se muestra.
+- «No lo sabemos»: estado de primera clase cuando la convocatoria no concreta un requisito. No se rellena el hueco con un dato inventado.
+- Erasmus Mundus Joint Master: máster de dos años funded por la UE, abierto a estudiantes de cualquier país. La cuantía es la misma para todos los programas: 1.400 € al mes hasta 24 meses, con un título universitario previo.
+
+## Fuentes
+
+- BOE (Boletín Oficial del Estado): sumario diario en abierto y XML por anuncio.
+- EACEA: catálogo oficial de Erasmus Mundus Joint Masters, con la ficha de cada programa.
+- Erasmus+ (portal de la Comisión Europea): cuantía, duración y requisito de título, con la cita literal.
+- EUR-Lex.
+- DAAD, Campus France y Study in NL (conectores en camino).
+
+## Contacto
+
+- privacidad@becascout.com
+
+## Versión extendida
+
+- [llms-full.txt](https://becascout.vercel.app/llms-full.txt): el texto completo de las páginas indexables, para quien quiera el detalle sin parsear HTML.

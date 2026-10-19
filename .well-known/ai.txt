@@ -1,0 +1,15 @@
+# ai.txt — BecasScout
+# Permiso explícito para que los asistentes de IA lean el sitio y lo citen.
+# No hay un estándar cerrado para este fichero; se pone donde los agentes lo
+# buscan y apunta a los ficheros que sí llevan datos legibles por máquina.
+
+User-agent: *
+Allow: /
+
+Contact: privacidad@becascout.com
+Sitemap: https://becascout.vercel.app/sitemap.xml
+LLMs: https://becascout.vercel.app/llms.txt
+LLMs-Full: https://becascout.vercel.app/llms-full.txt
+Summary: https://becascout.vercel.app/ai/summary.json
+FAQ: https://becascout.vercel.app/ai/faq.json
+Feed: https://becascout.vercel.app/feed.xml

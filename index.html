@@ -5,7 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BecasScout — Las becas de Europa, con los requisitos leídos</title>
 <meta name="description" content="BecasScout lee las convocatorias oficiales y te dice qué requisitos cumples y cuánto tiempo queda. Cada requisito con la cita literal del documento.">
+<meta name="author" content="BecasScout">
 <meta name="theme-color" content="#12463A">
+<!-- Base canónica en producción; ver la sección SEO de AGENTS.md. -->
+<link rel="canonical" href="https://becascout.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BecasScout">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="BecasScout — las becas de Europa, con los requisitos leídos">
+<meta property="og:description" content="Lee las convocatorias oficiales y te dice qué requisitos cumples. Cada requisito con la cita literal del documento.">
+<meta property="og:url" content="https://becascout.vercel.app/">
+<meta property="og:image" content="https://becascout.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:alt" content="BecasScout: becas de Europa con los requisitos leídos y su cita.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BecasScout — las becas de Europa, con los requisitos leídos">
+<meta name="twitter:description" content="Lee las convocatorias oficiales y te dice qué requisitos cumples, cada uno con su cita.">
+<meta name="twitter:image" content="https://becascout.vercel.app/og.png">
+<!-- El feed es lo que leen los lectores de RSS y los que piden la lista de
+     convocatorias sin entrar en la web. Va declarado en las cinco páginas
+     indexables para que el descubrimiento no dependa de cuál se abra. -->
+<link rel="alternate" type="application/rss+xml" title="BecasScout — convocatorias" href="https://becascout.vercel.app/feed.xml">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M7 5.5h7l4 4v9H7z' fill='none' stroke='%23F7F4EC' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14 5.5v4h4' fill='none' stroke='%23F7F4EC' stroke-width='1.6'/%3E%3Cpath d='M9 13.8l1.7 1.7 3.8-3.8' fill='none' stroke='%23F7F4EC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,12 +40,119 @@
     .foot-links a[href$="privacidad.html"],
     .foot-links a[href$="cookies.html"] { font-weight: 600; color: var(--ink-2); }
   </style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://becascout.vercel.app/#organization",
+      "name": "BecasScout",
+      "alternateName": "Becas Scout",
+      "url": "https://becascout.vercel.app/",
+      "email": "privacidad@becascout.com",
+      "description": "BecasScout lee las convocatorias oficiales y te dice qué requisitos cumples y cuánto tiempo queda. Cada requisito con la cita literal del documento.",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://becascout.vercel.app/logo.png",
+        "width": 512,
+        "height": 512
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "privacidad@becascout.com",
+        "availableLanguage": ["es"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://becascout.vercel.app/#website",
+      "url": "https://becascout.vercel.app/",
+      "name": "BecasScout",
+      "inLanguage": "es",
+      "datePublished": "2026-10-18",
+      "dateModified": "2026-10-19",
+      "author": { "@id": "https://becascout.vercel.app/#organization" },
+      "publisher": { "@id": "https://becascout.vercel.app/#organization" }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://becascout.vercel.app/#webpage",
+      "url": "https://becascout.vercel.app/",
+      "name": "BecasScout — Las becas de Europa, con los requisitos leídos",
+      "description": "BecasScout lee las convocatorias oficiales y te dice qué requisitos cumples y cuánto tiempo queda. Cada requisito con la cita literal del documento.",
+      "inLanguage": "es",
+      "isPartOf": { "@id": "https://becascout.vercel.app/#website" },
+      "about": { "@id": "https://becascout.vercel.app/#organization" },
+      "primaryImageOfPage": { "@id": "https://becascout.vercel.app/#organization" },
+      "breadcrumb": { "@id": "https://becascout.vercel.app/#migas" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://becascout.vercel.app/#migas",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://becascout.vercel.app/" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://becascout.vercel.app/#faq",
+      "inLanguage": "es",
+      "isPartOf": { "@id": "https://becascout.vercel.app/#website" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿BecasScout presenta mi solicitud?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Leemos la convocatoria y te decimos qué requisitos cumples; la solicitud la presentas tú en el organismo que la convoca. Cada ficha enlaza al documento original."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿De dónde sale cada requisito?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Del documento oficial: el Boletín Oficial del Estado y otros boletines. Cada requisito lleva la cita literal del párrafo del que salió y la página donde está, para que lo compruebes en diez segundos."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Por qué no dais la probabilidad de que me den la beca?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Porque no existe. Estas convocatorias no publican cuántos se presentan ni cuántos se conceden, así que un porcentaje sería una cifra inventada con apariencia de estadística. Hablamos de requisitos que cumples, no de probabilidades."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cuánto cuesta usar BecasScout?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nada. No cobramos comisión ni tramitamos la solicitud. Crear la cuenta es gratis y sirve para una cosa: avisarte cuando se acerca un plazo."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Tenéis que saber mi nota media?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Tu nota media, tu edad, tu nivel y tu país de destino se quedan en tu navegador y no se envían a ningún servidor. Solo se usan para calcular qué requisitos cumples en tu pantalla."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
 <header class="top">
   <div class="shell top-in">
-    <a class="brand" href="index.html">
+    <a class="brand" href="/">
       <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
         <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
@@ -34,6 +163,8 @@
     <nav class="top-nav">
       <a href="#como">Cómo funciona</a>
       <a href="#metodo">Nuestro método</a>
+      <a href="erasmus-mundus.html">Erasmus Mundus</a>
+      <a href="sobre.html">Sobre</a>
       <a href="#fuentes">Fuentes</a>
     </nav>
     <div class="top-act">
@@ -47,7 +178,6 @@
   <section class="hero">
     <div class="shell hero-grid">
       <div>
-        <span class="kicker">Becas de Europa · leídas</span>
         <h1>Hay becas que no ves porque <em>nadie las resume</em></h1>
         <p class="hero-lede">
           Se convocan en boletines oficiales y en el portal de cada universidad.
@@ -149,17 +279,68 @@
         <div class="step">
           <div class="step-n">ES</div>
           <h3>Boletín Oficial del Estado</h3>
-          <p>Sumario diario en abierto y el XML de cada anuncio. La fuente primaria de las convocatorias del Estado y de las universidades.</p>
+          <p><a href="https://www.boe.es/diario_boe/" target="_blank" rel="noopener">Sumario diario</a> en abierto y el XML de cada anuncio. La fuente primaria de las convocatorias del Estado y de las universidades.</p>
         </div>
         <div class="step">
           <div class="step-n">UE</div>
-          <h3>Erasmus+ y Eur-Lex</h3>
-          <p>Programas europeos y publicada en el Diario Oficial. Conectores propios, uno por portal.</p>
+          <h3>Erasmus+ y el Diario Oficial</h3>
+          <p><a href="https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals" target="_blank" rel="noopener">Erasmus+</a> y <a href="https://eur-lex.europa.eu/" target="_blank" rel="noopener">EUR-Lex</a>. Conectores propios, uno por portal.</p>
         </div>
         <div class="step">
           <div class="step-n">+</div>
           <h3>DAAD, Campus France, Study in NL</h3>
           <p>Los portales nacionales de beca de intercambio. Cada uno se añade con su propio conector, porque cada uno cambia solo.</p>
+        </div>
+      </div>
+
+      <!-- Los números van con su fuente al lado. Poner cifras sin decir de
+           dónde salen es justo lo que este sitio critica. -->
+      <div class="steps" style="margin-top:1px">
+        <div class="step">
+          <div class="step-n">01</div>
+          <h3>75 programas</h3>
+          <p>del catálogo oficial de <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a>, leídos el 19 de octubre de 2026. <a href="erasmus-mundus.html">Están todos aquí, con su ficha.</a></p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div>
+          <h3>1.400 € al mes</h3>
+          <p>hasta 24 meses, con un título universitario. La misma cifra para los 75 programas, y por eso se puede citar una vez. <a href="erasmus-mundus.html#cuanto">La cita, entera.</a></p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div>
+          <h3>0 % de éxito</h3>
+          <p>No hay ningún porcentaje, y no lo habrá. Las convocatorias no publican cuántos se presentan ni cuántos caen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-2" id="faq">
+    <div class="shell">
+      <div class="sec-head">
+        <h2>Preguntas que nos hacen siempre</h2>
+        <p>Las mismas que nos escriben antes de crear la cuenta. Contestadas del derecho.</p>
+      </div>
+      <div class="faq">
+        <div class="faq-item">
+          <h3>¿BecasScout presenta mi solicitud?</h3>
+          <p>No. Leemos la convocatoria y te decimos qué requisitos cumples; la solicitud la presentas tú en el organismo que la convoca. Cada ficha enlaza al documento original.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿De dónde sale cada requisito?</h3>
+          <p>Del documento oficial: el Boletín Oficial del Estado y otros boletines. Cada requisito lleva la cita literal del párrafo del que salió y la página donde está, para que lo compruebes en diez segundos.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Por qué no dais la probabilidad de que me den la beca?</h3>
+          <p>Porque no existe. Estas convocatorias no publican cuántos se presentan ni cuántos se conceden, así que un porcentaje sería una cifra inventada con apariencia de estadística. Hablamos de requisitos que cumples, no de probabilidades.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Cuánto cuesta usar BecasScout?</h3>
+          <p>Nada. No cobramos comisión ni tramitamos la solicitud. Crear la cuenta es gratis y sirve para una cosa: avisarte cuando se acerca un plazo.</p>
+        </div>
+        <div class="faq-item">
+          <h3>¿Tenéis que saber mi nota media?</h3>
+          <p>No. Tu nota media, tu edad, tu nivel y tu país de destino se quedan en tu navegador y no se envían a ningún servidor. Solo se usan para calcular qué requisitos cumples en tu pantalla.</p>
         </div>
       </div>
     </div>
@@ -168,9 +349,11 @@
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad. Última revisión: <time datetime="2026-10-19">19 de octubre de 2026</time>.</small>
         <div class="foot-links">
       <a href="becas.html">Buscar becas</a>
+      <a href="erasmus-mundus.html">Erasmus Mundus</a>
+      <a href="sobre.html">Sobre</a>
       <a href="privacidad.html">Privacidad</a>
       <a href="cookies.html">Cookies</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>

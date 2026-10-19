@@ -1,0 +1,35 @@
+{
+  "name": "BecasScout",
+  "url": "https://becascout.vercel.app/",
+  "inLanguage": "es",
+  "faq": [
+    {
+      "question": "¿Qué es BecasScout?",
+      "answer": "Un buscador de becas europeas que lee la convocatoria oficial y devuelve los requisitos como una lista comprobable. Cada requisito lleva la cita literal del párrafo del documento del que salió y el enlace a la fuente."
+    },
+    {
+      "question": "¿Cuánto da la beca Erasmus Mundus y hasta cuándo se pide?",
+      "answer": "1.400 € al mes hasta 24 meses como máximo, con un título universitario previo (o estar en el último año de grado) y entre 60, 90 o 120 créditos ECTS. Erasmus+ dice que la solicitud se presenta entre octubre y enero para el curso que empieza al año siguiente, pero cada programa tiene sus fechas exactas. Todo eso sale de las páginas oficiales de la Comisión Europea y va con su cita literal en https://becascout.vercel.app/erasmus-mundus.html"
+    },
+    {
+      "question": "¿BecasScout presenta mi solicitud?",
+      "answer": "No. Lee la convocatoria y dice qué requisitos cumples; la solicitud la presenta el solicitante en el organismo que la convoca."
+    },
+    {
+      "question": "¿De dónde sale cada requisito?",
+      "answer": "Del documento oficial: el Boletín Oficial del Estado y otros boletines. Cada requisito lleva la cita literal del párrafo del que salió y la página donde está."
+    },
+    {
+      "question": "¿Por qué no dais la probabilidad de que me den la beca?",
+      "answer": "Porque no existe. Las convocatorias no publican cuántos se presentan ni cuántos se conceden, así que un porcentaje sería una cifra inventada con apariencia de estadística. Se habla de requisitos que se cumplen, nunca de probabilidades."
+    },
+    {
+      "question": "¿Cuánto cuesta usar BecasScout?",
+      "answer": "Nada. No cobra comisión ni tramita la solicitud. La cuenta es gratuita y sirve para avisar cuando se acerca un plazo."
+    },
+    {
+      "question": "¿Tenéis que saber mi nota media?",
+      "answer": "No. La nota media, la edad, el nivel y el país de destino se quedan en el navegador y no se envían a ningún servidor; solo se usan para calcular qué requisitos cumples en pantalla."
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "BecasScout",
+  "url": "https://becascout.vercel.app/",
+  "description": "Buscador de becas europeas que lee la convocatoria oficial (BOE y otros boletines) y devuelve los requisitos como lista comprobable. Cada requisito lleva la cita literal del párrafo del documento del que salió.",
+  "type": "WebSite",
+  "inLanguage": "es",
+  "category": "Becas y educación",
+  "areaServed": "ES",
+  "contact": "privacidad@becascout.com",
+  "llms_txt": "https://becascout.vercel.app/llms.txt",
+  "llms_full": "https://becascout.vercel.app/llms-full.txt",
+  "sitemap": "https://becascout.vercel.app/sitemap.xml",
+  "feed": "https://becascout.vercel.app/feed.xml",
+  "about": "https://becascout.vercel.app/sobre.html",
+  "pages": {
+    "erasmus-mundus": "https://becascout.vercel.app/erasmus-mundus.html",
+    "buscador": "https://becascout.vercel.app/becas.html"
+  },
+  "notes": [
+    "BecasScout no tramita solicitudes, no cobra comisión y no es un organismo oficial.",
+    "Ningún requisito se muestra sin la cita literal del documento del que salió y sin enlace a la fuente.",
+    "No se publican porcentajes de éxito: no existen datos de adjudicaciones que los respalden.",
+    "Becas Erasmus Mundus: 1400 € al mes hasta 24 meses, título universitario previo y solicitud entre octubre y enero, con cita de la Comisión Europea."
+  ]
+}

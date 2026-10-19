@@ -1,0 +1,57 @@
+# robots.txt — BecasScout
+#
+# El sitio entero es rastreable. Los bots de BÚSQUEDA de IA se nombran uno a
+# uno aunque la regla general ya los cubra: así, si algún día alguien añade un
+# «User-agent: * / Disallow» de emergencia, estos siguen entrando y el sitio no
+# desaparece de ChatGPT, Perplexity o Google. Aparecer en una respuesta de IA es
+# justo lo que se busca: que la cita del requisito salga con su fuente.
+#
+# Los bots de ENTRENAMIENTO (GPTBot, ClaudeBot, Google-Extended, CCBot…) también
+# se permiten hoy. Es una decisión de política, no técnica: si se quieren cerrar,
+# basta con descomentar el bloque del final sin tocar los de búsqueda.
+
+User-agent: *
+Allow: /
+
+# Bots de búsqueda de IA y buscadores con IA. No bloquear: son los que citan.
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+# ── Para cerrar el entrenamiento, descomentar y desplegar ──
+# User-agent: GPTBot
+# Disallow: /
+#
+# User-agent: ClaudeBot
+# Disallow: /
+#
+# User-agent: Google-Extended
+# Disallow: /
+#
+# User-agent: CCBot
+# Disallow: /
+
+Sitemap: https://becascout.vercel.app/sitemap.xml

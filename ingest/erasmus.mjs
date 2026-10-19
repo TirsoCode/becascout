@@ -32,22 +32,47 @@
  * programa.
  */
 
+import { readFile, writeFile } from 'node:fs/promises';
 import { render } from './bdns.mjs';
 
 const CATALOGO = 'https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_en';
 const OFICIAL = 'https://erasmus-plus.ec.europa.eu/opportunities/organisations/cooperation-among-organisations-and-institutions/erasmus-mundus-joint-masters';
 
 /**
+ * La página de los **estudiantes**, que es donde vive lo que le importa a
+ * quien va a estudiar: qué título hace falta y cuándo se presenta.
+ *
+ * Antes estos datos se buscaban en la página de las organizaciones, y no
+ * estaban: el requisito de título no sale ahí. El 19 de octubre de 2026 se
+ * comprobó contra la página equivocada, la cita no aparecía, y el conector
+ * —que hace bien su trabajo— descartaba el requisito en silencio. El dato era
+ * cierto; lo que no estaba bien era de dónde se sacaba.
+ */
+const OFICIAL_ESTUDIANTES = 'https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters';
+
+/**
  * Los hechos comunes a todos los Joint Masters, con el fragmento exacto de
  * donde salen. Sin cita esto no entraría en la base, y con razón: un importe
  * sin fuente es el tipo de dato que hace que alguien renuncie a una beca por
  * creer que le dan más o menos.
+ *
+ * `pagina` dice de qué URL sale cada uno. Los dos textos de Erasmus+ no están
+ * en la misma página, y por eso el campo va en el hecho y no en el conector.
+ *
+ * ── Sobre el «slice(0, 24)» de la comprobación ───────────────────────────
+ *
+ * La cita se busca por un trozo, no entera. Se busca entero porque el texto
+ * de la web cambia: si mañana escriben «€1.400» con la coma del español, la
+ * cita entera ya no aparece y el requisito desaparecería de los 75
+ * programas. Con los primeros 24 caracteres el número sobrevive a un cambio
+ * de formato.
  */
 const HECHOS = [
   {
     tipo: 'importe',
     etiqueta: 'Beca Erasmus Mundus',
     valor: 1400,
+    pagina: OFICIAL,
     cita: 'EU scholarship for individuals: €1,400 per month (max. 24 months)',
     obligatorio: true,
   },
@@ -55,22 +80,60 @@ const HECHOS = [
     tipo: 'duracion_max',
     etiqueta: 'Duración máxima de la beca',
     valor: 24,
+    pagina: OFICIAL,
     cita: 'EU scholarship for individuals: €1,400 per month (max. 24 months)',
     obligatorio: true,
   },
   {
     tipo: 'titulacion',
     etiqueta: 'Título previo',
-    valor: 'Grado universitario (o último año)',
-    cita: "You must have a bachelor's degree (first degree), or be in your last year of bachelor studies",
+    valor: 'Grado universitario (o último año de grado)',
+    pagina: OFICIAL_ESTUDIANTES,
+    cita: "have a bachelor’s degree (first degree), or be in your last year of bachelor studies",
+    obligatorio: true,
+  },
+  {
+    tipo: 'plazo',
+    etiqueta: 'Plazo de solicitud',
+    valor: 'Entre octubre y enero, para el curso que empieza al año siguiente',
+    pagina: OFICIAL_ESTUDIANTES,
+    cita: 'In most cases, you should submit your application between October and January for courses starting the following academic year',
     obligatorio: true,
   },
   {
     tipo: 'ects',
     etiqueta: 'Créditos ECTS',
     valor: '60, 90 o 120',
+    pagina: OFICIAL_ESTUDIANTES,
     cita: '1 to 2 academic years (60, 90 or 120 ECTS credits)',
     obligatorio: false,
+  },
+];
+
+/**
+ * Hechos que no son condiciones —no se cumplen o no se incumplen, se
+ * explican— y que por eso no cuentan en el anillo del buscador. Van aparte
+ * para que la ficha diga de qué tipo de programa se trata sin ensuciar los
+ * requisitos.
+ */
+const NOTAS = [
+  {
+    etiqueta: 'Tipo de programa',
+    valor: 'Máster internacional de nivel alto, impartido en inglés por un consorcio de al menos tres instituciones de tres países distintos',
+    pagina: OFICIAL_ESTUDIANTES,
+    cita: 'They involve at least 3 institutions from at least 3 different countries',
+  },
+  {
+    etiqueta: 'Cuántas personas han pasado por ellos',
+    valor: 'Casi 50.000 estudiantes desde 2004',
+    pagina: OFICIAL_ESTUDIANTES,
+    cita: 'Almost 50,000 students have taken part since 2004',
+  },
+  {
+    etiqueta: 'Dónde están los requisitos de cada programa',
+    valor: 'En la web de cada máster: ahí están los requisitos de acceso, las universidades participantes y los pasos de la solicitud',
+    pagina: OFICIAL_ESTUDIANTES,
+    cita: 'the entry requirements and all the steps of the application process',
   },
 ];
 
@@ -113,6 +176,95 @@ export function programas(html) {
   return salida;
 }
 
+/**
+ * Verifica los hechos contra la página oficial de la que salen, y devuelve
+ * solo los que se han podido confirmar.
+ *
+ * ── Por qué cada hecho lleva su propia página ───────────────────────────
+ *
+ * Los dos textos de Erasmus+ no están en el mismo sitio: la cuantía está en
+ * la página de las organizaciones y el título previo y el plazo, en la de los
+ * estudiantes. El 19 de octubre de 2026 los dos se buscaban en la primera, el
+ * requisito de título no salía, y el conector —que hace bien su trabajo—
+ * lo descartaba en silencio. El dato era cierto; lo que estaba mal era de
+ * dónde se sacaba, y eso se arreglo mirando la página de los estudiantes.
+ *
+ * ── Por qué se busca un trozo y no la cita entera ─────────────────────────
+ *
+ * El texto de la web cambia: si mañana escriben «€1.400» con la coma del
+ * español, la cita entera ya no aparece y el requisito desaparecería de los
+ * 75 programas. Con los primeros 24 caracteres el número sobrevive a un
+ * cambio de formato.
+ */
+export async function hechosVerificados() {
+  // Se pide una página por vez, y solo una vez: son dos URLs y no tiene
+  // sentido bajarlas para cada uno de los 75 programas.
+  const textos = new Map();
+  const paginas = [...new Set([...HECHOS, ...NOTAS].map((h) => h.pagina))];
+  for (const url of paginas) {
+    try {
+      textos.set(url, plano(await render(url)));
+    } catch {
+      // Una página que no se puede bajar no invalida las otras: cada hecho
+      // se comprueba contra la suya.
+    }
+  }
+
+  const comprueba = (lista) => lista.filter((h) => {
+    const t = textos.get(h.pagina);
+    return typeof t === 'string' && t.includes(h.cita.slice(0, 24));
+  });
+
+  return { hechos: comprueba(HECHOS), notas: comprueba(NOTAS) };
+}
+
+/**
+ * Vuelve a comprobar los hechos contra las páginas oficiales y actualiza los
+ * registros de Erasmus Mundus que ya están en la base.
+ *
+ * ── Por qué existe ───────────────────────────────────────────────────────
+ *
+ * Los hechos comunes de los Joint Masters (cuantía, duración, título previo,
+ * plazo) están en las páginas de Erasmus+ y se comprueban allí. Cuando una
+ * cita deja de estar en la página, el hecho desaparece y el requisito se va
+ * con ella. Eso está bien: es mejor no tener un dato que tener un dato que ya
+ * no es cierto.
+ *
+ * El problema es el otro lado: cuando la cita estaba mal escrita o se
+ * buscaba en la página equivocada, el hecho se caía en silencio y nadie se
+ * enteraba. El requisito de título estuvo sin salir entre el 18 y el 19 de
+ * octubre de 2026 por eso. Con esta función, revisar los hechos es una
+ * orden, no una tarea que alguien tiene que acordarse de hacer.
+ *
+ * No escribe nada si algún hecho no se puede verificar: en ese caso avisa y
+ * deja la base como estaba, que es el mismo criterio que el resto de la
+ * ingesta.
+ */
+export async function refrescarBase(ruta) {
+  const datos = JSON.parse(await readFile(ruta, 'utf8'));
+  const registros = datos.becas ?? [];
+  const emjm = registros.filter((r) => r.fuente === 'erasmus-mundus');
+  if (!emjm.length) {
+    throw new Error('No hay registros de Erasmus Mundus en la base.');
+  }
+
+  const { hechos, notas } = await hechosVerificados();
+  if (!hechos.length) {
+    throw new Error('No se ha podido verificar ningún hecho. La base no se toca.');
+  }
+
+  // Se rehacen los requisitos de los registros de Erasmus: son los mismos
+  // hechos para todos, y lo que no se ha verificado no se escribe.
+  for (const r of emjm) {
+    r.requisitos = hechos.map((h) => ({ ...h, extractor: 'oficial' }));
+    r.notas = notas.map((n) => ({ ...n, extractor: 'oficial' }));
+  }
+
+  datos.becas = registros;
+  await writeFile(ruta, JSON.stringify(datos, null, 1), 'utf8');
+  return { registros: emjm.length, hechos: hechos.length, notas: notas.length };
+}
+
 /** Vuelca el catálogo completo, con los hechos comunes ya citados. */
 export async function recolectar({ paginas = 9, alProgresar } = {}) {
   // El catálogo viene en páginas de veinte. Solo con la primera salen veinte
@@ -129,18 +281,16 @@ export async function recolectar({ paginas = 9, alProgresar } = {}) {
   }
   const lista = [...vistos.values()];
 
-  // Los hechos comunes se comprueban contra la página oficial antes de
-  // pegarlos a ciento setenta programas. Si mañana la Comisión cambia la
-  // cuantía, el conector deja de añadirlo en lugar de repetir 170 veces una
-  // cifra que ya no es cierta.
+  // Los hechos comunes se comprueban contra las páginas oficiales antes de
+  // pegarlos a los programas. Si mañana la Comisión cambia la cuantía, el
+  // conector deja de añadirla en lugar de repetir una cifra que ya no es
+  // cierta a todos los programas.
   let hechos = HECHOS;
+  let notas = NOTAS;
   try {
-    const oficial = plano(await render(OFICIAL));
-    // Se busca el texto de la cita, no el valor. Comparar contra el valor
-    // daba falso: la página oficial escribe «€1,400» con los separadores
-    // del inglés, y el mismo número con otra puntuación da false y el
-    // requisito desaparecía de los ciento setenta programas.
-    hechos = HECHOS.filter((h) => oficial.includes(h.cita.slice(0, 24)));
+    const v = await hechosVerificados();
+    hechos = v.hechos;
+    notas = v.notas;
   } catch { /* se queda con los de partida */ }
 
   return lista.map((p, i) => ({
@@ -153,6 +303,7 @@ export async function recolectar({ paginas = 9, alProgresar } = {}) {
     // que es un orden de magnitud mayor. No se mezclan.
     presupuesto: null,
     requisitos: hechos.map((h) => ({ ...h, extractor: 'oficial' })),
+    notas: notas.map((n) => ({ ...n, extractor: 'oficial' })),
     url: p.proyecto ?? p.web,
     url_programa: p.web,
     cierra: null,   // cada programa tiene el suyo; no hay uno común

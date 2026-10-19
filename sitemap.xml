@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Solo entran las páginas indexables. Las de privacidad, cookies y el buscador
+  van con `noindex` a propósito (son utilidad, no contenido que deba competir en
+  Google), así que no se listan aquí: un sitemap que anuncia URLs noindex se
+  contradice solo.
+
+  Al añadir una página indexable nueva, se añade su <url> y se actualiza la
+  fecha de <lastmod>. No hay build que genere esto, es una web estática.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://becascout.vercel.app/</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://becascout.vercel.app/erasmus-mundus.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://becascout.vercel.app/sobre.html</loc>
+    <lastmod>2026-10-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>
