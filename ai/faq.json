@@ -2,7 +2,7 @@
   "name": "BecasScout",
   "url": "https://becascout.vercel.app/",
   "inLanguage": "es",
-  "faq": [
+  "faqs": [
     {
       "question": "¿Qué es BecasScout?",
       "answer": "Un buscador de becas europeas que lee la convocatoria oficial y devuelve los requisitos como una lista comprobable. Cada requisito lleva la cita literal del párrafo del documento del que salió y el enlace a la fuente."
