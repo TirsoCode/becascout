@@ -65,6 +65,15 @@ function fechaCorta(iso) {
 }
 
 /**
+ * 1400 → «1.400». En español los millares van con punto, y un «1400 €» en
+ * el título de una página es una señal de que la página la escribió una
+ * máquina.
+ */
+function euros(n) {
+  return Number(n).toLocaleString('es-ES');
+}
+
+/**
  * Busca un requisito por su tipo. Si no está, no se escribe nada de él: es
  * preferible un hueco visible a un dato que parece bueno y no lo es.
  */
@@ -176,16 +185,16 @@ async function main() {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Becas Erasmus Mundus: ${importe.valor} € al mes, qué piden y los ${emjm.length} programas</title>
-<meta name="description" content="Beca Erasmus Mundus: ${importe.valor} € al mes hasta ${duracion?.valor ?? 24} meses, ${esc((titulacion?.valor ?? 'título universitario').toLowerCase())}, ${esc((plazo?.valor ?? 'plazo de solicitud').toLowerCase())} y la lista de los ${emjm.length} programas con su ficha oficial. Con la cita de la Comisión Europea.">
+<title>Becas Erasmus Mundus: ${euros(importe.valor)} € al mes y los ${emjm.length} programas</title>
+<meta name="description" content="Beca Erasmus Mundus: ${euros(importe.valor)} € al mes hasta ${duracion?.valor ?? 24} meses, título universitario y solicitud de octubre a enero. Los ${emjm.length} programas, con su ficha y la cita oficial.">
 <meta name="author" content="BecasScout">
 <meta name="theme-color" content="#12463A">
 <link rel="canonical" href="${BASE}/erasmus-mundus.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BecasScout">
 <meta property="og:locale" content="es_ES">
-<meta property="og:title" content="Becas Erasmus Mundus: ${importe.valor} € al mes, qué piden y los ${emjm.length} programas">
-<meta property="og:description" content="${importe.valor} € al mes hasta ${duracion?.valor ?? 24} meses, ${esc((titulacion?.valor ?? 'título universitario').toLowerCase())} y la lista de los ${emjm.length} programas con su ficha oficial. Con la cita.">
+<meta property="og:title" content="Becas Erasmus Mundus: ${euros(importe.valor)} € al mes y los ${emjm.length} programas">
+<meta property="og:description" content="${euros(importe.valor)} € al mes hasta ${duracion?.valor ?? 24} meses, título universitario y solicitud entre octubre y enero. Los ${emjm.length} programas, con su ficha y la cita.">
 <meta property="og:url" content="${BASE}/erasmus-mundus.html">
 <meta property="og:image" content="${BASE}/og.png">
 <meta property="og:image:width" content="1200">
@@ -193,7 +202,7 @@ async function main() {
 <meta property="og:image:alt" content="BecasScout: becas de Europa con los requisitos leídos y su cita.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Becas Erasmus Mundus: cuánto dan y qué piden">
-<meta name="twitter:description" content="${importe.valor} € al mes, título universitario y los ${emjm.length} programas con su ficha oficial.">
+<meta name="twitter:description" content="${euros(importe.valor)} € al mes, título universitario y los ${emjm.length} programas con su ficha oficial.">
 <meta name="twitter:image" content="${BASE}/og.png">
 <link rel="alternate" type="application/rss+xml" title="BecasScout — convocatorias" href="${BASE}/feed.xml">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M7 5.5h7l4 4v9H7z' fill='none' stroke='%23F7F4EC' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14 5.5v4h4' fill='none' stroke='%23F7F4EC' stroke-width='1.6'/%3E%3Cpath d='M9 13.8l1.7 1.7 3.8-3.8' fill='none' stroke='%23F7F4EC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
@@ -229,7 +238,7 @@ ${JSON.stringify(jsonld, null, 2)}
 <main class="doc">
   <div class="doc-meta">Datos del catálogo oficial de EACEA y de las páginas de Erasmus+, leídos el ${fecha}</div>
 
-  <h1>Becas Erasmus Mundus: ${importe.valor} € al mes y ${esc((titulacion?.valor ?? 'título universitario').toLowerCase())}</h1>
+  <h1>Becas Erasmus Mundus: ${euros(importe.valor)} € al mes y ${esc((titulacion?.valor ?? 'título universitario').toLowerCase())}</h1>
   <p class="doc-lede">
     Los Joint Masters de Erasmus Mundus son las becas europeas con la regla más
     limpia que hay: la misma cuantía y los mismos requisitos para todos los
@@ -238,7 +247,7 @@ ${JSON.stringify(jsonld, null, 2)}
   </p>
 
   <div class="callout">
-    <p><strong>Lo que hay que tener, en corto:</strong> ${importe.valor} € al mes
+    <p><strong>Lo que hay que tener, en corto:</strong> ${euros(importe.valor)} € al mes
     durante ${duracion?.valor ?? 24} meses como máximo${titulacion ? `, ${esc(titulacion.valor.toLowerCase())}` : ''}${ects ? ` y entre ${esc(ects.valor)} créditos ECTS` : ''}${plazo ? `. La solicitud se presenta ${esc(plazo.valor.toLowerCase())}` : ''}.
     No hay que ser español ni presentar un proyecto: se rellena la solicitud
     del programa y ya.</p>
@@ -246,7 +255,7 @@ ${JSON.stringify(jsonld, null, 2)}
 
   <h2 id="cuanto">Cuánto da la beca</h2>
   <p>
-    ${importe.valor} euros al mes, hasta ${duracion?.valor ?? 24} meses. La
+    ${euros(importe.valor)} euros al mes, hasta ${duracion?.valor ?? 24} meses. La
     cuantía no la decide el programa: es la misma para todos los Joint Masters
     de Erasmus Mundus, y por eso se puede comprobar una vez y aplicarla a
     todos. La beca cubre la participación, el viaje, el visado y una asignación
@@ -381,7 +390,7 @@ eso se puede dar el dato con su cita.
 
 ### Cuánto da
 
-${importe.valor} € al mes durante ${duracion?.valor ?? 24} meses como máximo.
+${euros(importe.valor)} € al mes durante ${duracion?.valor ?? 24} meses como máximo.
 La cuantía no la decide cada programa: es la misma para todos los Joint Masters
 de Erasmus Mundus.
 
@@ -473,7 +482,7 @@ async function feed(todas, emjm, importe, duracion, ects, plazo, generado) {
   // Las de Erasmus Mundus, con el ancla de su programa en la página.
   for (const [i, b] of emjm.entries()) {
     const desc = [
-      `Beca Erasmus Mundus (Joint Master). ${importe.valor} € al mes hasta ${duracion?.valor ?? 24} meses.`,
+      `Beca Erasmus Mundus (Joint Master). ${euros(importe.valor)} € al mes hasta ${duracion?.valor ?? 24} meses.`,
       `ECTS: ${ects?.valor ?? '60, 90 o 120'}.`,
       plazo ? `Plazo: ${plazo.valor}.` : '',
       `Solicitud en la web del programa.`,
