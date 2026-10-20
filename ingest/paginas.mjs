@@ -74,6 +74,24 @@ function euros(n) {
 }
 
 /**
+ * El valor de un requisito tal y como va al feed. El presupuesto es un número
+ * de las reglas y salía tal cual —«Presupuesto de la convocatoria: 49552000»—,
+ * una cifra ilegible. La página ya lo pinta con `euros()`; el feed hace lo
+ * mismo y le añade el símbolo. Los demás valores se quedan como están: el
+ * «Duración máxima de la beca: 24» son meses y NO lleva euros.
+ *
+ * El `typeof` no es paranoia: `euros()` sobre un valor que no es número imprime
+ * «NaN» y ahí no se aparece el error — silencio, en vez de cifra. Si el
+ * extractor algún día manda el presupuesto como texto, mejor que llegue tal
+ * cual que un «NaN €» con apariencia de dato.
+ */
+function valorRequisito(r) {
+  return r.tipo === 'presupuesto' && typeof r.valor === 'number'
+    ? `${euros(r.valor)} €`
+    : r.valor;
+}
+
+/**
  * Busca un requisito por su tipo. Si no está, no se escribe nada de él: es
  * preferible un hueco visible a un dato que parece bueno y no lo es.
  */
@@ -205,7 +223,7 @@ async function main() {
 <meta name="twitter:description" content="${euros(importe.valor)} € al mes, título universitario y los ${emjm.length} programas con su ficha oficial.">
 <meta name="twitter:image" content="${BASE}/og.png">
 <link rel="alternate" type="application/rss+xml" title="BecasScout — convocatorias" href="${BASE}/feed.xml">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M7 5.5h7l4 4v9H7z' fill='none' stroke='%23F7F4EC' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14 5.5v4h4' fill='none' stroke='%23F7F4EC' stroke-width='1.6'/%3E%3Cpath d='M9 13.8l1.7 1.7 3.8-3.8' fill='none' stroke='%23F7F4EC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M6 3.4h8l4.6 4.6v12.6H6z' fill='%23F7F4EC'/%3E%3Cpath d='M14 3.4v4.6h4.6z' fill='%23D8D0BF'/%3E%3Cpath d='M8.4 10.4h4.4M8.4 13.2h3' stroke='%23C2B9A6' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M18.9 4.6 12 14.2' stroke='%231A2A24' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M12 14.2 9.9 17.2' stroke='%231A2A24' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16.6 7.7 14.6 10.3' stroke='%23A9BFB4' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -221,9 +239,10 @@ ${JSON.stringify(jsonld, null, 2)}
   <div class="shell top-in">
     <a class="brand" href="/">
       <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6.6 3.2h7.2l4.4 4.4v13.2H6.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M13.8 3.2v4.4h4.4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M19.2 5 12.3 14.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M12.3 14.4 10.4 17.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
@@ -463,7 +482,7 @@ async function feed(todas, emjm, importe, duracion, ects, plazo, generado) {
     const desc = [
       b.organizador ? `Convoca: ${b.organizador}.` : '',
       reqs.length
-        ? `Requisitos: ${reqs.map((r) => `${r.etiqueta}: ${r.valor}`).join(' · ')}.`
+        ? `Requisitos: ${reqs.map((r) => `${r.etiqueta}: ${valorRequisito(r)}`).join(' · ')}.`
         : 'De esta convocatoria todavía no hemos podido extraer los requisitos.',
       b.cierra ? `Cierra el ${b.cierra}.` : '',
       b.url ? `Documento oficial: ${b.url}` : '',

@@ -96,9 +96,11 @@ function aRegistro(ficha, requisitos) {
  * destino», «estancia en», «movilidad en», «permanencia en».
  *
  * La palabra de destino es lo que evita el error grande: sin ella, un
- * documento que menciona «Francia» en una lista de países con los que
- * hay acuerdo would dejaría a todas las becas como Idleonas. Con ella, el
- * país solo cuenta si el documento dice que ahí se estudia.
+ * documento que menciona «Francia» de pasada —en la lista de países con
+ * los que hay acuerdo— levantaría la bandera de destino en todas las
+ * fichas que traigan ese país en su texto, no solo en las que de verdad
+ * se estudia ahí. Con ella, el país solo cuenta si el documento dice que
+ * ahí se estudia.
  *
  * ── Lo que no se hace ────────────────────────────────────────────────────
  *
@@ -109,7 +111,7 @@ function aRegistro(ficha, requisitos) {
 function paisesDe(ficha, requisitos) {
   const texto = String(ficha.texto ?? '');
 
-  // Las palabras quereddicen «aquí se estudia».
+  // Las palabras que dicen «aquí se estudia».
   const senales = /(?:pa[ií]s|universidad|instituto|centro)\s+de\s+destino|destino\s+(?:en|de|para)|estancias?\s+en|movilidad\s+en|permanencia\s+en|estudios\s+en|se\s+destinan\s+a|destinatarios?\s+en/i;
 
   const encontrados = new Set();
@@ -187,7 +189,7 @@ async function cachePrevia() {
  * **el fichero sale con una mezcla de dos versiones**. Pasó el 19 de
  * octubre de 2026: se añadió el destino y el nivel a los registros, y las
  * 24 fichas del BOE de la caché siguieron sin ellos porque el conector ni
- * se los 下载ó. La web enseñaba 390 fichas y el filtro de destino no
+ * se los bajó. La web enseñaba 390 fichas y el filtro de destino no
  * filtraba ninguna, sin que nada fallara.
  *
  * Por eso la caché lleva la versión de las reglas con la que se extrajo.
@@ -400,7 +402,7 @@ async function procesar(f) {
   // eso sirve para filtrar.
   //
   // Se busca **solo en el anuncio**, y no en las Bases. Las Bases del BOE
-  // son el texto de la convocatoria entera, y therein «grado» aparece
+  // son el texto de la convocatoria entera, y ahí «grado» aparece
   // como «grado de cumplimiento de los objetivos» y «Máster, Doctorado,
   // cursos y seminarios» como la lista de cosas que se puede financiar.
   // Ninguna de las dos cosas dice a quién va la beca, y con las Bases
@@ -571,30 +573,6 @@ for (const fuente of fuentes) {
   }
 }
 
-// ── No se descarta nada ─────────────────────────────────────────────────
-//
-// Había un filtro que publicaba solo lo que traía ficha de BDNS o requisitos
-// extraídos, y descartaba el resto por «ruido». Se ha quitado, por dos
-// razones que conviene leer.
-//
-// La primera es de criterio: una convocatoria no es ruido porque el título no
-// encaje con lo que yo esperaba. Puede ser una beca de investigación, una
-// ayuda a una asociación o un programa raro, y quien la busca por su cuenta
-// sabe lo que busca. Filtrar por palabras del título es sustituir el criterio
-// del estudiante por el mío.
-//
-// La segunda es práctica: un filtro que se equivoca es invisible. Si quita de
-// más, quien busca no ve el hueco y no sabe que faltaba algo. Enseñar de más
-// cuesta un clic; quitar de más pierde la beca sin dejar rastro.
-//
-// Lo que sí se mantiene es la etiqueta. Cada registro dice de dónde viene y
-// qué se ha podido sacar, para que nadie confunde una convocatoria completa con
-// una de la que solo tenemos el título.
-// Estaba en el arrastre, y no podía funcionar: Erasmus se suma después de
-// arrastrar, así que cuando se comprobaba si un identificador ya estaba visto
-// todavía no se sabía nada de los 75 de Erasmus. El resultado eran 727 fichas
-// con 75 repetidas dos veces, que en la web son dos tarjetas idénticas seguidas.
-//
 // ── El fichero ────────────────────────────────────────────────────────────
 //
 // Aquí es donde se decide qué se escribe, y es el punto donde el 19 de
@@ -605,6 +583,12 @@ for (const fuente of fuentes) {
 // La regla, en una línea: todo anuncio que el BOE ha publicado en esta
 // ventana y ha pasado el filtro tiene que estar en el fichero, o se acaba de
 // descargar o sale de la caché. Lo que se salga de la ventana, fuera.
+// ── Por qué se deduplica aquí ───────────────────────────────────────────
+//
+// Estaba en el arrastre, y no podía funcionar: Erasmus se suma después de
+// arrastrar, así que cuando se comprobaba si un identificador ya estaba visto
+// todavía no se sabía nada de los 75 de Erasmus. El resultado eran 727 fichas
+// con 75 repetidas dos veces, que en la web son dos tarjetas idénticas seguidas.
 const { publicables, repetidas } = ensambla({ registros, omitidas, cache });
 if (repetidas) {
   console.log(`  ${repetidas} fichas repetidas, eliminadas al escribir.`);

@@ -4,27 +4,26 @@
  * ── Qué es esto ──────────────────────────────────────────────────────────
  *
  * Los Joint Masters de Erasmus Mundus son lo más parecido a la beca ideal del
- * producto: máster entero, funded por la UE, abierto a estudiantes de todo el
- * mundo y con los mismos requisitos para todos. No hay que ser español ni
- * proponer un proyecto: se rellana una solicitud y ya.
+ * producto: máster entero, financiado por la UE, abierto a estudiantes de
+ * todo el mundo y con los mismos requisitos para todos. No hay que ser
+ * español ni proponer un proyecto: se rellena una solicitud y ya.
  *
  * ── Por qué este conector es distinto a los otros ────────────────────────
  *
  * DAAD y Campus France enseñan documentos que no tenemos que citar: DAAD da
  * un catálogo sin requisitos y Campus France es un blog. Aquí pasa al revés.
  * El catálogo de EACEA es un directorio de enlaces, y cada programa tiene su
- * propia web —ciento setenta webs distintas con ciento setenta diseños
- * distintos, que es una cosa que no se puede scrapear. Pero hay dos cosas que
- * sí son universales y verificables:
+ * propia web —cada una con su diseño, que es una cosa que no se puede
+ * scrapear. Pero hay dos cosas que sí son universales y verificables:
  *
  *   1. La cuantía de la beca: 1.400 €/mes hasta 24 meses. Está escrito en la
  *      página oficial del programa y aplica a todos.
- *   2. El requisito base: grado universitario. Igual para los ciento setenta.
+ *   2. El requisito base: grado universitario. Igual para todos.
  *
  * Esas dos cosas se guardan CON CITA, de la página de la Comisión. Y cada
  * programa entra con el enlace a su web y a su ficha oficial del proyecto, que
- * es donde el estudiante tiene que ir igualmente. Eso no es un catálogo
- *-dead-end como el de DAAD: es un punto de partida con el dato que importa
+ * es donde el estudiante tiene que ir igualmente. Eso no es un callejón sin
+ * salida, como el de DAAD: es un punto de partida con el dato que importa
  * ya resuelto.
  *
  * Es un conector honesto sobre una fuente que no da más de sí. Preferimos
@@ -242,7 +241,7 @@ export function programas(html) {
  * estudiantes. El 19 de octubre de 2026 los dos se buscaban en la primera, el
  * requisito de título no salía, y el conector —que hace bien su trabajo—
  * lo descartaba en silencio. El dato era cierto; lo que estaba mal era de
- * dónde se sacaba, y eso se arreglo mirando la página de los estudiantes.
+ * dónde se sacaba, y eso se arregló mirando la página de los estudiantes.
  *
  * ── Por qué se busca un trozo y no la cita entera ─────────────────────────
  *

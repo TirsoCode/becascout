@@ -1,5 +1,5 @@
 /**
- * consultas.mjs — las piezas de red que se Repiten en los conectores.
+ * consultas.mjs — las piezas de red que se repiten en los conectores.
  *
  * ── Por qué este fichero ──────────────────────────────────────────────────
  *
@@ -10,7 +10,7 @@
  * Lo que se repite aquí tiene un nombre y una regla, y las dos importan:
  *
  *   1. **Timeout.** Toda petición de red lo tiene. Una fuente que se cuelga
- *      no puede Comer una pasada entera de la ingesta: el 19 de octubre de
+ *      no puede comerse una pasada entera de la ingesta: el 19 de octubre de
  *      2026 una fuente caída dejó el job del cron corriendo hasta que GitHub
  *      lo mató, y la base se quedó como estaba.
  *   2. **`catch` y vacío.** Una fuente que falla devuelve `null` o `[]`, nunca
@@ -18,7 +18,7 @@
  *      dice nada» y una excepción es «el programa está roto». La primera se
  *      avisa por log y se sigue; la segunda para la pasada.
  *   3. **Nada de reintentos.** Un reintento contra un WAF no mejora nada y
- *      empeora elapedido: el WAF ve más tráfico de golpe y corta antes. Si
+ *      lo empeora: el WAF ve más tráfico de golpe y corta antes. Si
  *      una fuente falla, se dice y se sigue con la siguiente.
  */
 

@@ -101,7 +101,11 @@ requisitos (
   valor         jsonb,
   obligatorio    bool,
   cita          text,               -- literal del documento. NO NULL
-  extractor     text                -- 'llm' | 'reglas'
+  extractor     text                -- 'reglas'. El camino con 'llm' se quitó el
+                                    -- 18 de octubre de 2026: añadía requisitos
+                                    -- que tampoco se podían enseñar sin cita,
+                                    -- así que no resolvía nada y costaba clave
+                                    -- y factura
 )
 ```
 
@@ -153,9 +157,11 @@ Un requisito es:
 
 ## 7. Diseño
 
-Mismos tokens que [ProfScout](https://profscout.com/): verde pino `#14523F`,
-neutros con matiz verde, Fraunces para display y Schibsted Grotesk para
-texto, DM Mono para datos y citas.
+Arrancamos del tono de [ProfScout](https://profscout.com/), pero la identidad
+es otra: papel cálido en vez de verde frío, `--brand` `#12463A` para la acción
+primaria y nada más, Instrument Serif para display y una retícula editorial
+con filetes en vez de tarjetas con sombra. ProfScout no se copió: copiar la
+paleta entera habría hecho la web indistinguible de la referencia.
 
 La marca propia es el **anillo de requisitos cumplidos**: un círculo que
 rellena según cuántos requisitos satisface, con el número en el centro.
@@ -184,8 +190,12 @@ aquí.
 El email existe para una cosa: avisar de plazos. Perfil en `localStorage` y
 funciona entero sin cuenta; entrar es opcional y solo habilita el aviso.
 
-Con cuentas hay GDPR: política de privacidad, consentimiento explícito y
-borrado de datos a petición.
+Con cuentas hay GDPR: política de privacidad y borrado de datos a petición.
+La web usa una sola cookie —la de sesión— y no pide consentimiento
+(«consentimiento del art. 22.2.c RGPD, exento para el servicio pedido», ver
+`cookies.html`). El aviso de plazo es el servicio que una hace al dar el
+correo, no una newsletter: por eso se quita con un clic en la cuenta y no
+necesita doble opt-in.
 
 ## 9. Legal
 

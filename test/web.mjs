@@ -91,6 +91,20 @@ ws.addEventListener('message', (ev) => {
 });
 await new Promise((r) => ws.addEventListener('open', r, { once: true }));
 
+/**
+ * Si el navegador se cierra a mitad de una medición, hay que decirlo.
+ *
+ * Sin esto, las peticiones pendientes se quedan esperando para siempre: el
+ * bucle de eventos se queda vacío, Node avisa «unsettled top-level await» y
+ * sale con el código 13, sin decir qué pasó. Con esto, lo que está debajo
+ * de `esperarFichas()` falla con un mensaje que sí dice algo: el navegador
+ * murió.
+ */
+ws.addEventListener('close', () => {
+  for (const { reject } of pendientes.values()) reject(new Error('el navegador se cerró a mitad de la medición'));
+  pendientes.clear();
+});
+
 function enviar(method, params = {}) {
   id++;
   const mid = id;
@@ -135,6 +149,27 @@ async function esperarFichas(minimo = 1) {
     await new Promise((r) => setTimeout(r, 300));
   }
   return 0;
+}
+
+/**
+ * Cuenta las fichas al terminar el beat de búsqueda.
+ *
+ * «Comprobar» no pinta la lista al momento: primero enseña ~1 s el titular
+ * («Buscando N becas…») y la lista llega al caer el telón. Contar a tiempo
+ * fijo —antes, a 400 ms— contaba en mitad del titular, cuando el conteo
+ * es cero por diseño. Se espera a que el titular se vaya; lo que queda
+ * detrás ya es la lista de verdad.
+ */
+async function contarTrasBuscar() {
+  for (let i = 0; i < 80; i++) {
+    const n = await evaluar(`(() => {
+      if (document.querySelector('.buscando')) return null;
+      return document.querySelectorAll('[data-beca]').length;
+    })()`);
+    if (n !== null) return n;
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  return evaluar('document.querySelectorAll("[data-beca]").length');
 }
 
 await enviar('Page.enable');
@@ -200,23 +235,23 @@ console.log('El filtro de destino');
 const sinFiltro = buscador.fichas;
 
 for (const cod of ['ES', 'DE', 'FR', 'IT', 'GB']) {
-  const n = await evaluar(`(() => {
+  await evaluar(`(() => {
     const s = document.querySelector('#pais');
     s.value = '${cod}';
     document.querySelector('#buscar').click();
-    return new Promise(r => setTimeout(() => r(document.querySelectorAll('[data-beca]').length), 400));
   })()`);
+  const n = await contarTrasBuscar();
   ok(n < sinFiltro, `filtrar por ${cod} no ha recortado la lista (siguen ${n})`);
   ok(n > 0, `filtrar por ${cod} ha dejado la lista vacía`);
 }
 
 // Y que al quitar el filtro vuelva todo.
-const vuelta = await evaluar(`(() => {
+await evaluar(`(() => {
   const s = document.querySelector('#pais');
   s.value = '';
   document.querySelector('#buscar').click();
-  return new Promise(r => setTimeout(() => r(document.querySelectorAll('[data-beca]').length), 400));
 })()`);
+const vuelta = await contarTrasBuscar();
 ok(vuelta === sinFiltro, `quitar el filtro no ha restaurado la lista (${vuelta} de ${sinFiltro})`);
 
 // ── La píldora de destino ─────────────────────────────────────────────────

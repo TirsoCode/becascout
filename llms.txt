@@ -7,7 +7,7 @@ BecasScout no tramita solicitudes, no cobra comisión y no es ningún organismo 
 ## Páginas
 
 - [Inicio](https://becascout.vercel.app/): qué hace BecasScout, cómo funciona y de dónde sale cada dato.
-- [Becas Erasmus Mundus](https://becascout.vercel.app/erasmus-mundus.html): cuantía de la beca, requisitos y la lista de los 75 programas del catálogo oficial, con la cita de la Comisión Europea.
+- [Becas Erasmus Mundus](https://becascout.vercel.app/erasmus-mundus.html): cuantía de la beca, requisitos y la lista de los 217 programas del catálogo oficial, con la cita de la Comisión Europea.
 - [Método y quién está detrás](https://becascout.vercel.app/sobre.html): cómo se extraen los requisitos y por qué la cita es obligatoria.
 - [Buscador de becas](https://becascout.vercel.app/becas.html): comparador de requisitos por perfil (la lista completa se lee con cuenta; la página no se indexa).
 - [Feed RSS](https://becascout.vercel.app/feed.xml): las convocatorias de la base, con su importe y su cita.
@@ -24,8 +24,8 @@ BecasScout no tramita solicitudes, no cobra comisión y no es ningún organismo 
 - BOE (Boletín Oficial del Estado): sumario diario en abierto y XML por anuncio.
 - EACEA: catálogo oficial de Erasmus Mundus Joint Masters, con la ficha de cada programa.
 - Erasmus+ (portal de la Comisión Europea): cuantía, duración y requisito de título, con la cita literal.
-- EUR-Lex.
-- DAAD, Campus France y Study in NL (conectores en camino).
+- BDNS (Base de Datos Nacional de Subvenciones): presupuesto, plazo y enlace a las Bases de cada convocatoria.
+- DAAD: el catálogo de becas de Alemania, con el nivel de cada programa.
 
 ## Contacto
 

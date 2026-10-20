@@ -14,7 +14,7 @@
      distintas. -->
 <meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://becascout.vercel.app/supabase-config.html">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M6 3.4h8l4.6 4.6v12.6H6z' fill='%23F7F4EC'/%3E%3Cpath d='M14 3.4v4.6h4.6z' fill='%23D8D0BF'/%3E%3Cpath d='M8.4 10.4h4.4M8.4 13.2h3' stroke='%23C2B9A6' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M18.9 4.6 12 14.2' stroke='%231A2A24' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M12 14.2 9.9 17.2' stroke='%231A2A24' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16.6 7.7 14.6 10.3' stroke='%23A9BFB4' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -36,10 +36,10 @@
   </div>
 
   <p style="margin-top:32px;font-size:15px;color:#5E686D">Puedes añadirlas desde <code>vercel.com</code> → <em>Tu proyecto</em> → <em>Variables de entorno</em> → <em>Añadir</em>.</p>
-  <p style="margin-top:8px;font-size:15px;color:#5E686D">El botón <strong>Crear cuenta</strong> de la cabecera se mantiene: al hacer clic en él se crea una cuenta sin contraseña (flujo sin Supabase). Si tienes las claves, la cuenta se confirma automáticamente y no tendrás que registrarte de nuevo.</p>
+  <p style="margin-top:8px;font-size:15px;color:#5E686D">El botón <strong>Crear cuenta</strong> de la cabecera se mantiene. Si tienes las claves, la cuenta se confirma automáticamente y no tendrás que registrarte de nuevo.</p>
 
   <p style="margin-top:24px;font-size:15px">
-    <strong>Por qué la separación.</strong> La aplicación usa una cookie <code>bs.cookie</code> firmada y JWTs firmados en el servidor; las claves en el código no pueden guardarse. Al moverlas a Vercel, su protección es otra responsabilidad del que mantiene el despliegue.
+    La sesión del servidor es una cookie <code>bs_sesion</code> HttpOnly cuyo token vive en la tabla <code>sesiones</code>. Sin las tres variables de Supabase, el alta de cuenta no se guarda y la API responde «el registro de cuentas no está disponible». Redespliega después de añadir las variables: Vercel no las interpone en caliente.
   </p>
 
   <p style="margin-top:24px;font-size:13px;color:#8A9499">Siempre puedes contactar conmigo: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a></p>

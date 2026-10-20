@@ -41,6 +41,22 @@ const ETIQUETA = {
 
 let becas = [];
 
+/* El beat del momento de búsqueda: cuánto dura el marco «Buscando N becas…»
+ * antes de que llegue la lista.
+ *
+ * El filtrado es instantáneo —la base entera ya está en el navegador—, así
+ * que esa espera no mide trabajo: la sustituye por un relato en cinco
+ * entradas —antetítulo, titular, párrafo, pasos y promesa— que en menos de
+ * un segundo no se leería. A quien pidió menos movimiento
+ * (`prefers-reduced-motion`) los gestos dan igual, y el beat se acorta:
+ * que exista, que no maree.
+ */
+const BEAT_BUSQUEDA = matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 1400;
+let beatPrevisto = null;
+/* Un contador abierto por búsqueda: al reponer el titular, el anterior se
+ * queda sin corazón —su `requestAnimationFrame` comprueba la ficha y para. */
+let cuentaAbierta = 0;
+
 /* ── Arranque ───────────────────────────────────────────────────────────── */
 
 async function cargar() {
@@ -57,7 +73,14 @@ async function cargar() {
   }
   llenarPaises();
   rellenarPerfil();
-  pintar();
+  // La primera pintada lleva el momento también: es la primera vez que se ve
+  // cuántas convocatorias hay detrás. Sin base no hay titular que contar.
+  if (becas.length) {
+    cartelBusqueda();
+    beatPrevisto = setTimeout(pintar, BEAT_BUSQUEDA);
+  } else {
+    pintar();
+  }
 }
 
 function rellenarPerfil() {
@@ -214,6 +237,119 @@ function motivo(r, ok) {
               : `El máximo es ${r.valor} y tienes ${p.edad}`;
   }
   return '';
+}
+
+/* ── El momento de la búsqueda ─────────────────────────────────────────── */
+
+/**
+ * La pantalla del titular: «Buscando 390 becas para Alemania».
+ *
+ * La cifra es de **toda** la base, no del recorte que saldrá después: lo que
+ * se está mirando es el corpus entero —igual que la referencia, «Searching
+ * 53,481 professors»—, y lo que pasa el filtro es lo que enseña la lista al
+ * caer el telón. El número va con el formato castellano: hoy son 390, y el
+ * día que sean 2.619 sale «2.619» y no «2619».
+ *
+ * Aquí es donde más tienta copiar a la referencia, y la única parte que no
+ * se puede: allí cada ficha lleva un «MATCH 87». Un encaje con porcentaje
+ * es exactamente la probabilidad inventada que este producto no enseña (ver
+ * «El otro límite» en AGENTS.md). El beat es teatro; la cifra, la única
+ * verdad que hay que contar: cuántas hay.
+ *
+ * Va dentro de `#zona-lista` porque el titular **sustituye** a la lista
+ * durante el beat: no hay fichas detrás de él que tapar. Y trae la página
+ * arriba —con `scrollIntoView`—, porque si se comprobó desde media lista
+ * bajada, el nuevo marco queda lejos del sitio donde se lee.
+ */
+function cartelBusqueda() {
+  const p = perfil.leer();
+  const partes = [];
+  if (p.nivel) partes.push(`de ${p.nivel}`);
+  if (p.pais) partes.push(`para ${nombreDe(p.pais)}`);
+  // Sin filtro se dice el ámbito que sí es verdad: lo que hay en la base
+  // es de aquí. No se pone «para ti», que finge un mérito que no hay.
+  const objetivo = partes.length ? partes.join(' ') : 'en toda Europa';
+  const num = becas.length.toLocaleString('es-ES');
+
+  $('#zona-lista').innerHTML = `
+    <div class="buscando" role="status">
+      <p class="buscando-k">Convocatorias de Europa</p>
+      <p class="buscando-h"><span aria-hidden="true">Buscando <b class="cuenta">0</b> becas ${esc(objetivo)}</span>
+        <span class="sr-only">Buscando ${num} becas ${esc(objetivo)}</span></p>
+      <p class="buscando-lede">Leemos las bases oficiales publicadas por el BOE, el catálogo de Erasmus Mundus, el DAAD y la Comisión Europea. De cada convocatoria: los requisitos, los plazos y los importes.</p>
+      <ul class="buscando-pasos">
+        <li><span class="n">01</span>Las bases, tal como se publican</li>
+        <li><span class="n">02</span>Los requisitos, sacados del texto</li>
+        <li><span class="n">03</span>La cita, en cada dato</li>
+      </ul>
+      <p class="buscando-sub"><span class="buscando-spin"></span>requisito a requisito contra tu perfil</p>
+    </div>`;
+  // Puesta en escena: el marco tiene que estar A LA VISTA. `#zona-lista`
+  // queda debajo de la barra del perfil —en un móvil, casi un formulario
+  // entero—, así que un `scrollTo(0,0)` era el plano equivocado: se veía el
+  // formulario y el titular detrás del pliegue. El propio marco manda.
+  $('#zona-lista .buscando').scrollIntoView({ block: 'start', behavior: 'instant' });
+  contarHasta($('#zona-lista .buscando-h .cuenta'), becas.length);
+}
+
+/**
+ * El número del titular sube desde 0 hasta el total, y al aterrizar da un
+ * pequeño golpe (`.contado`).
+ *
+ * Es el mismo teatro que el beat (AGENTS.md, «El momento de la búsqueda»):
+ * la búsqueda no tarda —todo está en el navegador—, pero una cifra que
+ * sube cuenta la historia que un total estático no cuenta: las que va
+ * «encontrando». Va con easing hacia fuera —rápido al principio, cuando
+ * «encuentra» de muchas en muchas, y frenando hasta exactamente el total—;
+ * no es un `setInterval` lineal, que se leería como una cuenta de coche.
+ *
+ * El valor accesible lo lleva el `.sr-only` del titular (el total, estático);
+ * el número que sube es ciego para el lector de pantalla, que es donde
+ * debe estar: una cuenta que cambia cada frame es ruido, no información.
+ */
+function contarHasta(nodo, total, duracion = 1100) {
+  if (!nodo) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    nodo.textContent = total.toLocaleString('es-ES');
+    return;
+  }
+  const ficha = ++cuentaAbierta;
+  const t0 = performance.now();
+  const paso = (t) => {
+    if (ficha !== cuentaAbierta) return;        // otra búsqueda lo relevó
+    // El `t` del primer fotograma puede ser **anterior** a `t0`: el frame
+    // pudo empezar antes de que acabara el clic. Sin el recorte, `p` sale
+    // negativo y el easing devuelve un número negativo —«Buscando -798
+    // becas»—, que es lo que se vio una vez. El reloj va de 0 a 1 y ni una
+    // palabra más.
+    const p = Math.min(Math.max((t - t0) / duracion, 0), 1);
+    nodo.textContent = Math.round(total * (1 - Math.pow(1 - p, 3))).toLocaleString('es-ES');
+    if (p === 1) { nodo.classList.add('contado'); return; }
+    requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+/**
+ * Lo que hace «Comprobar»: guarda el perfil, enseña el marco y pinta al
+ * final del beat.
+ *
+ * `clearTimeout` para que dos comprobaciones seguidas no acumulen beats
+ * pendientes: el último manda. Y si la base aún no llegó —«Comprobar» antes
+ * de que termine el `fetch`—, no hay titular que diga «Buscando 0 becas»:
+ * se guarda el perfil y punto, porque cuando la base llegue se pinta sola.
+ */
+function comprobar() {
+  perfil.guardar({
+    nota: $('#nota').value.trim(),
+    edad: $('#edad').value.trim(),
+    nivel: $('#nivel').value,
+    pais: $('#pais').value,
+  });
+  if (!becas.length) return;
+  clearTimeout(beatPrevisto);
+  cartelBusqueda();
+  beatPrevisto = setTimeout(pintar, BEAT_BUSQUEDA);
 }
 
 /* ── Render ─────────────────────────────────────────────────────────────── */
@@ -597,15 +733,7 @@ function esc(s) {
 
 /* ── Eventos ────────────────────────────────────────────────────────────── */
 
-$('#buscar').addEventListener('click', () => {
-  perfil.guardar({
-    nota: $('#nota').value.trim(),
-    edad: $('#edad').value.trim(),
-    nivel: $('#nivel').value,
-    pais: $('#pais').value,
-  });
-  pintar();
-});
+$('#buscar').addEventListener('click', comprobar);
 
 $('#pais').addEventListener('change', () => $('#buscar').click());
 $('#nivel').addEventListener('change', () => $('#buscar').click());

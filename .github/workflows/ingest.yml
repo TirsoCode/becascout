@@ -99,6 +99,21 @@ jobs:
             --concurrencia "${{ inputs.concurrencia || 6 }}" \
             2>&1 | tee ingesta.log
 
+      - name: Paginas (feed, Erasmus Mundus, llms-full)
+        # Continuar si la verificación de hechos con la Comisión falla — es una
+        # red externa y el job de la ingesta no puede depender de ella: las
+        # páginas quedan como estaban (mismo trato que una fuente caída).
+        continue-on-error: true
+        run: |
+          # Mismo `pipefail` que el paso de Ingesta, y por el mismo motivo: sin
+          # él, el código de salida de este paso es el de `tee`, que siempre es
+          # cero. Un `paginas.mjs` revientado —o una consulta a la Comisión que
+          # se quede a mitad— saldría en verde y el commit llevaría páginas
+          # viejas o a medio escribir.
+          set -o pipefail
+
+          node ingest/paginas.mjs 2>&1 | tee paginas.log
+
       - name: Resumen
         if: always()
         run: |
@@ -133,7 +148,9 @@ jobs:
         if: always()
         with:
           name: log-ingesta
-          path: ingesta.log
+          path: |
+            ingesta.log
+            paginas.log
           retention-days: 14
 
       - name: Commit
@@ -147,11 +164,13 @@ jobs:
           git config user.name  'BecasScout'
           git config user.email '284927969+TirsoCode@users.noreply.github.com'
 
-          # Solo `data/becas.json`. Ni una línea más: en esta carpeta también
-          # vive el almacén de respaldo con correos y sesiones, y aunque
-          # `.gitignore` lo tapa, `.gitignore` no es lo que decide qué se
-          # sube. Ese fichero es `.vercelignore`.
-          git add data/becas.json
+          # Cuatro ficheros: la base y las tres páginas que `paginas.mjs`
+          # regenera a partir de ella. Van en la misma línea a mano y no
+          # `git add .` porque en esta carpeta también vive el almacén de
+          # respaldo con correos y sesiones, y aunque `.gitignore` lo tapa,
+          # `.gitignore` no es lo que decide qué se sube. Ese fichero es
+          # `.vercelignore`.
+          git add data/becas.json erasmus-mundus.html feed.xml llms-full.txt
 
           # Un fichero sin fichas no es un resultado: es un fallo con forma de
           # fichero. No se publica, y el paso falla para que se vea.
@@ -185,15 +204,16 @@ jobs:
           # quedó con lo que hubiera, sin la ventana nueva, y el paso salió
           # en rojo sin que nadie entendiera por qué. Rebasar antes de
           # subir deja el commit de datos encima de lo que haya ahora, y como
-          # lo único que toca es `data/becas.json`, el conflicto —si lo hay—
-          # se resuelve sin perder nada de nadie.
+          # solo toca ficheros generados —la base y las tres páginas—, el
+          # conflicto, si lo hay, se resuelve sin perder nada de nadie.
           git fetch origin main
           git rebase origin/main || {
-            # Los dos lados tocamos `data/becas.json`. Gana esta pasada, que
+            # Los dos lados tocamos ficheros generados. Gana esta pasada, que
             # es la que acaba de leer el BOE y la que cumple el invariante de
-            # `ingest/run.mjs`.
+            # `ingest/run.mjs`; las páginas se regeneran a partir de ella, así
+            # que la recuperación basta con volver a añadirlas.
             git checkout --theirs -- data/becas.json || true
-            git add data/becas.json
+            git add data/becas.json erasmus-mundus.html feed.xml llms-full.txt 2>/dev/null || true
             GIT_EDITOR=true git rebase --continue || true
           }
 

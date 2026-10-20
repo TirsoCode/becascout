@@ -83,17 +83,29 @@ auth/
   callback.html       receptor del token de Google
   callback.js         su lógica. Aparte porque la CSP no deja guiones inline
 lib/
-  store.js            cuentas y sesiones. Postgres, con fichero de respaldo
+  store.js            cuentas, sesiones y avisos. Postgres, con fichero de respaldo
 ingest/
   boe.mjs             Boletín Oficial del Estado (sin clave, sin coste)
   xml.mjs             parser de XML mínimo, sin dependencias
-  extract.mjs         requisitos, con LLM o por reglas
+  consultas.mjs       las piezas de red que se repiten en los conectores
+  extract.mjs         requisitos, por reglas
+  ensamblar.mjs       qué se escribe en becas.json. Fuera de run.mjs para poder probarlo
   run.mjs             orquesta la ingesta
+  bdns.mjs            registro administrativo. Da presupuesto, plazo y Bases
+  daad.mjs            catálogo de becas de Alemania. Solo pasa con Chrome
+  ue.mjs              convocatorias de la Comisión (SEDIA), en nombre propio
   erasmus.mjs         catálogo de Erasmus Mundus. También refresca sus hechos
+  erasmus-paises.mjs  los países de cada programa. A mano, no en cada pasada
   paginas.mjs         genera erasmus-mundus.html, feed.xml y llms-full.txt
 supabase/migrations/  SQL de las tablas
 test/
   store.mjs           el almacén contra un Supabase de mentira
+  extract.mjs         las reglas de extracción
+  filtro.mjs          qué es una beca y qué no
+  ensamblar.mjs       lo que llega a data/becas.json
+  pais.mjs            el filtro de destino y de nivel
+  avisos.mjs          los avisos de plazo, de punta a punta
+  web.mjs             lo que se ve en el navegador
 data/becas.json       salida de la ingesta
 ```
 
@@ -176,6 +188,155 @@ borde en la tarjeta. Sin ella las 85 fichas pixeladas se leen como una sola
 mancha y no se distingue que hay más debajo, que es lo que hace que alguien
 siga bajando. Va en la retícula editorial y no como marco, y por eso es un
 `.lock + .lock::before` y no un `border` en `.beca`.
+
+### La encuesta de llegada
+
+Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar: de
+dónde nos ha conocido (ChatGPT, Claude, Instagram, TikTok, YouTube, Reddit, un
+amigo), cada una con el logotipo de la plataforma a color. La respuesta vive
+en `cuentas.origen` y no en el navegador: lo que se quiere saber es por dónde
+llega la gente, y eso en `localStorage` no se puede contar. Se pregunta una
+vez, se conteste o se pase, y a quien vuelve a entrar no se le pregunta.
+
+Dos cosas que no son obvias y conviene no deshacer:
+
+- **`registro-google` responde `nuevo`**, y con eso decide la web si pregunta.
+  El callback de Google (`auth/callback.html`) deja la bandera en
+  `sessionStorage` porque la página que crea la cuenta no es la que aterriza.
+- **La lista de respuestas está en dos sitios**: `ORIGENES` en `js/auth.js` (lo
+  que se enseña) y `ORIGENES` en `api/[...ruta].js` (lo que se acepta). El
+  filtro del servidor no es paranoia: la columna es un texto que el navegador
+  manda, y sin lista cerrada entraría lo que a alguien le apeteciera escribir.
+
+La columna llegó a existir el 20 de octubre de 2026, con la migración
+`0002_origen.sql` aplicada en el proyecto: hasta entonces la pregunta se
+enseñaba igual, pero la respuesta se perdía en silencio al no existir la
+columna. `NULL` es un estado legítimo —hay cuentas anteriores a la pregunta y
+gente que pasa sin contestar—, y «no lo sabemos» no se rellena con un valor
+por defecto.
+
+## Los avisos de plazo
+
+Es la razón por la que alguien da su correo, y desde el 20 de octubre de 2026
+existe: un cron diario manda un correo cuando una convocatoria de la base
+cierra en los próximos 7 días. Tres decisiones que conviene no deshacer.
+
+**El aviso es opt-out, no opt-in.** `cuentas.avisos` nace `not null default
+true` (migración `0003_avisos.sql`): la cuenta se crea justo para esto —es la
+promesa del FAQ de la portada—, así que pedir permiso para avisar sería pedir
+el producto que ya se está pidiendo. Desactivarlo es un interruptor en el
+modal de cuenta, y con eso el aviso se apaga. Por eso `privacidad.html`
+responde con el **art. 6.1.b** (ejecución del contrato) y no con el 6.1.a: un
+opt-out no es un consentimiento. La encuesta de llegada sí sigue en 6.1.a,
+porque esa pregunta es opcional y se puede pasar.
+
+**Lo que se marca es lo que se envió, y se marca DESPUÉS.** La tabla `avisos`
+no es una cola: es el registro de lo ya salido, con clave `(correo, beca)`.
+Si el envío falla, la fila no se escribe y la pasada del día siguiente
+reintenta. Marcar antes de enviar agendaría avisos para siempre perdidos: el
+primer correo que se pierde por un corte de Resend se convertiría en un plazo
+que nunca se anuncia. Por eso, sin `RESEND_API_KEY` o `CORREO_DE`, la pasada
+contesta `{ ok: true, motivo: 'sin configuración de envío', pendientes: N }` y
+**no toca nada**: la cola espera a que se configure.
+
+**La base la lee el cron por HTTP, del mismo anfitrión.** En Vercel el disco
+de una función es su bundle de despliegue, no el repositorio: leer
+`data/becas.json` con una ruta relativa ahí no existe. La pasada lo pide a
+`${host}/data/becas.json` —en local, `serve.mjs` sirve `/data/`; en
+producción, `.vercelignore` deja subir el fichero, que es el que el buscador
+pide desde el navegador—. Por eso `baseURL()` elige el esquema según el
+anfitrión: en local es http y pedir https a un puerto de http muere con un
+error de TLS que no dice nada del servidor.
+
+Lo que el cron **no** usa, y por qué:
+
+- **El campo `cerrada` del fichero.** Es del día en que se generó la base y
+  puede mentir: hay ficha marcada cerrada que sigue abierta. La fecha manda, y
+  la fecha es `cierra`.
+- **Un plazo en días hábiles.** No se convierte a fecha: es una regla relativa
+  y el día exacto depende de la publicación, del cómputo de hábiles y de los
+  festivos. Una fecha calculada tendría el aspecto de un dato comprobable y
+  estaría mal.
+- **Cualquier porcentaje de encaje.** El correo lleva título, fecha de cierre
+  y enlace a la convocatoria oficial. Nada más.
+
+Dos techos, por lo mismo: 10 convocatorias por correo y 50 correos por pasada.
+Lo que se pasa del tope **no se marca**, así que sale al día siguiente: la cola
+avanza y nadie pierde su aviso.
+
+**El cron responde 200 en todo lo que sea un fallo de la pasada** —la base no
+se pudo leer, el almacén no respondió, Resend falló— y **401 solo cuando la
+llamada no trae el `CRON_SECRET`**, que no es un fallo de la pasada sino una
+llamada que no iba autorizada. Por eso la ruta va envuelta en su propio
+`catch`: si `seleccionar()` o el cálculo de la fecha reventan, la respuesta
+sigue siendo 200 con `{ ok: false, motivo }` y no el 503 del `catch` general
+del handler, que dice «el registro de cuentas no está disponible» y no
+describe el fallo. La comparación del secreto es en **tiempo constante**
+(`timingSafeEqual`): con `!==` se mide.
+
+Y dos cosas que se pasarían por alto:
+
+- **PostgREST trunca a 1000 filas sin decir nada.** `max-rows` es 1000 por
+  defecto, así que una consulta que devuelve más sale recortada y sin error:
+  las cuentas que quedaban fuera **no recibían aviso**, y el registro de lo
+  enviado se quedaba corto, con lo que **el mismo aviso volvía cada día**.
+  Por eso `leerTabla()` pagina con la cabecera `Range` y lee hasta el
+  `Content-Range`.
+- **`hoyMadrid()` no puede depender del patrón regional.** `Intl…format` con
+  `en-CA` devuelve `AAAA-MM-DD` *si la configuración regional es esa*, y con
+  otra devuelve `10/20/2026`: el `split('-')` da `NaN` y la fecha reventaba.
+  Va con `formatToParts`, que devuelve las partes sueltas y no depende de cómo
+  las formatee la máquina.
+
+Las variables que necesita, en Vercel:
+
+```
+RESEND_API_KEY=   la clave de Resend (resend.com → API keys)
+CORREO_DE=        el remitente: "BecasScout <avisos@tu-dominio>"
+CRON_SECRET=      la contraseña que el cron exige en `authorization: Bearer …`
+```
+
+**El dominio del remitente tiene que estar verificado en Resend.** Sin eso,
+la API contesta 403 y solo se puede enviar al propio correo de la cuenta de
+Resend. Y `CRON_SECRET` se pone siempre: sin ella la ruta responde sin
+comprobar a nadie.
+
+`test/avisos.mjs` lo cubre entero contra un Supabase y un Resend de mentira:
+la ventana, el dedupe, que sin configuración no se marca nada, y que un fallo
+de Resend no consume el aviso. Y lo que **no** se comprueba aquí es que el
+correo llegue a una bandeja real: eso no se puede simular.
+
+## El momento de la búsqueda
+
+Al comprobar, la lista se sustituye un beat (~1,4 s) por un marco a página
+entera, que se trae a la vista con `scrollIntoView` —la lista está debajo de
+la barra del perfil, y en un móvil medio formulario antes del titular.
+Contenido: antetítulo, titular («Buscando 390 becas para Alemania», con el
+formato castellano de número), un párrafo con las fuentes que se leen (BOE,
+Erasmus Mundus, DAAD, Comisión), los tres pasos del método y una promesa.
+Tres decisiones que convienen no deshacer:
+
+- **La cifra es de toda la base, no del recorte del filtro.** Lo que se está
+  buscando es el corpus entero —igual que en la referencia, «Searching
+  53,481 professors»—, y lo que pasa el filtro es lo que la lista enseña al
+  terminar.
+- **La espera es teatro, y así se queda.** El filtrado es instantáneo: todo
+  está ya en el navegador. El marco entra en cadena —titular, párrafo,
+  pasos, promesa— con sus retardos (`backwards` + delay), y el número del
+  titular **sube de 0 al total** (`contarHasta`, con easing y un pequeño
+  golpe al aterrizar): una cifra que avanza cuenta «las que va encontrando»,
+  lo que un total estático no cuenta. Por eso el beat es 1,4 s: no hay beat
+  que lea un marco entero. Va en `BEAT_BUSQUEDA` (js/becas.js) y se acorta
+  para quien pidió menos movimiento —con `animation-delay: 0` en la regla de
+  *reduced motion*, que sin él los bloques con retardo aparecerían tarde y de
+  golpe, y el contador fijo en el total. El valor que lee un lector de
+  pantalla va estático en `.sr-only` (la cuenta que cambia cada frame es
+  ruido, no información).
+- **Este es el sitio donde NO se imita del todo a la referencia.**
+  ProfScout acompaña el titular con un «MATCH 87» en cada ficha. Aquí jamás:
+  un encaje con porcentaje sería la probabilidad inventada que este producto
+  no enseña (ver «El otro límite»). El momento acaba en requisitos y citas,
+  no en un número de suerte.
 
 ## Fuentes de datos
 
@@ -300,6 +461,49 @@ Por eso la caché lleva la versión de las reglas con la que se extrajo
 vuelve a bajar todo. El número se sube **a mano** cuando cambia una regla
 de extracción, y por eso está escrito en mayúsculas: si se olvida, la web
 enseña una mezcla de dos versiones y no hay ningún error que lo delate.
+
+### La caché, el pool y el invariante
+
+Tres cosas de la ingesta que no se deducen del código y que costaron un
+día cada una.
+
+**La caché se carga ANTES de `recolectar`, y se le pasa como `omitir`.** Es
+un detalle de orden, no un ahorro: si se cargara después no habría forma de
+saltarse nada, porque para descartar la descarga de un anuncio ya guardado
+hay que saber que estaba guardado antes de empezar. Con la caché delante, una
+pasada diaria solo baja lo nuevo —unas pocas fichas— en vez de las 577 que
+hay en tres días.
+
+**La clave es el id del anuncio del BOE**, no el del registro. Al enriquecer
+con BDNS el registro pasa a llamarse `BDNS-910610` aunque venga del anuncio
+`BOE-A-2026-8122`, así que con la clave equivocada la caché no acertaba
+nunca: **de 577 fichas, 0 reutilizadas**. Y `boeIdBases` es el id del
+documento de **Bases**, que no es el anuncio que recorre el sumario.
+
+**Lo que la caché perdona vuelve al fichero.** El conector no baja los
+anuncios que ya tiene, así que esas fichas no pasan por `procesar` y nunca
+están en `registros`: si al escribir solo se escriben las de `registros`, la
+caché se come las fichas. El 19 de octubre de 2026 pasó —la base pasó de
+2.626 fichas a 76 y la web se quedó con el 3 % de lo que tenía— y el paso
+siguiente salió en verde. `recolectar` devuelve ahora `omitidas` (los ids
+que la caché perdonó) y `run.mjs` los vuelve a poner, con `cerrada`
+recalculada, porque el de la caché tiene la fecha del día en que se extrajo.
+
+**El pool va por tandas, no con un semáforo**, para que `data/becas.json`
+salga siempre con las filas en el mismo orden: el fichero se commitea dos
+veces al día, y un diff que reordena las filas enteras cada vez no dice nada
+de qué ha cambiado. Subir la concurrencia **no sale gratis** (ver «El WAF de
+BDNS»): por eso el número está en una bandera y no escrito en el código.
+
+**Hay un invariante: ni una ficha menos.** Toda convocatoria que el BOE ha
+publicado en la ventana y ha pasado el filtro tiene que estar en el fichero.
+Si el BOE da N y en el fichero hay menos, `run.mjs` sale con error y **no
+escribe el fichero**: la web sigue con el último `becas.json` bueno. La regla
+vive en `ingest/ensamblar.mjs` —fuera de `run.mjs` para poder probarla—
+y la vigila `test/ensamblar.mjs`. Y `data/becas.json` es **la foto de la
+ventana, no un archivo**: contiene lo publicado en los últimos `--dias`
+días, más el catálogo de Erasmus Mundus. Lo que se sale de la ventana, fuera.
+
 ## El filtro: qué es una beca y qué no
 
 El BOE publica cada día unas 230 noticias y unas 5 convocatorias. Sin filtro,
@@ -353,7 +557,10 @@ de actas y dos casos más. **Ninguna beca perdida.**
 node ingest/run.mjs --desde 2025-09-01 --hasta 2025-09-30   # ingesta real
 node test/store.mjs                                            # cuentas, sin red
 node test/extract.mjs                                          # reglas de extracción
+node test/filtro.mjs                                           # qué es una beca y qué no
+node test/ensamblar.mjs                                        # lo que llega al fichero
 node test/pais.mjs                                             # el filtro de destino
+node test/avisos.mjs                                           # los avisos de plazo
 node test/web.mjs                                              # lo que se ve en el navegador
 ```
 
@@ -390,6 +597,28 @@ node serve.mjs &
 node test/web.mjs http://localhost:5173
 ```
 
+**Si el test falla con cosas raras —«el titular no se lee», un
+`Cannot set properties of null`—, mira antes el puerto 9222.** El test
+conecta con Chrome por el protocolo de depuración, y si otro Chrome lo tiene
+tomado —uno que se quedó colgado de una pasada anterior, o uno de una
+captura— el test se engancha a **ese** navegador y mide una pestaña que no
+es la suya. Pasa por un fallo de la web y no lo es: `ss -ltnp | grep 9222`
+y, si hay un Chrome ahí, matarlo. La página puede estar perfectamente bien.
+
+`test/filtro.mjs` comprueba **qué es una beca y qué no**, con títulos
+reales del BOE y el epígrafe que les puso el boletín: que un «Real Decreto
+por el que se designa el jurado» no entre, y que una «convocatoria de Junta
+General» tampoco. Salen del BOE de verdad, no de la red.
+
+`test/ensamblar.mjs` comprueba la regla que se rompió el 19 de octubre de
+2026: **ni una ficha menos**. La caché no ahorra solo descargas, decide qué
+fichas existen, y un fallo ahí se ve como un número más en el log.
+
+`test/avisos.mjs` comprueba los avisos de plazo de punta a punta contra un
+Supabase y un Resend de mentira: la ventana de 7 días, el dedupe por
+(correo, beca), que sin configuración de envío no se marca nada, y que un
+fallo de Resend no consume el aviso.
+
 Lo que **no** hay todavía es un test del **filtro** (`motivoDescarte` en
 `ingest/boe.mjs`). Hoy se comprueba a mano, mirando el log de la pasada y
 revisando la carpeta «sin señal de convocatoria» uno a uno. Es el siguiente
@@ -415,6 +644,20 @@ falte un `git push`. El orden correcto es **commit → push → deploy**.
 ni se sirvieron: la tarjeta social y el logo del JSON-LD daban 404 en
 producción. Para los ficheros que hay que servir y además versionar, la
 excepción va **después** de la regla.
+
+**Y `.vercelignore` es un fichero distinto del `.gitignore`, y el que manda
+al desplegar.** Se dio por resuelto dos veces y las dos estaba mal: el 17 de
+octubre de 2026 se metieron `data/usuarios.json` y `data/sesiones.json` en el
+`.gitignore` —que protege del git, no del despliegue— y el 18 de octubre
+resultó que `https://becascout.vercel.app/data/sesiones.json` se servía en
+abierto, con las sesiones de las cuentas de prueba dentro. Lo que decide qué
+sube a Vercel es `.vercelignore`, y ahí faltaban.
+
+La regla que se queda: **todo lo que no deba leerse por URL va en
+`.vercelignore`; el `.gitignore` no lo cubre.** Son dos listas distintas y
+una no sustituye a la otra. Los tres ficheros con correos dentro —
+`data/usuarios.json`, `data/sesiones.json` y `data/avisos.json` — están en
+las dos, y `data/becas.json` en ninguna: ese sí va, porque es el producto.
 
 **Comprobar lo que se sirve, no lo que hay en el disco.** Un despliegue puede
 dejar fuera ficheros sin avisar: el 19 de octubre de 2026 un despliegue hecho
@@ -489,6 +732,26 @@ Después de añadirlas, la aplicación podrá confirmar automáticamente una cue
 registrarse y mantener las sesiones. Mientras no estén puestas, la página
 supabase-config.html se enseña al que llega.
 
+**Las migraciones se aplican con `supabase db push`, y aquí hay que ir por el
+pooler.** El proyecto es `pvyszdazcqsynvnkbeme` (eu-west-1) y la contraseña
+de Postgres está en `.env.local` (nunca en el repositorio). La conexión
+directa a `db.pvyszdazcqsynvnkbeme.supabase.co` **no funciona desde esta
+máquina**: el host resuelve solo a IPv6 y aquí no hay ruta, así que sale un
+`ECONNREFUSED` que no dice nada del problema. La que sí va es la del pooler
+de sesión, que está en `supabase/.temp/pooler-url`:
+
+```bash
+supabase db push --db-url "postgresql://postgres.pvyszdazcqsynvnkbeme:$PASS@aws-0-eu-west-1.pooler.supabase.com:5432/postgres"
+```
+
+El pooler en modo sesión permite DDL y el historial de migraciones sin
+problemas. Y para comprobar una migración a mano, `psql` **no está
+instalado**: la CLI de Supabase lo hace con `supabase db query`.
+
+Las tres migraciones aplicadas hasta el 20 de octubre de 2026: `0001`
+(cuentas y sesiones), `0002` (la columna `origen` de la encuesta de llegada) y
+`0003` (la columna `avisos` y la tabla `avisos`).
+
 ## Lo que no se hace
 
 - No se cobra comisión ni se tramita nada.
@@ -508,156 +771,92 @@ supabase-config.html se enseña al que llega.
 
 ## Tareas para la próxima sesión
 
-Estado a cierre del 16 de octubre de 2026: la web funciona, hay cuentas con
-contraseña y hay 78 convocatorias reales. Lo que queda, en orden.
+Estado a cierre del 20 de octubre de 2026: la web funciona, hay cuentas
+registradas, la base tiene 390 convocatorias reales y **los avisos de plazo
+ya están montados**. Lo que queda, en orden.
 
-### 1. La extracción por reglas — resuelto quitando el modelo
+### 1. Las claves de Google — lo único que no se puede hacer desde el repo
 
-**Hecho el 18 de octubre de 2026.** `extract.mjs` va por reglas, que es
-determinista y no necesita ninguna clave. Se quitó el camino con modelo (vía
-OpenRouter): añadía una clave, una dependencia externa y una factura para unos
-pocos requisitos más, y como nada se enseña sin su cita, no arreglaba el
-problema del producto —solo lo movía de sitio—.
+La parte que falta es **el proveedor de Google dentro de Supabase**, y es un
+panel: no hay fichero que tocar.
+
+**La vía que se eligió: Firebase da las credenciales, Supabase sigue siendo
+quien autentica.** No se migra la autenticación a Firebase, y no hace falta:
+la sesión de BecasScout la emite el servidor (`bs_sesion`, tabla `sesiones`),
+el JWT de Supabase solo sirve para que el backend sepa quién es, y las
+tablas están en Postgres. Firebase entra solo como la forma más rápida de
+conseguir un *client id* y un *secret* de Google OAuth sin pelearse con la
+pantalla de consentimiento.
+
+Los pasos, que están en el panel y no en el repositorio:
+
+1. [console.firebase.google.com](https://console.firebase.google.com) → un
+   proyecto nuevo → **Authentication → Sign-in method → Google → Habilitar**.
+   Firebase crea solo la pantalla de consentimiento y el cliente OAuth.
+2. El **client id** se ve ahí mismo. El **client secret** está en
+   [console.cloud.google.com](https://console.cloud.google.com) → APIs &
+   Services → Credentials → «Web client (auto-created by Google Service for
+   Firebase)».
+3. En ese cliente OAuth, **Authorized redirect URIs** tiene que estar
+   `https://pvyszdazcqsynvnkbeme.supabase.co/auth/v1/callback` —esta es la
+   que Google recibe de verdad, la que canjea el código por el token— y, por
+   si acaso, también `https://becascout.vercel.app/auth/callback` y
+   `http://localhost:5173/auth/callback`, que son a dónde vuelve el usuario.
+4. Supabase → **Authentication → Providers → Google → Enable**, con el id y
+   el secret.
+5. `vercel env add GOOGLE_CLIENT_ID production` con el client id, y
+   redesplegar. La API lo usa para comprobar el `aud` del token de Google.
+
+Sin el paso 3, el flujo muere en Google con un error que no dice que falta
+una URL. Ese es el fallo que más tiempo cuesta cuando aparece.
+
+### 2. Las claves de los avisos
+
+Lo que hace falta para que el correo salga de verdad, y que ya está escrito:
+
+```
+vercel env add RESEND_API_KEY   production   # la clave de resend.com
+vercel env add CORREO_DE        production   # BecasScout <avisos@tudominio>
+vercel env add CRON_SECRET      production   # una contraseña larga
+```
+
+Y una cosa que no es un clic: **el dominio del remitente tiene que estar
+verificado en Resend** (resend.com/domains, con sus registros de DNS). Sin
+eso la API contesta 403 y solo se puede enviar al correo de la propia cuenta
+de Resend —que sirve para probar, no para avisar a nadie—.
+
+### 3. Desplegar
+
+Hay mucho pushed y nada en producción todavía. El orden es **commit → push →
+deploy**, y el commit tiene que estar en GitHub antes del despliegue: Vercel
+comprueba el autor contra el repositorio conectado y, si el commit solo
+existe en local, bloquea el despliegue con «the commit author doesn't have
+permission to create deployments for this project».
+
+### 4. La cobertura de la extracción
 
 Con reglas salen pocos requisitos de las Bases del BOE: el texto son
-20.000–50.000 caracteres de prosa jurídica y las expresiones regulares no llegan
-a todo. Mejorar esa cobertura es trabajo de las reglas, no de volver a meter un
-modelo.
+20.000–50.000 caracteres de prosa jurídica y las expresiones regulares no
+llegan a todo. Mejorar esa cobertura es trabajo de las reglas, no de volver
+a meter un modelo. Y cuando cambie una regla, **hay que subir
+`VERSION_REGLAS` a mano**: la caché guarda el resultado de extraer, no el
+texto, así que con el número viejo el fichero sale con una mezcla de dos
+versiones y no hay ningún error que lo delate.
 
-### 2. Terminar Supabase — la base está hecha, falta el botón de Google
+### 5. Lo que sigue abierto de la ingesta
 
-**Hecho el 17 de octubre de 2026.** Proyecto `pvyszdazcqsynvnkbeme`
-(eu-west-1), tablas `cuentas` y `sesiones` creadas con `supabase db push` desde
-`supabase/migrations/0001_cuentas.sql`, y las tres variables en Vercel
-(`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`). Las claves
-están también en `.env.local`, que no se sube a ningún sitio.
-
-**Lo que falta** es solo el proveedor de Google dentro de Supabase:
-Authentication → Providers → Google → meter el client id y el secret de Google
-Cloud. Redirect URIs a autorizar:
-`https://becascout.vercel.app/auth/callback` y
-`http://localhost:5173/auth/callback`.
-
-Hasta entonces el botón de Google usa el flujo antiguo con Google Identity
-Services, que funciona. El correo y la contraseña ya van contra Postgres.
-
-### 3. Ampliar la ingesta
-
-**Lo que ya no es el problema: la concurrencia.** El bucle de fichas iba
-secuencial, una detrás de otra, y ahí se iba el tiempo. Ahora va en pool, a 6 a
-la vez por defecto, con `--concurrencia N` para cambiarlo. Dos cosas de ahí que
-no son óbvies:
-
-- El pool va **por tandas**, no con un semáforo, para que `data/becas.json` salga
-  siempre con las filas en el mismo orden. El fichero se commitea y un diff que
-  reordena las 85 entradas cada vez no dice nada de qué ha cambiado.
-- Subir la concurrencia **no sale gratis**. BDNS va detrás de un WAF y cuando
-  te corta contesta «Acceso Denegado» **sin dar error**: el programa lo trata
-  como «esta ficha no trae nada» y la beca se queda sin presupuesto ni plazo
-  sin que nada se caiga. Ese es el motivo de que el número esté en una bandera
-  y no sea un 20 escrito en el código.
-
-**La descarga también está cacheada (esto era el bloqueo).** Antes la caché
-solo guardaba los requisitos, y se consultaba *después* de haber bajado el
-texto, que es lo caro. Una pasada de tres días bajaba 577 XML cada vez. Ahora:
-
-- La caché se carga **antes** de `recolectar` y se le pasa como `omitir`, para
-  que el conector no baje lo que ya tiene. Si se cargara después no habría
-  forma de saltarse nada.
-- Se indexa por el **id del anuncio del BOE**, no por el del registro. Al
-  enriquecer con BDNS el registro pasa a llamarse `BDNS-910610` aunque venga
-  del anuncio `BOE-A-2026-8122`, así que con la clave anterior la caché no
-  acertaba nunca: **de 577 fichas, 0 reutilizadas.** Y `boeIdBases` es el id
-  del documento de Bases, que no es el anuncio que recorre el sumario.
-- **Lo que la caché perdona vuelve al fichero.** El conector no baja los
-  anuncios que ya tiene, así que esas fichas no pasan por `procesar` y no
-  están en `registros`: si al escribir solo se escriben las de `registros`,
-  la caché se come las fichas. El 19 de octubre de 2026 pasó —la base pasó
-  de 2.626 fichas a 76 y la web se quedó con el 3 % de lo que tenía— y el
-  paso siguiente salió en verde. `recolectar` devuelve ahora `omitidas` (los
-  ids que la caché perdonó) y `run.mjs` los vuelve a poner, con `cerrada`
-  recalculada, porque el de la caché tiene la fecha del día en que se extrajo.
-- **`data/becas.json` es la foto de la ventana, no un archivo.** Contiene lo
-  publicado en los últimos `--dias` días, más el catálogo de Erasmus Mundus.
-  Lo que se sale de la ventana, fuera. La razón es el filtro: hasta el 18 de
-  octubre de 2026 el sumario se publicaba entero y la base tenía 2.400
-  noticias administrativas mezcladas con las becas, y arrastrarlas hacia
-  delante las habría dejado para siempre.
-- Hay un **invariante**: toda convocatoria que el BOE ha publicado en la
-  ventana y ha pasado el filtro tiene que estar en el fichero. Si el BOE da N
-  y en el fichero hay menos, `run.mjs` sale con error y **no escribe el
-  fichero**: la web sigue con el último `becas.json` bueno. Un base a la que
-  se le caen fichas sin avisar es lo que hay que evitar a toda costa.
-
-### Cobertura: lo que hay y lo que no
-
-A 17 de octubre de 2026, de las fichas del BOE salen ministerios y ninguna de
-comunidades autónomas, provincias o ayuntamientos. **No es un fallo del
-conector:** el sumario del BOE solo trae `metadatos` y `diario`, el boletín del
-Estado. Las autonómicas viven en 17 webs y las provinciales en otras 50.
+**Cobertura territorial.** De las fichas del BOE salen ministerios y ninguna
+de comunidades autónomas, provincias o ayuntamientos. **No es un fallo del
+conector:** el sumario del BOE solo trae `metadatos` y `diario`, el boletín
+del Estado. Las autonómicas viven en 17 webs y las provinciales en otras 50.
 
 El atajo sería **BDNS**, que es nacional y sí cubre todo el Estado, pero hoy
-solo se usa para enriquecer lo que ya viene del BOE. BDNS es una SPA de Angular
-que carga de una API interna sin documentar; desmontarla da todos los municipios
-y el riesgo de que se rompa sin avisar. Descartado de momento, y anotado aquí
-para que no se reintente a ciegas.
+solo se usa para enriquecer lo que ya viene del BOE. BDNS es una SPA de
+Angular que carga de una API interna sin documentar; desmontarla da todos los
+municipios y el riesgo de que se rompa sin avisar. Descartado de momento, y
+anotado aquí para que no se reintente a ciegas.
 
 Descartada también **EUR-Lex**, que parecía el BOE de la UE: al buscar
 becas devuelve contratos de suministros franceses —«Rue de la Bourse», «750
 Bourses CFBE»— donde «bourse» es una calle y una compra de software. Es
 legislación y contratas, no convocatorias.
-
-### 4. Avisos de plazo
-
-Es la razón por la que alguien daría su correo, y no está hecho. Necesita
-tabla `avisos`, cron diario y envío de correo (Resend o SES). Solo tiene
-sentido cuando haya plazos reales en la base, que depende del punto 1.
-
-### 5. Limpiar las cuentas de prueba — resuelto dos veces
-
-Se dio por resuelto el 17 de octubre de 2026 metiendo `data/usuarios.json` y
-`data/sesiones.json` en el `.gitignore`… y no lo estaba. El `.gitignore` protege
-del git, **no del despliegue**: quien decide qué sube a Vercel es `.vercelignore`,
-y esos dos ficheros seguían subiéndose. El 18 de octubre de 2026 resultó que
-`https://becascout.vercel.app/data/sesiones.json` se servía en abierto, con las
-sesiones de las cuentas de prueba dentro.
-
-Arreglado en `.vercelignore` (las cuatro variantes, más `test/`), que es el
-fichero que de verdad manda al desplegar. La regla que se queda: **todo lo que no
-deba leerse por URL va en `.vercelignore`; el `.gitignore` no lo cubre.** Son dos
-listas distintas y una no sustituye a la otra.
-
-### 6. `SPEC.md` y `AGENTS.md` estaban desfasados
-
-- La sección de cookies de `SPEC.md` decía que la pantalla de consentimiento
-  iba primero y luego pasó al final del pie. El aviso ya no existe: se quitó el
-  18 de octubre de 2026. La web usa una sola cookie —la de sesión—, su política
-  está enlazada en el pie y no hay consentimiento que pedir
-  (`cookies.html`, art. 22.2.c del RGPD).
-- El árbol de `AGENTS.md` ya incluye `api/`, `lib/`, `auth/`, `test/` y
-  `supabase/migrations/`. **Resuelto el 17 de octubre de 2026.**
-
-### 7. Encuesta de llegada — hecho el 18 de octubre de 2026
-
-Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar: de
-dónde nos ha conocido (ChatGPT, Claude, Instagram, TikTok, YouTube, Reddit, un
-amigo), cada una con el logotipo de la plataforma a color. La
-respuesta vive en `cuentas.origen` y no en el navegador: lo que se quiere saber
-es por dónde llega la gente, y eso en `localStorage` no se puede contar. Se
-pregunta una vez, se conteste o se pase, y a quien vuelve a entrar no se le
-pregunta.
-
-Dos cosas que no son obvias y conviene no deshacer:
-
-- **`registro-google` responde `nuevo`**, y con eso decide la web si pregunta.
-  El callback de Google (`auth/callback.html`) deja la bandera en
-  `sessionStorage` porque la página que crea la cuenta no es la que aterriza.
-- **La lista de respuestas está en dos sitios**: `ORIGENES` en `js/auth.js` (lo
-  que se enseña) y `ORIGENES` en `api/[...ruta].js` (lo que se acepta). El
-  filtro del servidor no es paranoia: la columna es un texto que el navegador
-  manda, y sin lista cerrada entraría lo que a alguien le apeteciera escribir.
-
-**Falta aplicar la migración `supabase/migrations/0002_origen.sql`** en el
-proyecto de Supabase (`supabase db push`, o pegarla en el SQL Editor). Hasta
-entonces la pregunta se enseña igual, pero la respuesta se pierde en silencio
-al no existir la columna.

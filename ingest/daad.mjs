@@ -37,7 +37,7 @@
  *
  * ── El destino ───────────────────────────────────────────────────────────
  *
- * Almost todos los programas de DAAD son para estudiar **en Alemania**, y
+ * Casi todos los programas de DAAD son para estudiar **en Alemania**, y
  * por eso el destino por defecto es `DE`. Los que son para otro sitio lo
  * dicen en su ficha («Scholarship Value», «Target Group» o el propio
  * título), y esos se detectan por el nombre del país en el texto de la
@@ -45,7 +45,7 @@
  *
  * La lista de países de la tarjeta de DAAD es «de dónde vienes», no «a
  * dónde vas»: «Only specified» significa «solo para ciertos solicitantes».
- * Confundir las dos cosas WouldWould pondría a un estudiante de India
+ * Confundir las dos cosas pondría a un estudiante de India
  * buscando una beca para estudiar en India. Por eso el destino no se saca
  * de ahí.
  */

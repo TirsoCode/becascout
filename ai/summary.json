@@ -5,7 +5,7 @@
   "type": "WebSite",
   "inLanguage": "es",
   "category": "Becas y educación",
-  "areaServed": "ES",
+  "areaServed": ["ES", "EU"],
   "contact": "privacidad@becascout.com",
   "llms_txt": "https://becascout.vercel.app/llms.txt",
   "llms_full": "https://becascout.vercel.app/llms-full.txt",
