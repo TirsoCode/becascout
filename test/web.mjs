@@ -32,12 +32,40 @@
 
 import { spawn } from 'node:child_process';
 import { mkdtemp, rm } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const WS = globalThis.WebSocket;
 const BASE = process.argv[2] ?? 'http://localhost:5173';
-const PUERTO = 9222 + (Number(process.env.PUERTO_DEBUG ?? 0) || 0);
+const PUERTO_BASE = 9222 + (Number(process.env.PUERTO_DEBUG ?? 0) || 0);
+
+/**
+ * Un puerto libre para el navegador, y no el 9222 a pelo.
+ *
+ * El protocolo de depuración se elige por puerto, y si otro Chrome lo tiene
+ * tomado —una pasada anterior que se quedó colgada, o una captura— el test
+ * se engancha a **ese** navegador y mide una pestaña que no es la suya. Se
+ * vio: el test daba «75 fichas» con la base de 390, porque estaba mirando la
+ * pestaña de otro Chrome que estaba en mitad de su propio bucle de filtros.
+ * Fallaba como si fuera un fallo de la web, y no lo era.
+ *
+ * Por eso se busca un puerto libre antes de abrir el navegador, en vez de
+ * confiar en que el anterior soltó el suyo.
+ */
+async function puertoLibre(base) {
+  for (let p = base; p < base + 60; p++) {
+    const libre = await new Promise((res) => {
+      const s = createServer();
+      s.once('error', () => res(false));
+      s.once('listening', () => s.close(() => res(true)));
+      s.listen(p, '127.0.0.1');
+    });
+    if (libre) return p;
+  }
+  throw new Error('no hay ningún puerto libre para el navegador');
+}
+const PUERTO = await puertoLibre(PUERTO_BASE);
 
 let fallos = 0;
 function ok(cond, mensaje) {

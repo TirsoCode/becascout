@@ -598,12 +598,18 @@ node test/web.mjs http://localhost:5173
 ```
 
 **Si el test falla con cosas raras —«el titular no se lee», un
-`Cannot set properties of null`—, mira antes el puerto 9222.** El test
-conecta con Chrome por el protocolo de depuración, y si otro Chrome lo tiene
-tomado —uno que se quedó colgado de una pasada anterior, o uno de una
-captura— el test se engancha a **ese** navegador y mide una pestaña que no
-es la suya. Pasa por un fallo de la web y no lo es: `ss -ltnp | grep 9222`
-y, si hay un Chrome ahí, matarlo. La página puede estar perfectamente bien.
+`Cannot set properties of null»—, mira antes el puerto de depuración.** El
+protocolo de Chrome se elige por puerto, y si otro Chrome lo tiene tomado —una
+pasada anterior que se quedó colgada, o una captura— el test se engancha a
+**ese** navegador y mide una pestaña que no es la suya. Pasó: el test daba
+«75 fichas» con la base de 390, porque estaba mirando la pestaña de otro
+Chrome que estaba en mitad de su propio bucle de filtros. Fallaba como si
+fuera un fallo de la web, y no lo era.
+
+Por eso `test/web.mjs` **busca un puerto libre** antes de abrir el navegador,
+en vez de confiar en que el anterior soltó el suyo. Si aun así falla raro,
+`ss -ltnp | grep 9222` y, si hay un Chrome ahí, matarlo: la página puede
+estar perfectamente bien.
 
 `test/filtro.mjs` comprueba **qué es una beca y qué no**, con títulos
 reales del BOE y el epígrafe que les puso el boletín: que un «Real Decreto
