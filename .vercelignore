@@ -26,10 +26,17 @@ node_modules/
 # `https://becascout.vercel.app/data/sesiones.json` se servía en abierto, con
 # las sesiones dentro: cualquiera que lo descargara se las llevaba. `data/becas.json`
 # SÍ va: el buscador lo pide desde el navegador y es el producto.
+#
+# `avisos.json` es el registro de lo enviado en el modo fichero (sin
+# Supabase) y contiene correos: mismo trato que sus dos hermanos. La misma
+# lista va también en `.gitignore`: dos listas distintas y una no sustituye
+# a la otra.
 data/usuarios.json
 data/usuarios.tmp.json
 data/sesiones.json
 data/sesiones.tmp.json
+data/avisos.json
+data/avisos.tmp.json
 
 # Las pruebas corren en local; no hay motivo para servirlas.
 test/

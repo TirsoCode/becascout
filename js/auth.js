@@ -66,7 +66,10 @@ export async function sesion() {
     const res = await fetch(`${API}/yo`, { credentials: 'same-origin' });
     if (res.ok) {
       const d = await res.json();
-      cache = { email: d.correo };
+      // `avisos` manda en el interruptor de la cuenta. `=== true` a
+      // propósito: si el servidor viejo aún no lo manda, lo que queda es
+      // `false`, no un `undefined` que el márkup tendría que adivinar.
+      cache = { email: d.correo, avisos: d.avisos === true };
       return cache;
     }
   } catch {
@@ -130,6 +133,7 @@ async function api(camino, datos) {
     error: cuerpo.error,
     correo: cuerpo.correo,
     nuevo: cuerpo.nuevo,   // solo lo manda registro-google: la cuenta acaba de nacer
+    avisos: cuerpo.avisos, // solo lo manda /avisos: el estado RECIÉN escrito, no el pedido
   };
 }
 
@@ -161,9 +165,10 @@ function abrirModal() {
       <aside class="auth-side">
         <span class="brand auth-brand">
           <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6.5 3h7.5l4.5 4.5V21h-12z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M14 3v4.5h4.5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M9 14.4l2.1 2.1 4.3-4.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6.6 3.2h7.2l4.4 4.4v13.2H6.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M13.8 3.2v4.4h4.4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M19.2 5 12.3 14.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M12.3 14.4 10.4 17.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
           <span class="brand-name">Becas<b>Scout</b></span>
         </span>
@@ -494,8 +499,18 @@ function abrirEncuesta() {
 export async function abrirAjustes() {
   // La sesión de juguete no es cuenta: no hay ajustes que dar. Salir ya está
   // a un clic en la cabecera de donde sí lo hay.
-  const s = await sesion();
+  let s = await sesion();
   if (!s || s.local) return;
+  // El cache puede venir sin `avisos`: pasa cuando la cuenta acaba de crear
+  // en este mismo navegador y `registro` no es quien la trae. Pintar el
+  // interruptor con un estado adivinado —«off» por defecto— sería mentir
+  // justo donde el producto promete «un correo cuando se acerca un plazo».
+  // Se repregunta al servidor una vez y listo.
+  if (s.avisos === undefined) {
+    cache = null;
+    s = await sesion();
+    if (!s || s.local) return;
+  }
   if (document.getElementById('scrim')) return;
 
   const scrim = document.createElement('div');
@@ -544,17 +559,87 @@ export async function abrirAjustes() {
 
       <p class="ajs-correo"></p>
 
+      <div class="avisos-fila">
+        <div class="avisos-txt">
+          <span class="avisos-t">Avisos de plazo</span>
+          <p>Un correo solo cuando una convocatoria de la lista cierra en los próximos 7 días. Lo quitas aquí mismo.</p>
+        </div>
+        <button type="button" class="switch" id="ajs-avisos" role="switch"
+                aria-checked="false" aria-label="Avisos de plazo">
+          <span class="switch-dot"></span>
+        </button>
+      </div>
+
       <div class="ajs-act">
         <button type="button" class="btn btn-quiet" id="ajs-salir">Cerrar sesión</button>
         <button type="button" class="btn btn-rust" id="ajs-borrar">Eliminar la cuenta</button>
-      </div>`;
+      </div>
+
+      <div class="modal-msg"></div>`;
 
     // El correo vuelve de la sesión y lo escribió quien registró la cuenta:
     // por textContent, como en las cabeceras.
     caja.querySelector('.ajs-correo').textContent = s.email ?? '';
     caja.querySelector('#ajs-salir').onclick = salir;
     caja.querySelector('#ajs-borrar').onclick = pasoBorrar;
+    avisosDePlazo();
     caja.focus();
+  }
+
+  /**
+   * La fila de «Avisos de plazo»: un interruptor y su promesa, nada más.
+   *
+   * El estado al abrir lo dice la sesión. El de después de pulsar lo dice
+   * el **servidor**, no la petición que se le mandó: un 401 —la sesión ha
+   * caducado mientras se leía la lista— contesta por error, y pintar lo
+   * pedido haría creer que va a llegar un correo que no va a llegar. Si no
+   * responde, se vuelve al estado de antes y la fila de abajo habla, sin
+   * cerrar el modal ni tocar a «Salir» ni a «Borrar cuenta». La respuesta
+   * se sincroniza con el cache de sesión para que reabrir el modal —o
+   * volver del paso de borrado— no enseñe un estado ya pasado.
+   */
+  function avisosDePlazo() {
+    const interruptor = caja.querySelector('#ajs-avisos');
+    const msg = caja.querySelector('.modal-msg');
+    let activados = Boolean(s.avisos);
+
+    const pinta = () => interruptor.setAttribute('aria-checked', String(activados));
+    pinta();
+
+    interruptor.onclick = async () => {
+      const antes = activados;
+      interruptor.disabled = true;
+      msg.innerHTML = '';
+
+      // Se enseña YA lo que se pide: el beat del POST es lo único que
+      // hay de respuesta visual a un dedo en un móvil. La corrección
+      // llega abajo, con la verdad del servidor.
+      activados = !antes;
+      pinta();
+
+      let res = null;
+      try {
+        res = await api('avisos', { activar: !antes });
+      } catch { /* sin respuesta: se deshace */ }
+
+      if (res?.ok) {
+        // La verdad es la del servidor, aunque coincida con lo pedido.
+        activados = res.avisos === true;
+        if (cache) cache.avisos = activados;
+      } else {
+        activados = antes;
+        // El 401 es el caso más probable: la sesión caducó mientras se leía
+        // la lista. «sin sesión» es la palabra del servidor, que habla para
+        // el servidor; quien tiene el modal delante necesita saber que tiene
+        // que volver a entrar.
+        msgDelModal(caja, res?.status === 401
+          ? 'Tu sesión ha caducado. Entra otra vez para cambiar los avisos.'
+          : (res?.error ?? 'Los avisos no se han podido cambiar ahora mismo.'));
+      }
+
+      pinta();
+      interruptor.disabled = false;
+    };
   }
 
   function pasoBorrar() {
@@ -705,7 +790,11 @@ function lanzar(scrim, cerrar, msg) {
  */
 function sesionJuguete(correo) {
   modo = 'local';
-  cache = { email: correo, local: true };
+  // `avisos: true` a propósito: la fila de ajustes se salta las sesiones de
+  // juguete (no es cuenta, no hay nada que dar), así que hoy no se pinta.
+  // La bandera viva evita que, si algún día se pinta, el interruptor muestre
+  // un estado que su propia sesión nunca ha dicho.
+  cache = { email: correo, local: true, avisos: true };
   return cache;
 }
 

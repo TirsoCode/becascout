@@ -7,6 +7,12 @@
       "permanent": true
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cron-avisos",
+      "schedule": "15 7 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

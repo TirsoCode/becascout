@@ -106,7 +106,9 @@ img, svg { display: block; max-width: 100%; }
 .brand-name { font-size: 17px; letter-spacing: -.02em; }
 .brand-name b { font-weight: 700; }
 
-.top-nav { display: flex; gap: 4px; margin-left: 8px; }
+/* La navegación no se encoge: los enlaces miden 544 px y, si el espacio
+   aprieta, el texto se parte en dos líneas y la cabecera queda coja. */
+.top-nav { display: flex; gap: 4px; margin-left: 8px; flex: none; }
 .top-nav a {
   padding: 7px 13px; font-size: 14.5px; font-weight: 450; color: var(--ink-3);
   border-radius: var(--r-pill); transition: color .16s, background .16s;
@@ -290,7 +292,7 @@ img, svg { display: block; max-width: 100%; }
 .foot { border-top: 1px solid var(--rule); padding: 34px 0; margin-top: 40px; }
 .foot-in { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .foot small { color: var(--ink-4); font-size: 13px; }
-.foot-links { margin-left: auto; display: flex; gap: 20px; }
+.foot-links { margin-left: auto; display: flex; flex-wrap: wrap; gap: 20px; }
 .foot-links a { font-size: 13.5px; color: var(--ink-3); }
 .foot-links a:hover { color: var(--brand); }
 
@@ -324,7 +326,87 @@ img, svg { display: block; max-width: 100%; }
 }
 .counts b { font-family: var(--mono); font-size: 17px; color: var(--ink); font-weight: 500; }
 
-.list { display: grid; gap: 14px; padding-bottom: 60px; }
+/* La lista entra con una subida corta: llega justo cuando cae el telón del
+   momento de búsqueda, y el movimiento sella el relevo. */
+.list { display: grid; gap: 14px; padding-bottom: 60px; animation: rise .38s var(--ease); }
+
+/* ── El momento de la búsqueda ───────────────────────────────────────────
+ *
+ * Entre «Comprobar» y la lista hay un beat: la lista se sustituye un rato
+ * por un titular a página entera --«Buscando 2.619 becas para Alemania»—
+ * con el tamaño de la base que se está mirando. El markup lo construye
+ * `cartelBusqueda()` en js/becas.js; ahí está anotado el porqué de la
+ * espera y el del límite: nunca un «MATCH 87» junto a esta cifra.
+ */
+.buscando { padding: 96px 0 104px; text-align: center; scroll-margin-top: 76px; }
+.buscando-k {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--brand-mid);
+  margin-bottom: 22px; animation: rise .4s var(--ease);
+}
+/* La misma apertura que el kicker de la portada: el filete antes del texto
+   ata este momento a la casa. */
+.buscando-k::before { content: ''; width: 26px; height: 1px; background: var(--brand-line); }
+.buscando-h {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(40px, 9vw, 84px); line-height: 1.03;
+  letter-spacing: -.026em;
+  max-width: 14ch; margin: 0 auto 20px;
+  animation: rise .5s var(--ease) .04s backwards;
+}
+/* El número va inline-block por dos motivos: así no se parte por la mitad
+   entre líneas si el titular envuelve, y así un `transform` le aplica —es
+   el golpe que da al aterrizar en el total. */
+.buscando-h b {
+  font-style: italic; font-weight: 400; color: var(--brand);
+  display: inline-block; transform-origin: 50% 85%;
+}
+.buscando-h b.contado { animation: alza .38s var(--ease); }
+@keyframes alza {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+.buscando-lede {
+  font-size: 15px; line-height: 1.6; color: var(--ink-3);
+  max-width: 46ch; margin: 0 auto;
+  animation: rise .5s var(--ease) .14s backwards;
+}
+/* Los tres pasos del método, con filete por encima y numeración mono. Cada
+   bloque entra con su retardo: el titular, luego lo que pasa detrás, y al
+   final la promesa. La cadencia es lo que convierte una espera en relato.
+ *
+   Van en rejilla, no centrados uno a uno: centrados, los números «01», «02»
+   y «03» quedan escalonados y no leen como columna. En una columna, cada
+   paso lleva su número en la misma posición y el bloque se lee como una
+   lista. */
+.buscando-pasos {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px 28px; max-width: 760px;
+  margin: 30px auto 0; padding: 24px 0 0;
+  border-top: 1px solid var(--rule);
+  animation: rise .5s var(--ease) .3s backwards;
+}
+.buscando-pasos li {
+  list-style: none; display: grid; grid-template-columns: 2.2em 1fr;
+  gap: 8px; align-items: baseline;
+  font-size: 13.5px; color: var(--ink-2);
+}
+.buscando-pasos .n { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; color: var(--brand-mid); }
+.buscando-sub {
+  display: inline-flex; align-items: center; gap: 9px;
+  max-width: 100%; margin-top: 24px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--ink-4);
+  animation: rise .5s var(--ease) .5s backwards;
+}
+.buscando-spin {
+  width: 11px; height: 11px; flex: none; border-radius: 50%;
+  border: 1.5px solid var(--rule-2); border-top-color: var(--brand-mid);
+  animation: girar .7s linear infinite;
+}
+@keyframes girar { to { transform: rotate(1turn); } }
 
 /* Filete entre convocatorias.
  *
@@ -676,10 +758,51 @@ body.con-cartel { padding-bottom: 104px; }
    quieto y borrar lleva el borde de los estados —lo que se rompe—. La
    confirmación a mano vive en el servidor; aquí solo se pregunta dos veces. */
 .ajs-correo {
-  padding: 12px 2px; margin-bottom: 18px;
+  padding: 12px 2px; margin-bottom: 0;
   border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
   font-size: 15px; font-weight: 600; overflow-wrap: anywhere;
 }
+
+/* ── Avisos de plazo ───────────────────────────────────────── */
+/* Una fila bajo el correo: la promesa a la izquierda —lo que llega y
+   cómo se quita— y el mando a la derecha. El filete inferior la separa
+   de los botones con el mismo gesto de retícula del resto del modal. */
+.avisos-fila {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 13px 2px 16px; margin-bottom: 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.avisos-txt { flex: 1; min-width: 0; }
+.avisos-t { display: block; font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
+.avisos-fila p { font-size: 12.5px; color: var(--ink-4); line-height: 1.55; margin-top: 3px; }
+
+/* El interruptor. Encendido es el verde de la marca y solo las transiciones
+   de reposición (150 ms): nada de entrada teatral. */
+.switch {
+  position: relative; flex: none;
+  width: 46px; height: 27px; margin-top: -1px;
+  border-radius: var(--r-pill);
+  background: var(--paper-3);
+  border: 1px solid var(--rule-2);
+  transition: background .15s var(--ease), border-color .15s var(--ease), opacity .15s;
+}
+/* 46 px es poco para un dedo: el área de golpe crece alrededor sin
+   engordar la pieza que se ve. Encaja dentro del hueco de la fila, no
+   por encima de las palabras. */
+.switch::before { content: ''; position: absolute; inset: -10px; }
+.switch-dot {
+  position: absolute; top: 50%; left: 3px;
+  width: 19px; height: 19px; border-radius: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(22,25,27,.3);
+  transition: transform .15s var(--ease);
+}
+.switch[aria-checked='true'] { background: var(--brand); border-color: var(--brand); }
+.switch[aria-checked='true'] .switch-dot { transform: translate(19px, -50%); }
+/* Desactivado durante la llamada: es la señal de que el mando ya se
+   ha pulsado y espera su verdad del servidor. */
+.switch:disabled { opacity: .6; }
 .ajs-act { display: flex; flex-direction: column; gap: 10px; }
 .ajs-act .btn { width: 100%; }
 .ajustes .enc-skip { margin-top: 4px; }
@@ -716,19 +839,45 @@ body.con-cartel { padding-bottom: 104px; }
   .profile-bar .btn { grid-column: 1 / -1; }
 }
 
+/* La navegación de la cabecera aparece cuando hay sitio de sobra.
+ *
+ * Los cinco enlaces —Cómo funciona, Nuestro método, Erasmus Mundus, Sobre y
+ * Fuentes— miden 544 px, y con el logo y los botones de la acción la fila
+ * necesita del orden de 1.000 px. Por debajo la portada se salía: medido,
+ * 174 px de desborde en un ancho de 700 y 71 px en uno de 768 (un iPad).
+ * El test no lo veía porque solo mide 390 y 1280.
+ *
+ * No se recorta la lista de enlaces ni se deja que la página desborde: se
+ * esconde la fila entera y el pie hace ese trabajo. En la portada el pie
+ * lleva las mismas secciones.
+ */
+@media (max-width: 1023px) {
+  .top-nav { display: none; }
+}
+
 @media (max-width: 680px) {
   .shell { padding: 0 20px; }
-  .top-nav { display: none; }
+  /* El hueco de 28 px de la cabecera está pensado para brand, navega y
+     acciones. Sin la navega —oculta aquí— quedan dos, y con 28 px el
+     «Crear cuenta» se salía 9 px de un móvil de 390. */
+  .top-in { gap: 10px; }
   .band { padding: 54px 0; }
   .beca { grid-template-columns: 1fr; }
   .ringbox { flex-direction: row; width: auto; gap: 12px; }
   .ring-cap { text-align: left; }
   .profile-bar { grid-template-columns: 1fr; }
+  /* Los tres pasos del método, en una columna: en tres columnas de un
+     móvil de 390 el texto de cada paso se parte en dos líneas y la lista
+     deja de leerse. */
+  .buscando-pasos { grid-template-columns: 1fr; }
   .foot-in { flex-direction: column; align-items: flex-start; }
   .foot-links { margin-left: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  /* Sin el `animation-delay` a cero, los bloques con retardo que entran con
+     `backwards` quedarían ocultos todo su retardo y luego aparecerían de un
+     golpe: peor que sin animación. */
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
   html { scroll-behavior: auto; }
 }

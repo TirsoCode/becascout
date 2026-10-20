@@ -2,6 +2,11 @@ node_modules/
 .env
 .env*
 
+# …salvo el ejemplo, que es la lista de variables SIN VALOR: sin él, quien
+# clone el repositorio no sabe qué claves hacen falta ni para qué. Es la
+# excepción va DESPUÉS de la regla, que es lo que la anula.
+!.env.example
+
 # Datos del proyecto enlazado: ref, pooler-url y versiones. No es un secreto,
 # pero es de tu cuenta y no va al repositorio.
 supabase/.temp/
@@ -10,6 +15,11 @@ data/usuarios.json
 data/usuarios.tmp.json
 data/sesiones.json
 data/sesiones.tmp.json
+# El registro de avisos enviados: correos de cuentas reales. No va al
+# repositorio, y tampoco al despliegue —para eso está .vercelignore, que
+# lleva la misma lista. La regla del 18 de octubre de 2026.
+data/avisos.json
+data/avisos.tmp.json
 *.log
 _t.html
 _m.html
