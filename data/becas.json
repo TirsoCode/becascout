@@ -1,9 +1,9 @@
 {
- "generado": "2026-10-20T15:15:56.935Z",
+ "generado": "2026-10-21T00:49:50.350Z",
  "version_reglas": 3,
  "rango": {
-  "desde": "2026-09-29",
-  "hasta": "2026-10-20"
+  "desde": "2026-09-30",
+  "hasta": "2026-10-21"
  },
  "becas": [
   {
@@ -635,32 +635,6 @@
    "eli": "",
    "requisitos": [],
    "texto_len": 1862
-  },
-  {
-   "id": "BDNS-931806",
-   "boeIdAnuncio": "BOE-B-2026-31573",
-   "titulo": "Resolución de la Dirección General del Instituto de la Juventud, por la que se convocan ayudas del Programa «Erasmus+»,",
-   "organizador": "Ministerio de Juventud e Infancia",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51217,
-   "publicada": "20260929",
-   "cierra": "2026-10-01",
-   "cerrada": true,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31573",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 6691,
-   "presupuesto": 4701960.6,
-   "boeIdBases": "BOE-A-2021-15851",
-   "texto_bases_len": 33417
   },
   {
    "id": "DAAD-10000092",
