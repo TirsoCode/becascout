@@ -2,7 +2,7 @@
 
 > Buscador de becas europeas que lee la convocatoria oficial (BOE y otros boletines) y devuelve los requisitos como lista comprobable, cada uno con la cita literal del párrafo del documento del que salió.
 
-BecasScout no tramita solicitudes, no cobra comisión y no es ningún organismo oficial. Lee convocatorias publicadas por otros y las resume, siempre con enlace a la fuente original. No da porcentajes de éxito: no existen datos de adjudicaciones, así que cualquier cifra sería inventada.
+BecasScout no tramita solicitudes, no cobra comisión y no es ningún organismo oficial. Lee convocatorias publicadas por otros y las resume, siempre con enlace a la fuente original.
 
 ## Páginas
 
