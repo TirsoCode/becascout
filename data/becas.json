@@ -1,9 +1,9 @@
 {
- "generado": "2026-10-21T15:29:01.365Z",
+ "generado": "2026-10-22T00:51:27.794Z",
  "version_reglas": 3,
  "rango": {
-  "desde": "2026-09-30",
-  "hasta": "2026-10-21"
+  "desde": "2026-10-01",
+  "hasta": "2026-10-22"
  },
  "becas": [
   {
@@ -511,130 +511,6 @@
    "presupuesto": 6000000,
    "boeIdBases": "BOE-A-2026-14489",
    "texto_bases_len": 295182
-  },
-  {
-   "id": "BDNS-932047",
-   "boeIdAnuncio": "BOE-B-2026-31649",
-   "titulo": "SUBVENCIONES A ENTIDADES DE FORMACIÓN PARA LA FINANCIACIÓN DE ACCIONES FORMATIVAS VINCULADAS AL CATÁLOGO NACIONAL DE ES",
-   "organizador": "Ministerio de Educación, Formación Profesional y Deportes",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51346,
-   "publicada": "20260930",
-   "cierra": null,
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31649",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 1862,
-   "presupuesto": 35000000,
-   "boeIdBases": "BOE-B-2026-31649",
-   "texto_bases_len": 1862
-  },
-  {
-   "id": "BDNS-932058",
-   "boeIdAnuncio": "BOE-B-2026-31651",
-   "titulo": "SUBVENCIONES A ENTIDADES DE FORMACIÓN PARA LA FINANCIACIÓN DE ACCIONES FORMATIVAS VINCULADAS AL CATÁLOGO NACIONAL DE ES",
-   "organizador": "Ministerio de Educación, Formación Profesional y Deportes",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51350,
-   "publicada": "20260930",
-   "cierra": null,
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31651",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 1862,
-   "presupuesto": 20000000,
-   "boeIdBases": "BOE-B-2026-31651",
-   "texto_bases_len": 1862
-  },
-  {
-   "id": "BDNS-932069",
-   "boeIdAnuncio": "BOE-B-2026-31652",
-   "titulo": "SUBVENCIONES PARA LA FINANCIACIÓN DE ACCIONES FORMATIVAS ESPECÍFICAMENTE A COLECTIVOS VULNERABLES, Y VINCULADAS AL CATÁ",
-   "organizador": "Ministerio de Educación, Formación Profesional y Deportes",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51352,
-   "publicada": "20260930",
-   "cierra": null,
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31652",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 1862,
-   "presupuesto": 46700000,
-   "boeIdBases": "BOE-B-2026-31652",
-   "texto_bases_len": 1862
-  },
-  {
-   "id": "BOE-A-2026-20369",
-   "boeIdAnuncio": "BOE-A-2026-20369",
-   "titulo": "Orden TRM/1019/2026, de 14 de septiembre, por la que se establecen las bases reguladoras para la concesión de subvenciones públicas a las sociedades de garantía recíproca que otorguen avales a empresas del sector del transporte por carretera para la adquisición de vehículos.",
-   "organizador": "Ministerio de Transportes y Movilidad Sostenible",
-   "ambito": "estatal",
-   "seccion": "3",
-   "pagina": 128210,
-   "publicada": "20260930",
-   "cierra": null,
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20369",
-   "eli": "https://www.boe.es/eli/es/o/2026/09/14/trm1019",
-   "requisitos": [],
-   "texto_len": 46534
-  },
-  {
-   "id": "BOE-B-2026-31650",
-   "boeIdAnuncio": "BOE-B-2026-31650",
-   "titulo": "Extracto de la Resolución de la Secretaría General de Formación Profesional de fecha 25 de Septiembre de 2026, por la que se procede a la convocatoria, de ámbito estatal, de concesión de subvenciones a entidades de formación para la financiación de acciones formativas vinculadas al catálogo nacional de estándares de competencias profesionales, en el sector de la construcción, para el año 2026.",
-   "organizador": "Ministerio de Educación, Formación Profesional y Deportes",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51348,
-   "publicada": "20260930",
-   "cierra": null,
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31650",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 1862
   },
   {
    "id": "EMJM-1-erasmus-mundus-joint-mas",
