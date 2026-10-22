@@ -337,7 +337,7 @@ const LEGALES = new Set(['/privacidad.html', '/cookies.html']);
 
 console.log('Las demás páginas');
 
-for (const ruta of ['/privacidad.html', '/cookies.html', '/404.html', '/supabase-config.html']) {
+for (const ruta of ['/privacidad.html', '/cookies.html', '/404.html', '/supabase-config.html', '/cuenta.html']) {
   await evaluar("localStorage.removeItem('becascout.idioma')");
   await cargarPagina(ruta);
 
@@ -378,71 +378,65 @@ for (const ruta of ['/privacidad.html', '/cookies.html', '/404.html', '/supabase
 
 console.log('');
 
-// ── El modal de la cuenta, en inglés ─────────────────────────────────────
+// ── La página del alta, en inglés ────────────────────────────────────────
 
-/* El modal no lleva `data-i18n`: se construye en `js/auth.js` con `t()`, así
-   que un texto que se quede en castellano no lo pilla el barrido de arriba.
-   Se abre de verdad, en una página que ya está en inglés, y se lee lo que
-   sale: el título, el botón de enviar, las etiquetas, los marcadores y el
-   aspa. Y la encuesta de llegada, que se pinta sola. */
-console.log('El modal de la cuenta');
+/* La página del alta lleva `data-i18n` en lo estático —las etiquetas, el
+   argumento del panel verde— y lo que cambia con el modo lo escribe
+   `js/cuenta.js` con `t()` (título, botón, enlace del pie), así que un texto
+   que se quede en castellano no lo pilla el barrido de arriba. Se carga de
+   verdad, con el inglés ya puesto, y se lee lo que sale. */
+console.log('La página de la cuenta');
 
-await evaluar("localStorage.removeItem('becascout.idioma')");
-await cargarPagina('/');
-await evaluar("document.querySelector('.lang-btn').click()");
-await new Promise((r) => setTimeout(r, 300));
+await evaluar("localStorage.setItem('becascout.idioma', 'en')");
 
-await evaluar(`document.querySelector('[data-open-auth]')?.click()`);
-await new Promise((r) => setTimeout(r, 900));
+await cargarPagina('/cuenta.html');
+await new Promise((r) => setTimeout(r, 500));
 
-const modal = await evaluar(`(() => {
-  const m = document.querySelector('#scrim .modal');
-  if (!m) return { abierto: false };
-  const modales = (sel) => [...m.querySelectorAll(sel)].map((e) => (e.textContent || '').replace(/\\s+/g, ' ').trim());
+const alta = await evaluar(`(() => {
+  const c = document.querySelector('.cuenta');
+  if (!c) return { abierta: false };
+  const etiquetas = [...c.querySelectorAll('label.flab')].map((e) => (e.textContent || '').replace(/\\s+/g, ' ').trim());
   return {
-    abierto: true,
-    titulo: m.querySelector('#modal-t')?.textContent ?? '',
-    sub: m.querySelector('#modal-sub')?.textContent ?? '',
-    enviar: m.querySelector('#f-enviar')?.textContent ?? '',
-    etiquetas: modales('label.flab'),
-    marcadores: [...m.querySelectorAll('input')].map((i) => i.placeholder),
-    cerrar: m.querySelector('.modal-x')?.getAttribute('aria-label') ?? '',
-    google: !!m.querySelector('#btn-google'),
+    abierta: true,
+    titulo: c.querySelector('#modal-t')?.textContent ?? '',
+    sub: c.querySelector('#modal-sub')?.textContent ?? '',
+    enviar: c.querySelector('#f-enviar')?.textContent ?? '',
+    etiquetas,
+    marcadores: [...c.querySelectorAll('input')].map((i) => i.placeholder),
+    pitch: ((c.querySelector('.auth-pitch h2')?.textContent ?? '') + ' ' +
+            (c.querySelector('.auth-pitch p')?.textContent ?? '')).replace(/\\s+/g, ' ').trim(),
+    google: !!c.querySelector('#btn-google'),
   };
 })()`);
 
-ok(modal.abierto, 'el modal de la cuenta no se abre en la portada');
-if (modal.abierto) {
-  ok(modal.titulo === 'Create your account', `el título del modal no está en inglés («${modal.titulo}»)`);
-  ok(modal.enviar === 'Create account', `el botón del modal no está en inglés («${modal.enviar}»)`);
-  ok(modal.etiquetas.join('|') === 'Email|Password', `las etiquetas del formulario no están en inglés («${modal.etiquetas.join('|')}»)`);
-  ok(modal.marcadores[0] === 'you@example.com', `el marcador del correo no está en inglés («${modal.marcadores[0]}»)`);
-  ok(modal.cerrar === 'Close', `el aspa del modal no está en inglés («${modal.cerrar}»)`);
-  ok(!CASTELLANO.test([modal.titulo, modal.sub, modal.enviar, modal.cerrar, ...modal.etiquetas, ...modal.marcadores].join(' ')),
-    `queda castellano dentro del modal: «${[modal.titulo, modal.sub, modal.enviar, modal.cerrar, ...modal.etiquetas].join(' · ')}»`);
+ok(alta.abierta, 'la página del alta no carga');
+if (alta.abierta) {
+  ok(alta.titulo === 'Create your account', `el título del alta no está en inglés («${alta.titulo}»)`);
+  ok(alta.enviar === 'Create account', `el botón del alta no está en inglés («${alta.enviar}»)`);
+  ok(alta.etiquetas.join('|') === 'Email|Password', `las etiquetas del formulario no están en inglés («${alta.etiquetas.join('|')}»)`);
+  ok(alta.marcadores[0] === 'you@example.com', `el marcador del correo no está en inglés («${alta.marcadores[0]}»)`);
+  const cabecera = [alta.titulo, alta.sub, alta.enviar, alta.pitch, ...alta.etiquetas, ...alta.marcadores].join(' ');
+  ok(!CASTELLANO.test(cabecera), `queda castellano en la página del alta: «${cabecera.trim()}»`);
 }
-// Sin `googleId` —en local `/api/config` no lo trae— el botón no se pinta.
-ok(!modal.google, 'sale el botón de Google sin que /api/config traiga googleId');
 
-// El enlace al pie cambia el modal a «entrar», también en inglés.
+// Sin `googleId` —en local `/api/config` no lo trae— el botón no se pinta.
+ok(!alta.google, 'sale el botón de Google sin que /api/config traiga googleId');
+
+// El enlace al pie cambia la página a «entrar», también en inglés.
 await evaluar("document.querySelector('#modal-cambia')?.click()");
 await new Promise((r) => setTimeout(r, 400));
-const modalEntrar = await evaluar(`(() => {
-  const m = document.querySelector('#scrim .modal');
+const altaEntrar = await evaluar(`(() => {
+  const c = document.querySelector('.cuenta');
   return {
-    titulo: m?.querySelector('#modal-t')?.textContent ?? '',
-    enviar: m?.querySelector('#f-enviar')?.textContent ?? '',
-    alt: m?.querySelector('#modal-alt')?.textContent.replace(/\\s+/g, ' ').trim() ?? '',
+    titulo: c?.querySelector('#modal-t')?.textContent ?? '',
+    enviar: c?.querySelector('#f-enviar')?.textContent ?? '',
+    alt: (c?.querySelector('#modal-alt')?.textContent ?? '').replace(/\\s+/g, ' ').trim(),
   };
 })()`);
-ok(modalEntrar.titulo === 'Sign in', `el modal de entrar no está en inglés («${modalEntrar.titulo}»)`);
-ok(modalEntrar.enviar === 'Sign in', `el botón de entrar no está en inglés («${modalEntrar.enviar}»)`);
-ok(!CASTELLANO.test(modalEntrar.alt), `queda castellano en el pie del modal («${modalEntrar.alt}»)`);
-
-// Escape cierra, como en cualquier modal del sitio.
-await evaluar("document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))");
-await new Promise((r) => setTimeout(r, 300));
-ok(!(await evaluar("!!document.querySelector('#scrim')")), 'el modal no se cierra con Escape');
+ok(altaEntrar.titulo === 'Sign in', `la página de entrar no está en inglés («${altaEntrar.titulo}»)`);
+ok(altaEntrar.enviar === 'Sign in', `el botón de entrar no está en inglés («${altaEntrar.enviar}»)`);
+ok(!CASTELLANO.test(altaEntrar.alt), `queda castellano en el pie de la página del alta («${altaEntrar.alt}»)`);
+console.log('');
 
 // ── La encuesta de llegada, en inglés ────────────────────────────────────
 

@@ -36,7 +36,14 @@ test('la portada enseña lo que promete', async ({ page }) => {
   expect(titular.length, `el titular se lee «${titular}»`).toBeGreaterThan(20);
 
   // La navegación principal y el pie.
-  await expect(page.locator('header.top nav a').first()).toBeVisible();
+  //
+  // La navega principal se esconde por diseño por debajo de 1023 px —el pie
+  // lleva las mismas secciones—, así que la prueba no puede exigir lo mismo
+  // en las dos anchuras: en escritorio, a la vista; en móvil, guardada.
+  const estrecho = page.viewportSize().width <= 1023;
+  const nav = page.locator('header.top nav a').first();
+  if (estrecho) await expect(nav).toBeHidden();
+  else await expect(nav).toBeVisible();
   await expect(page.locator('.foot-links a[href$="privacidad.html"]')).toBeVisible();
   await expect(page.locator('.foot-links a[href$="cookies.html"]')).toBeVisible();
 

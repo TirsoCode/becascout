@@ -1,7 +1,7 @@
 {
   "name": "BecasScout",
   "url": "https://becascout.vercel.app/",
-  "inLanguage": "es",
+  "inLanguage": ["es", "en"],
   "faqs": [
     {
       "question": "¿Qué es BecasScout?",

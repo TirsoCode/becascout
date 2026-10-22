@@ -17,7 +17,7 @@
  * los mismos tengas cuenta o no.
  */
 
-import { sesion, haySesion, pedirAcceso, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
+import { sesion, sesionFresca, haySesion, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
 import { CODIGOS, nombreDe } from './paises.js';
 import { t, alCambiarIdioma, idiomaActual } from './i18n.js';
 
@@ -184,6 +184,12 @@ async function pintarCabecera() {
   const zona = $('#sesion-zona');
   zona.innerHTML = '<span class="pill mono">…</span>';
   const s = await sesion();
+  // Lo que esta pintada representa es también el estado que `alVolver`
+  // compara (declarado más abajo). Empezar en `null` era una trampa: el
+  // primer repinte tras el alta en la otra pestaña ve `null`, no repinta, y
+  // deja el nuevo valor escrito — el «Crear cuenta» se quedaría ahí para
+  // siempre con la cuenta ya hecha.
+  vista = s ? (s.local ? 'local' : 'si') : 'no';
 
   zona.innerHTML = '';
   if (s) {
@@ -225,11 +231,24 @@ async function pintarCabecera() {
     d.append(x);
     zona.appendChild(d);
   } else {
-    const b = document.createElement('button');
-    b.className = 'btn btn-brand';
-    b.textContent = t('cab.crear');
-    b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
-    zona.appendChild(b);
+    // La puerta es un enlace de verdad, no un botón que monta un modal: el
+    // alta vive en cuenta.html y este enlace la abre en otra pestaña. El
+    // `?desde` dice dónde está esta página, y al terminar el alta la pestaña
+    // vuelve aquí sola (ver js/cuenta.js). Que sea un enlace y no un clic
+    // programado le quita a la puerta el bloqueo de popups y deja que el
+    // navegador la trate como a cualquier enlace.
+    const a = document.createElement('a');
+    a.className = 'btn btn-brand';
+    a.textContent = t('cab.crear');
+    a.href = 'cuenta.html?desde=%2Fbecas.html';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    // La marca que comparten las puertas (`data-open-auth`): las pruebas la
+    // buscan y en la portada se quita cuando hay sesión. La puerta de la
+    // portada la lleva escrita en el HTML; la de aquí nace en JavaScript y
+    // sin marca no la encuentra nadie.
+    a.setAttribute('data-open-auth', '');
+    zona.appendChild(a);
   }
 }
 
@@ -661,10 +680,14 @@ function cartelAcceso(abierta) {
   const txt = document.createElement('p');
   txt.textContent = t('velo.texto');
 
-  const b = document.createElement('button');
+  // La llamada al alta es un enlace a cuenta.html en otra pestaña, como las
+  // demás puertas (ver pintarCabecera), no un modal encima de la lista.
+  const b = document.createElement('a');
   b.className = 'btn cartel-btn';
   b.textContent = t('velo.btn');
-  b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
+  b.href = 'cuenta.html?desde=%2Fbecas.html';
+  b.target = '_blank';
+  b.rel = 'noopener';
 
   barra.append(txt, b);
   document.body.appendChild(barra);
@@ -879,6 +902,33 @@ $('#buscar').addEventListener('click', comprobar);
 $('#pais').addEventListener('change', () => $('#buscar').click());
 $('#nivel').addEventListener('change', () => $('#buscar').click());
 
+/* La pestaña, cuando vuelve del alta.
+ *
+ * El alta se hace en cuenta.html, en otra pestaña: mientras se creaba la
+ * cuenta esta página estuvo al fondo con el velo puesto y «Crear cuenta» en
+ * la cabecera. Al recobrar el foco puede tener ya sesion en la cookie y no
+ * haberse enterado.
+ *
+ * Se repregunta sin cache (`sesionFresca`, que además protege la sesión de
+ * juguete, que el servidor no conoce) y solo si la firma cambió se repinta
+ * la cabecera y la lista. El cuidado del despliegue es el mismo que tiene el
+ * cambio de idioma: si el marco de la búsqueda está en pantalla se rehace
+ * entero —su beat sigue su curso y no se le salta pintando la lista—. */
+let vista = null;
+async function alVolver() {
+  if (document.visibilityState !== 'visible') return;
+  const s = await sesionFresca();
+  const ahora = s ? (s.local ? 'local' : 'si') : 'no';
+  if (vista !== null && ahora !== vista) {
+    pintarCabecera();
+    if ($('#zona-lista .buscando')) cartelBusqueda();
+    else if (becas.length) pintar();
+  }
+  vista = ahora;
+}
+document.addEventListener('visibilitychange', alVolver);
+window.addEventListener('focus', alVolver);
+
 /* Al cambiar de idioma hay que repintar lo que nace en este fichero: la
  * cabecera, el desplegable de países, la lista y la barra de abajo. i18n.js
  * solo repinta lo que lleva `data-i18n` en el HTML, y aquí casi todo se
@@ -898,7 +948,8 @@ alCambiarIdioma(() => {
 pintarCabecera();
 cargar();
 
-// Si se acaba de crear la cuenta en otro sitio —el callback de Google— la
-// página de aterrizaje es esta: la pregunta de llegada sale aquí. Ver
+// Si se acaba de crear la cuenta en otro sitio —el callback de Google, o el
+// salto de vuelta de cuenta.html con el alta recién hecha—, la página de
+// aterrizaje es esta: la pregunta de llegada sale aquí. Ver
 // `revisarEncuesta()` en js/auth.js.
 revisarEncuesta();

@@ -199,7 +199,11 @@ async function main() {
         '@id': `${BASE}/erasmus-mundus.html#webpage`,
         url: `${BASE}/erasmus-mundus.html`,
         name: 'Becas Erasmus Mundus: cuánto dan, qué piden y los programas',
-        inLanguage: 'es',
+        // Los dos idiomas: desde el 22 de octubre de 2026 la página se puede
+        // leer en inglés con el interruptor. El castellano es el que está en
+        // el HTML —el rastreo no ejecuta JavaScript— y el inglés el que
+        // encuentra quien llega desde un asistente.
+        inLanguage: ['es', 'en'],
         datePublished: fechaIso,
         dateModified: fechaIso,
         isPartOf: { '@id': `${BASE}/#website` },

@@ -60,6 +60,7 @@ del sitio. Playwright espera a que la página esté de verdad.
 ```
 index.html            portada. No enseña ni una beca
 becas.html            buscador. Contenido pixelado hasta tener cuenta
+cuenta.html           la página del alta. A pantalla entera, abierta en otra pestaña
 sobre.html            qué es esto, cómo se extrae y con qué reglas. Indexable
 erasmus-mundus.html   las becas Erasmus Mundus. Indexable. La genera paginas.mjs
 privacidad.html       política de privacidad
@@ -82,7 +83,8 @@ serve.mjs             servidor estático para desarrollo
 js/
   landing.js          portada
   becas.js            buscador, matching y el bloqueo
-  auth.js             Google OAuth y sesión
+  auth.js             sesión, encuesta de llegada y ajustes (el alta ya no vive aquí)
+  cuenta.js           la página del alta: ?desde, vuelta al origen y Google
   i18n.js             castellano e inglés: el diccionario, t() y el chip
 js/
   config.js           URL de la API y configuración pública
@@ -118,6 +120,7 @@ test/
   avisos.mjs          los avisos de plazo, de punta a punta
   web.mjs             lo que se ve en el navegador
   idioma.mjs          el cambio castellano/inglés, de punta a punta
+  e2e/                el sitio entero, con Playwright y el Chrome del sistema
 data/becas.json       salida de la ingesta
 ```
 
@@ -200,6 +203,62 @@ borde en la tarjeta. Sin ella las 85 fichas pixeladas se leen como una sola
 mancha y no se distingue que hay más debajo, que es lo que hace que alguien
 siga bajando. Va en la retícula editorial y no como marco, y por eso es un
 `.lock + .lock::before` y no un `border` en `.beca`.
+
+### El alta vive en cuenta.html, en otra pestaña
+
+Desde el 22 de octubre de 2026 crear cuenta **no es un modal flotante sobre
+la página que lo pidió**: es una página propia, `cuenta.html` + `js/cuenta.js`,
+a pantalla entera, que las puertas abren con `target="_blank"`. Los motivos
+prácticos: un enlace no se puede bloquear (un botón que llama `window.open`
+era presa del bloqueador de ventanas), en móvil el modal sobre el buscador
+apretaba, y a pantalla entera la página se puede repartir en dos columnas en
+escritorio, con la promesa del producto a la izquierda y el formulario a la
+derecha. Las puertas —todas llevan la marca `data-open-auth`— son la
+cabecera y el héroe de la portada, la cabecera del buscador y la barra fija
+del velo. Es un **enlace**, no un botón que monta un modal: el navegador la
+trata como a cualquier otro enlace.
+
+Lo que conviene no deshacer:
+
+- **El `?desde` viaja en la URL y se valida contra una lista cerrada**
+  (`DESTINOS` en `js/cuenta.js`: `/`, `/becas.html`,
+  `/erasmus-mundus.html`). Un `?desde` inventado no lleva a un 404 ni a un
+  sitio ajeno: cae al buscador. La puerta de la portada vendió «esta
+  página»; la del buscador, el buscador.
+- **Al terminar el alta, la pestaña vuelve sola** (`location.replace` al
+  `?desde`) y antes de saltar pone la bandera `bs.encuesta` en
+  `sessionStorage`, que gasta `revisarEncuesta()` en la página de llegada.
+  Es el mismo mecanismo que usa `auth/callback.js` para Google, con el
+  mismo literal repartido entre tres ficheros a propósito.
+- **La pestaña de origen no sabe nada del alta hasta que recobra el
+  foco.** Al volver, `alVolver()` —escuchado en `visibilitychange` y
+  `focus` en `js/landing.js` y `js/becas.js`— repregunta sin cache
+  (`sesionFresca()`) y repinta solo si la firma de la sesión cambió
+  (`'no' | 'si' | 'local'`). En el buscador, si el marco de la búsqueda está
+  en pantalla se rehace entero y no se pinta la lista por debajo, para no
+  saltarse el beat.
+- **La firma arranca con lo pintado, no con `null`.** `pintarCabecera()`
+  deja escrito qué pinta (`vista = s ? … : 'no'`). Empezar en `null` era una
+  trampa: el primer `alVolver()` tras el alta veía `null`, no repintaba, y
+  dejaba el nuevo valor escrito — el «Crear cuenta» se quedaba ahí para
+  siempre con la cuenta ya hecha. Un centinela que traga el primer cambio
+  es un centinela que nunca pinta el cambio que importa: el único.
+- **La puerta del buscador nace en JavaScript y tiene que llevar la marca
+  a mano** (`a.setAttribute('data-open-auth', '')` en `js/becas.js`). La de
+  la portada la lleva escrita en el HTML; si la de aquí se olvida, las
+  pruebas la buscan y no está.
+- **Con sesión, la puerta grande del héroe pasa a «Buscar becas»**
+  (`nav.buscar` en i18n, enlace a `/becas.html`). Un «Crear cuenta gratis»
+  de cara a quien ya tiene cuenta manda al alta como si no hubiera pasado
+  nada.
+- **La sesión de juguete no vuelve a ninguna parte.** Vive solo en la
+  memoria del módulo; redirigir al buscador la perdería al instante. Se
+  queda en la página, con el aviso (`cuenta.local.ok`) de que se acaba al
+  cerrar la pestaña.
+- **Los ids del formulario conservan el nombre del modal de antes**
+  (`#modal-t`, `#f-correo`, `#f-pass`, `#f-enviar`, `#f-hint`,
+  `#modal-alt`, `#modal-cambia`, `.modal-msg`): los escribe `js/cuenta.js`
+  y los apuntan las pruebas. Renombrarlos es romperlas a la vez.
 
 ### La encuesta de llegada
 
@@ -597,9 +656,19 @@ npm run test:e2e                                               # todo el sitio, 
 
 La suite de Playwright (`test/e2e/`) es la que mira **el sitio entero**: las
 ocho páginas en móvil y en escritorio, el interruptor de idioma en todas
-ellas, el buscador con sus filtros y su cartel, la cuenta —el modal, el alta,
-la encuesta de llegada y los ajustes— y la página de Erasmus. Levanta su
+ellas, el buscador con sus filtros y su cartel, la cuenta —la puerta que abre
+`cuenta.html` en otra pestaña, el `?desde` que decide la vuelta del alta, la
+encuesta de llegada y los ajustes— y la página de Erasmus. Levanta su
 propio servidor en el 5174 y no necesita el 5173.
+
+**El servidor de la suite arranca con `BS_SIN_ENV=1`** (en el `webServer` de
+`playwright.config.js`) y por eso `serve.mjs` no carga `.env.local`. Sin el
+flag, las claves del fichero ponían el almacén en modo Supabase y el alta de
+las pruebas nacía en la base real: el 22 de octubre de 2026 había 61 cuentas
+de prueba en producción y un corte de red durante la suite salía como 503 del
+registro —«el registro de cuentas no está disponible»— que se leía como un
+fallo del test. El modo es el del fichero por partida doble: es el que
+describe la cabecera de `cuenta.spec.js`, y `data/` se puede borrar sin daño.
 
 ```bash
 npm install          # solo para las pruebas: @playwright/test

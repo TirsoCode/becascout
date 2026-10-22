@@ -72,9 +72,9 @@
       "@id": "https://becascout.vercel.app/#website",
       "url": "https://becascout.vercel.app/",
       "name": "BecasScout",
-      "inLanguage": "es",
+      "inLanguage": ["es", "en"],
       "datePublished": "2026-10-18",
-      "dateModified": "2026-10-21",
+      "dateModified": "2026-10-22",
       "author": { "@id": "https://becascout.vercel.app/#organization" },
       "publisher": { "@id": "https://becascout.vercel.app/#organization" }
     },
@@ -84,7 +84,7 @@
       "url": "https://becascout.vercel.app/",
       "name": "BecasScout — Las becas de Europa, con los requisitos leídos",
       "description": "BecasScout lee las convocatorias oficiales y te dice qué requisitos cumples y cuánto tiempo queda. Cada requisito con la cita literal del documento.",
-      "inLanguage": "es",
+      "inLanguage": ["es", "en"],
       "isPartOf": { "@id": "https://becascout.vercel.app/#website" },
       "about": { "@id": "https://becascout.vercel.app/#organization" },
       "primaryImageOfPage": { "@id": "https://becascout.vercel.app/#organization" },
@@ -100,7 +100,7 @@
     {
       "@type": "FAQPage",
       "@id": "https://becascout.vercel.app/#faq",
-      "inLanguage": "es",
+      "inLanguage": ["es", "en"],
       "isPartOf": { "@id": "https://becascout.vercel.app/#website" },
       "mainEntity": [
         {
@@ -163,7 +163,12 @@
     </nav>
     <div class="top-act">
       <a class="btn btn-quiet" href="becas.html" data-i18n="nav.buscarCorto" data-ocultar-movil>Buscar</a>
-      <button class="btn btn-brand" data-open-auth data-i18n="nav.crear">Crear cuenta</button>
+      <!-- El alta es una página (cuenta.html) y se abre en otra pestaña: por
+           eso es un enlace con target y no un botón que monta un modal.
+           `data-open-auth` lo busca js/landing.js al repintar la cabecera
+           cuando ya hay sesión: lo retira. -->
+      <a class="btn btn-brand" href="cuenta.html?desde=%2F" target="_blank" rel="noopener"
+         data-open-auth data-i18n="nav.crear">Crear cuenta</a>
     </div>
     <!-- El conmutador es hermano de `.top-act` y no va dentro: `pintarCabecera()`
          reescribe esa zona al entrar, y lo que viva ahí desaparece. -->
@@ -181,7 +186,9 @@
           abres las bases, son 60 páginas. El plazo ya ha empezado.
         </p>
         <div class="hero-cta">
-          <button class="btn btn-brand" data-open-auth data-i18n="inicio.hero.cta">Crear cuenta gratis</button>
+          <!-- Otra puerta al alta, como la de la cabecera: otra pestaña. -->
+          <a class="btn btn-brand" href="cuenta.html?desde=%2F" target="_blank" rel="noopener"
+             data-open-auth data-i18n="inicio.hero.cta">Crear cuenta gratis</a>
           <a class="btn btn-ghost" href="becas.html" data-i18n="inicio.hero.ver">Ver cómo se ve</a>
         </div>
         <p class="hero-note" data-i18n="inicio.hero.nota">Sin tarjeta. Vale cualquier correo, no solo Gmail.</p>
@@ -193,7 +200,6 @@
       <div class="panel" aria-hidden="true">
         <div class="panel-bar">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span class="panel-url">boe.es/diario_boe/txt.php?id=BOE-A-…</span>
         </div>
         <div class="panel-body">
           <div class="mock-line"><span class="mock-n">01</span><span class="mock-t" data-i18n="inicio.panel.l1">Resolución de … por la que se convocan …… plazas</span><span class="mock-tag" data-i18n="inicio.panel.t1">pdf</span></div>
@@ -331,7 +337,7 @@
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small data-i18n-html="pie.revisado">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad. Última revisión: <time datetime="2026-10-21">21 de octubre de 2026</time>.</small>
+    <small data-i18n-html="pie.revisado">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad. Última revisión: <time datetime="2026-10-22">22 de octubre de 2026</time>.</small>
         <div class="foot-links">
       <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
       <a href="erasmus-mundus.html" data-i18n="pie.erasmus">Erasmus Mundus</a>

@@ -8,7 +8,13 @@ const ROOT = new URL('.', import.meta.url).pathname;
 // Se cargan aquí, antes de importar la API, porque api/[...ruta].js y
 // lib/store.js leen process.env al cargarse. Sin esto, el servidor de
 // desarrollo siempre cae al modo fichero aunque las claves existan.
+//
+// `BS_SIN_ENV` salta esa carga a propósito: es lo que usa la suite e2e. Sin
+// el flag, las claves del fichero meten el alta de las pruebas en la base
+// real de Supabase y cualquier corte de red durante la suite sale como 503
+// del registro, que se lee como un fallo del test y no como lo que es.
 async function cargarEnv() {
+  if (process.env.BS_SIN_ENV === '1') return;
   for (const nombre of ['.env', '.env.local']) {
     try {
       const raw = await readFile(new URL(nombre, import.meta.url), 'utf8');

@@ -1,5 +1,6 @@
 /**
- * auth.js — Cuentas de usuario.
+ * auth.js — Cuentas de usuario: la sesión, la encuesta de llegada y los
+ * ajustes.
  *
  * Hay tres formas de entrar y se explican en un momento. Antes de nada, lo que
  * este archivo ya no hace, porque es un error que estaba antes: **no escribe
@@ -24,7 +25,11 @@
  *
  * La primera **solo existe si el despliegue trae sus claves**: el botón se
  * pinta cuando `/api/config` devuelve un `googleId`, y no antes. Las otras dos
- * no dependen de nada de fuera. Ver `abrirModal`.
+ * no dependen de nada de fuera. El formulario del alta vive desde octubre de
+ * 2026 en la página `cuenta.html` —abierta en otra pestaña por las puertas de
+ * «Crear cuenta»— con su lógica en `js/cuenta.js`; aquí queda lo que una
+ * sesión tiene de suyo: leerla y cerrarla, la encuesta de llegada y los
+ * ajustes.
  *
  * ── Por qué el token de Google no se guarda ─────────────────────────────
  *
@@ -38,12 +43,14 @@
  * Al crear la cuenta —y solo entonces— sale una pregunta que se puede pasar:
  * de dónde nos ha conocido. La respuesta se guarda en la cuenta, en el
  * servidor, porque es un dato del proyecto y no del navegador; aquí se decide
- * cuándo se enseña. Google con Supabase obliga a saltar a `/auth/callback`, y
- * de ahí sí vuelve la bandera (`bs.encuesta` en `sessionStorage`) para que la
- * página de aterrizaje lance la pregunta una vez. Ver `revisarEncuesta()`.
+ * cuándo se enseña. Google con Supabase obliga a saltar a `/auth/callback`,
+ * y el alta a mano con cuenta nueva deja la misma bandera (`bs.encuesta` en
+ * `sessionStorage`) en js/cuenta.js antes de volver a la página de origen.
+ * En los dos casos la gasta `revisarEncuesta()`, que corre al cargar las
+ * páginas donde aterriza el salto. Ver `revisarEncuesta()`.
  */
 
-import { iniciarSupabase, entrarConGoogle, salirSupabase } from './supabase.js';
+import { salirSupabase } from './supabase.js';
 // Los textos del modal salen del diccionario: el mismo formulario sirve en
 // castellano y en inglés sin duplicar el marcado. Importar `t` arranca también
 // i18n.js, así que el conmutador de la cabecera funciona aunque esta página no
@@ -52,11 +59,6 @@ import { t } from './i18n.js';
 
 const API = '/api';
 
-// El id del proyecto de Google —el mismo de `GOOGLE_CLIENT_ID` en Vercel—. No
-// es un secreto: viaja al navegador en cualquier flujo OAuth. Queda aquí como
-// último recurso del camino sin Supabase; el id que manda es el que sirve
-// `/api/config`, que además es el que decide si hay botón.
-const GOOGLE_CLIENT_ID = '436706781551-o1nquf0ib9lp1p1vs1st0g08bs2a4k8m.apps.googleusercontent.com';
 const PERFIL = 'becascout.perfil';
 
 // La encuesta de llegada: `ORIGEN` recuerda en el navegador que ya se
@@ -65,9 +67,6 @@ const PERFIL = 'becascout.perfil';
 // a la cuenta, en el servidor.
 const ORIGEN = 'becascout.origen';
 const ENCUESTA = 'bs.encuesta';
-
-let modo = 'servidor';   // 'servidor' | 'local'
-let pendiente = null;
 
 /* ── Sesión ─────────────────────────────────────────────────────────────── */
 
@@ -87,7 +86,7 @@ export async function sesion() {
       return cache;
     }
   } catch {
-    modo = 'local';
+    /* sin respuesta: no hay sesión */
   }
   cache = false;
   return cache;
@@ -109,30 +108,28 @@ export async function haySesion() {
 }
 
 /**
- * Además del propio formulario del modal, los dos botones fijos de la portada
- * abren `pedirAcceso`. Un doble disparo sobre el mismo botón —onclick y
- * addEventListener conviviendo un tiempo— resolvía `pendiente` al segundo
- * clic y dejaba la primera promesa colgada para siempre: quien llamaba con
- * `.then()` no volvía a saber de ella. Si el modal ya está abierto, la promesa
- * en curso es la respuesta, no una segunda.
+ * Repregunta al servidor, sin el cache.
+ *
+ * El alta vive desde octubre de 2026 en `cuenta.html`, en **otra pestaña**:
+ * mientras esta estaba al fondo, aquí la sesión pudo haber nacido —o haberse
+ * caído—. Al recobrar el foco, las páginas repreguntan con esto y repintan
+ * solo si cambió (ver `alVolver()` en js/landing.js y js/becas.js).
+ *
+ * La sesión de juguete se conserva: vive solo en la memoria del módulo y el
+ * servidor no la conoce — `/api/yo` la invalidaría a cada vuelta de foco y
+ * la cabecera perdería su aviso aunque nadie hubiera tocado nada.
  */
-let accesoEnCurso = null;
-
-export function pedirAcceso() {
-  if (accesoEnCurso) return accesoEnCurso;
-  accesoEnCurso = new Promise((resolve) => {
-    pendiente = (r) => {
-      accesoEnCurso = null;
-      resolve(r);
-    };
-    abrirModal();
-  });
-  return accesoEnCurso;
+export async function sesionFresca() {
+  const antes = cache;
+  cache = null;
+  const s = await sesion();
+  if (!s && antes?.local) { cache = antes; return antes; }
+  return s;
 }
 
 /* ── API ────────────────────────────────────────────────────────────────── */
 
-async function api(camino, datos) {
+export async function api(camino, datos) {
   const res = await fetch(`${API}/${camino}`, {
     method: 'POST',
     credentials: 'same-origin',
@@ -157,246 +154,6 @@ export async function salir() {
   cache = null;
   localStorage.removeItem(PERFIL);
   location.reload();
-}
-
-/* ── Modal ──────────────────────────────────────────────────────────────── */
-
-const GOOGLE_SVG = `<svg width="17" height="17" viewBox="0 0 18 18" aria-hidden="true">
-  <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
-  <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H1v2.34A9 9 0 0 0 9 18z"/>
-  <path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.94H1a9 9 0 0 0 0 8.12l2.97-2.34z"/>
-  <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 1 4.94l2.97 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
-</svg>`;
-
-/**
- * Lo que el servidor dice que hay configurado: `url` y `anon` de Supabase, y
- * el `googleId`.
- *
- * Hace falta **antes** de pintar el modal, porque de `googleId` depende que el
- * botón de Google exista. Se pide al cargar la página y se guarda la promesa:
- * el clic tiene que abrir el modal ya, no después de un viaje de red. Si la
- * petición falla —sin servidor delante— queda un objeto vacío, que quiere decir
- * exactamente lo mismo: no hay claves.
- */
-let clavesPromesa = null;
-function clavesDeConfig() {
-  if (!clavesPromesa) {
-    clavesPromesa = fetch(`${API}/config`)
-      .then((r) => (r.ok ? r.json() : {}))
-      .catch(() => ({}));
-  }
-  return clavesPromesa;
-}
-
-clavesDeConfig();
-
-async function abrirModal() {
-  if (document.getElementById('scrim')) return;
-
-  // Sin `googleId` el botón no se pinta. Y no es un adorno: con las claves
-  // ausentes, pulsarlo abre una ventana de Google que contesta con un error
-  // sobre `client_id` y orígenes autorizados, que es justo lo que no se puede
-  // explicar a quien solo quería entrar. Mejor un modal con el formulario
-  // —que funciona siempre— que un botón que lleva a un callejón.
-  //
-  // El código del flujo se queda entero (`conGoogle`, `lanzar`): el día que
-  // lleguen las claves, el botón vuelve solo, sin tocar nada más.
-  const { googleId } = await clavesDeConfig();
-  const hayGoogle = Boolean(googleId);
-
-  // El separador «o con tu correo» solo tiene sentido si hay algo arriba.
-  const bloqueGoogle = hayGoogle
-    ? `<button class="gbtn" id="btn-google">${GOOGLE_SVG} ${t('cuenta.google')}</button>
-
-        <div class="modal-sep">${t('cuenta.sep')}</div>`
-    : '';
-
-  const scrim = document.createElement('div');
-  scrim.className = 'scrim';
-  scrim.id = 'scrim';
-  scrim.innerHTML = `
-    <div class="modal modal-wrap auth" role="dialog" aria-modal="true" aria-labelledby="modal-t">
-      <aside class="auth-side">
-        <span class="brand auth-brand">
-          <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6.6 3.2h7.2l4.4 4.4v13.2H6.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M13.8 3.2v4.4h4.4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M19.2 5 12.3 14.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-            <path d="M12.3 14.4 10.4 17.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span class="brand-name">Becas<b>Scout</b></span>
-        </span>
-
-        <div class="auth-pitch">
-          <h2>${t('cuenta.pitch.h')}</h2>
-          <p>${t('cuenta.pitch.p')}</p>
-        </div>
-
-        <dl class="auth-stats">
-          <div><dt>0</dt><dd>${t('cuenta.stat1')}</dd></div>
-          <div><dt>0</dt><dd>${t('cuenta.stat2')}</dd></div>
-        </dl>
-      </aside>
-
-      <div class="auth-main">
-        <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-
-        <h3 id="modal-t">${t('cuenta.titulo.registro')}</h3>
-        <p id="modal-sub">${t('cuenta.sub.registro')}</p>
-        <div class="modal-msg"></div>
-
-        ${bloqueGoogle}
-
-        <form id="form">
-          <label class="flab" for="f-correo">${t('cuenta.correo')}</label>
-          <input id="f-correo" type="email" required autocomplete="email" placeholder="${t('cuenta.correo.ph')}">
-          <label class="flab" for="f-pass">${t('cuenta.pass')}</label>
-          <input id="f-pass" type="password" required minlength="10" autocomplete="new-password"
-                 placeholder="${t('cuenta.pass.ph')}">
-          <p class="fhint" id="f-hint">${t('cuenta.pista')}</p>
-          <button class="btn btn-brand" type="submit" id="f-enviar">${t('cuenta.enviar.registro')}</button>
-        </form>
-
-        <p class="auth-alt" id="modal-alt"></p>
-
-        <p class="modal-fine">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="5" y="10.5" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.9"/>
-            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.9"/>
-          </svg>
-          ${t('cuenta.fino')}
-        </p>
-      </div>
-    </div>`;
-
-  document.body.appendChild(scrim);
-  document.body.style.overflow = 'hidden';
-
-  const cerrar = (r) => {
-    scrim.remove();
-    document.body.style.overflow = '';
-    pendiente?.(r);
-    pendiente = null;
-  };
-
-  scrim.querySelector('.modal-x').onclick = () => cerrar(null);
-  scrim.addEventListener('click', (e) => { if (e.target === scrim) cerrar(null); });
-  document.addEventListener('keydown', function esc(e) {
-    if (e.key === 'Escape') { document.removeEventListener('keydown', esc); cerrar(null); }
-  });
-
-  // ── Crear / entrar, con un enlace al pie ───────────────────────────────
-  // Antes eran dos pestañas. El formulario es el mismo y lo único que cambia
-  // es a quién se llama y qué se le pide a la contraseña, así que va como
-  // enlace, que además no parte el modal en dos mitades antes de enseñar nada.
-  let accion = 'registro';
-  const form = scrim.querySelector('#form');
-  const pass = scrim.querySelector('#f-pass');
-  const enviar = scrim.querySelector('#f-enviar');
-  const hint = scrim.querySelector('#f-hint');
-  const alt = scrim.querySelector('#modal-alt');
-
-  const pintarModo = (modo) => {
-    accion = modo;
-    enviar.textContent = accion === 'registro'
-      ? t('cuenta.enviar.registro')
-      : t('cuenta.enviar.login');
-    pass.minLength = accion === 'registro' ? 10 : 1;
-    pass.autocomplete = accion === 'registro' ? 'new-password' : 'current-password';
-    pass.placeholder = accion === 'registro'
-      ? t('cuenta.pass.ph')
-      : t('cuenta.pass.ph.login');
-    hint.textContent = accion === 'registro' ? t('cuenta.pista') : '';
-    hint.style.display = accion === 'registro' ? '' : 'none';
-    scrim.querySelector('.modal-msg').innerHTML = '';
-    // El encabezado sigue al modo. Poner «Crea tu cuenta» encima de un
-    // formulario de iniciar sesión confunde: quien ya tiene cuenta no viene a
-    // crearse nada, viene a entrar.
-    document.getElementById('modal-t').textContent = accion === 'registro'
-      ? t('cuenta.titulo.registro')
-      : t('cuenta.titulo.login');
-    document.getElementById('modal-sub').textContent = accion === 'registro'
-      ? t('cuenta.sub.registro')
-      : t('cuenta.sub.login');
-    alt.innerHTML = accion === 'registro'
-      ? `${t('cuenta.alt.login')} <button type="button" id="modal-cambia">${t('cuenta.alt.login.btn')}</button>`
-      : `${t('cuenta.alt.crear')} <button type="button" id="modal-cambia">${t('cuenta.alt.crear.btn')}</button>`;
-    alt.querySelector('#modal-cambia').onclick =
-      () => pintarModo(accion === 'registro' ? 'login' : 'registro');
-  };
-
-  pintarModo('registro');
-
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const msg = scrim.querySelector('.modal-msg');
-    const correo = scrim.querySelector('#f-correo').value.trim();
-    const password = pass.value;
-
-    if (modo === 'local') return cerrar(sesionJuguete(correo));
-
-    enviar.disabled = true;
-    enviar.textContent = accion === 'registro'
-      ? t('cuenta.enviando.registro')
-      : t('cuenta.enviando.login');
-
-    const r = await api(accion, { correo, password });
-
-    if (r.ok) {
-      cache = { email: correo };
-      cerrar(cache);
-      // Solo al crear cuenta. A quien entra con una que ya tenía no se le
-      // pregunta de dónde nos conoció: ya lo contestó —o lo pasó— el primer día.
-      if (accion === 'registro') encuestaDeAlta();
-      return;
-    }
-
-    enviar.disabled = false;
-    enviar.textContent = accion === 'registro'
-      ? t('cuenta.enviar.registro')
-      : t('cuenta.enviar.login');
-
-    if (r.status === 0 || r.status === 404) {
-      // No hay servidor. Se ofrece el modo local en lugar de un error seco,
-      // pero se dice que es de juguete: si alguien lo toma por una cuenta de
-      // verdad, el sitio le ha mentido.
-      modo = 'local';
-      msg.innerHTML = `<div class="modal-msg amber">${t('cuenta.local.aviso')}
-        <button id="btn-local" style="margin-top:8px;width:100%">${t('cuenta.local.btn')}</button></div>`;
-      msg.querySelector('#btn-local').onclick = () => cerrar(sesionJuguete(correo));
-      return;
-    }
-
-    msg.innerHTML = `<div class="modal-err">${esc(r.error ?? t('cuenta.error.generico'))}</div>`;
-  };
-
-  if (hayGoogle) {
-    scrim.querySelector('#btn-google').onclick = async () => {
-      // Se intenta Supabase primero. Si no está configurado —en desarrollo, o
-      // antes de crear el proyecto— se cae al flujo con Google Identity
-      // Services, que funciona sin ningún servicio de por medio. Tener las dos
-      // rutas significa que el botón nunca queda muerto.
-      if (await iniciarSupabase()) {
-        try {
-          sessionStorage.setItem('bs.destino', location.pathname);
-          await entrarConGoogle();
-          return;   // Supabase redirige; no hay callback
-        } catch (err) {
-          msgDelModal(scrim, err.message);
-        }
-      }
-      conGoogle(scrim, cerrar, googleId);
-    };
-  }
-}
-
-function msgDelModal(scrim, texto) {
-  const c = scrim.querySelector('.modal-msg');
-  if (c) c.innerHTML = `<div class="modal-err">${esc(texto)}</div>`;
 }
 
 /* ── Encuesta de llegada ────────────────────────────────────────────────── */
@@ -536,6 +293,16 @@ function abrirEncuesta() {
       setTimeout(() => cerrar(v), 850);
     };
   });
+}
+
+/**
+ * Un mensaje de error dentro del modal de ajustes. Con `innerHTML`: el
+ * texto llega del propio servidor (`d.error`), que lo escribe el sitio, no
+ * quien mira la página. No hay correo ni dato de usuario dentro.
+ */
+function msgDelModal(caja, texto) {
+  const c = caja.querySelector(`.modal-msg`);
+  if (c) c.innerHTML = `<div class="modal-err">${esc(texto)}</div>`;
 }
 
 /* ── Ajustes de la cuenta ───────────────────────────────────────────────── */
@@ -768,70 +535,6 @@ export async function abrirAjustes() {
   pasoInicio();
 }
 
-/* ── Google ─────────────────────────────────────────────────────────────── */
-
-function conGoogle(scrim, cerrar, clientId) {
-  const btn = scrim.querySelector('#btn-google');
-  const msg = scrim.querySelector('.modal-msg');
-  btn.disabled = true;
-  btn.innerHTML = t('cuenta.google.cargando');
-
-  if (!window.google?.accounts?.oauth2) {
-    const s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.async = true;
-    s.defer = true;
-    s.onload = () => lanzar(scrim, cerrar, msg, clientId);
-    s.onerror = () => {
-      msg.innerHTML = `<div class="modal-err">${t('cuenta.google.error')}</div>`;
-      btn.disabled = false;
-      btn.innerHTML = `${GOOGLE_SVG} ${t('cuenta.google')}`;
-    };
-    document.head.appendChild(s);
-    return;
-  }
-  lanzar(scrim, cerrar, msg, clientId);
-}
-
-function lanzar(scrim, cerrar, msg, clientId) {
-  try {
-    const client = window.google.accounts.oauth2.initTokenClient({
-      // El id del servidor manda; el de arriba es el del proyecto, para cuando
-      // el modal se abrió sin que `/api/config` contestara.
-      client_id: clientId || GOOGLE_CLIENT_ID,
-      scope: 'email',
-      callback: async (r) => {
-        if (r.error) { msg.innerHTML = `<div class="modal-err">${esc(t('cuenta.google.devuelto', { c: r.error }))}</div>`; return; }
-        try {
-          // Se manda el **access token**, no el correo que devuelve el perfil.
-          // El servidor no puede fiarse de lo que dice esta página: si aceptara
-          // un correo, cualquiera podría escribir el de otra persona y entrar
-          // como ella. Con el token, el servidor pregunta a Google quién es y
-          // solo entonces existe la cuenta.
-          //
-          // El correo que se pinta en la sesión es el que devuelve el servidor,
-          // que es el único que ha comprobado algo. Antes se leía del perfil de
-          // Google y se metía en `cache` sin contrastar: dos verdades, y la que
-          // se enseñaba era justo la que nadie había verificado.
-          const res = await api('registro-google', { token: r.access_token });
-          if (!res.ok) throw new Error(res.error ?? t('cuenta.error.generico'));
-          cache = { email: res.correo };
-          cerrar(cache);
-          // `nuevo` lo dice el servidor al escribir la cuenta: si ya existía
-          // —lo normal al volver a entrar con Google— no hay pregunta.
-          if (res.nuevo) encuestaDeAlta();
-        } catch (err) {
-          msg.innerHTML = `<div class="modal-err">${esc(err.message)}</div>`;
-        }
-      },
-      error_callback: () => { msg.innerHTML = `<div class="modal-err">${t('cuenta.google.cancelado')}</div>`; },
-    });
-    client.requestAccessToken({ prompt: '' });
-  } catch (err) {
-    msg.innerHTML = `<div class="modal-err">${esc(err.message)}</div>`;
-  }
-}
-
 /* ── Modo local ─────────────────────────────────────────────────────────── */
 
 /**
@@ -845,9 +548,12 @@ function lanzar(scrim, cerrar, msg, clientId) {
  * en todas las rutas—, que es cuando menos tiene sentido regalar la puerta.
  * El velo es el producto; un modo de emergencia que lo levanta miente en la
  * única parte que hay que sustentar.
+ *
+ * La ofrece la página del alta (js/cuenta.js) cuando el `POST` contesta sin
+ * servidor. Allí no se redirige después de crearla: vive solo en la memoria
+ * de ese módulo, y saltar a otra página la perdería al instante.
  */
-function sesionJuguete(correo) {
-  modo = 'local';
+export function sesionJuguete(correo) {
   // `avisos: true` a propósito: la fila de ajustes se salta las sesiones de
   // juguete (no es cuenta, no hay nada que dar), así que hoy no se pinta.
   // La bandera viva evita que, si algún día se pinta, el interruptor muestre

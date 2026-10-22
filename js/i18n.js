@@ -86,7 +86,7 @@ const DICC = {
   'pie.independiente': { en: 'BecasScout · An independent project. We are not a ministry or a university.' },
   'pie.solo': { en: 'BecasScout · An independent project.' },
   'pie.revisado': {
-    en: 'BecasScout · An independent project. We are not a ministry or a university. Last reviewed: <time datetime="2026-10-21">21 October 2026</time>.',
+    en: 'BecasScout · An independent project. We are not a ministry or a university. Last reviewed: <time datetime="2026-10-22">22 October 2026</time>.',
   },
 
   /* El botón dice el idioma al que lleva, no el que hay puesto: así se lee
@@ -517,7 +517,8 @@ const DICC = {
     en: 'You can always write to <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>.',
   },
 
-  /* ── Cuenta: modal, encuesta y ajustes (js/auth.js) ──────────────────── */
+  /* ── Cuenta: la página del alta (cuenta.html), la encuesta y los ajustes
+     (js/auth.js y js/cuenta.js) ─────────────────────────────────────────── */
   'cuenta.cerrar': { es: 'Cerrar', en: 'Close' },
   'cuenta.pasar': { es: 'Pasar', en: 'Skip' },
   'cuenta.pitch.h': {
@@ -576,6 +577,13 @@ const DICC = {
     en: 'No server is running. You can continue with a local test session, which <b>is not an account</b>: it lives in this browser only.',
   },
   'cuenta.local.btn': { es: 'Seguir en modo local', en: 'Continue in local mode' },
+  /* Lo que se lee justo después de aceptar el modo de juguete, en la página
+     del alta. Hay que decir que la sesión va en la pestaña: si no, quien migre
+     al buscador cree que la cuenta le sigue ahí. */
+  'cuenta.local.ok': {
+    es: 'Sesión local de prueba en marcha. Vive solo en esta pestaña: al cerrarla se acaba.',
+    en: 'Local test session running. It lives in this tab only: closing the tab ends it.',
+  },
   'cuenta.encuesta.h': { es: '¿Cómo nos has conocido?', en: 'How did you find us?' },
   'cuenta.encuesta.p': {
     es: 'Sirve para saber por dónde llega la gente. Si no quieres contestar, pasa sin más.',
@@ -733,8 +741,12 @@ const DICC = {
   },
   'etiqueta.fecha_limite': { es: 'Plazo', en: 'Deadline' },
   'etiqueta.plazo': { es: 'Plazo de solicitud', en: 'Application window' },
+  /* Tipos que solo traen las fichas de Erasmus Mundus y que llegaron antes
+     que su entrada: sin clave, la fila enseña «duracion_max» en crudo —en los
+     dos idiomas— y «convocatoria» en castellano con EN puesto. */
   'etiqueta.duracion_max': { es: 'Duración máxima', en: 'Maximum duration' },
-  'etiqueta.ects': { es: 'ECTS', en: 'ECTS' },
+  'etiqueta.ects': { es: 'Créditos ECTS', en: 'ECTS credits' },
+  'etiqueta.convocatoria': { es: 'Identificador de la convocatoria', en: 'Call identifier' },
 
   'motivo.notaOk': { es: 'Tu nota es {n} y piden {v}', en: 'Your grade is {n} and they ask for {v}' },
   'motivo.notaNo': { es: 'Piden {v} y tu nota es {n}', en: 'They ask for {v} and your grade is {n}' },
@@ -818,6 +830,94 @@ const DICC = {
   'pais.MK': { en: 'North Macedonia' },
   'pais.TR': { en: 'Turkey' },
   'pais.UA': { en: 'Ukraine' },
+  /* «UE» es el único cuyo nombre inglés no se escribe igual que el castellano
+     de js/paises.js: ahí va el acrónimo, y su espejo es «EU». */
+  'pais.UE': { en: 'EU' },
+
+  /* ── Erasmus Mundus (ingest/paginas.mjs) ─────────────────────────────
+     Igual que en las demás páginas: el castellano vive en el HTML que
+     genera paginas.mjs. Sin `es` aquí, al volver al castellano se restaura
+     lo que había en el HTML, y así no hay dos copias que desincronizar.
+     Sin estas claves, la página de Erasmus se quedaba entera en castellano
+     con EN puesto: data-i18n apuntaba a claves que nunca llegaron. */
+
+  'em.meta': { en: 'Data from the official EACEA catalogue and the Erasmus+ pages, read on' },
+  'em.h1': { en: 'Erasmus Mundus scholarships:' },
+  'em.h1.mes': { en: 'a month' },
+  'em.h1.dos': { en: 'and a university degree' },
+  'em.lede': {
+    en: 'The Erasmus Mundus Joint Masters are the European scholarships with the cleanest rule there is: the same amount and the same requirements for every programme. That is what makes it possible to state the figure with its quote, which is exactly what no other scholarship lets you do.',
+  },
+  'em.corto.h': { en: 'What you need, in short:' },
+  'em.corto.p': {
+    en: 'You don’t have to be Spanish or submit a project: the application is filled in on the programme’s own website, and that is all.',
+  },
+  'em.corto.y': { en: 'and between' },
+  'em.corto.ects': { en: 'ECTS credits' },
+  'em.req.titulacion': { en: 'Previous degree' },
+  'em.req.titulacion.valor': { en: 'A university degree (or final year of a degree)' },
+  'em.req.plazo': { en: 'Application window' },
+  'em.req.plazo.valor': {
+    en: 'Between October and January, for the course that starts the following year',
+  },
+  'em.req.ects': { en: 'ECTS credits' },
+  'em.req.ects.valor': { en: '60, 90 or 120' },
+  'em.alMes': { en: 'a month, up to' },
+  'em.meses': { en: 'months' },
+  'em.cuanto.h2': { en: 'What the scholarship pays' },
+  'em.cuanto.p1': {
+    en: 'The programme doesn’t set the amount: it is the same for every Erasmus Mundus Joint Master, and that is why it can be checked once and applied to all of them. The scholarship covers participation, travel, the visa and a living allowance, but the fine detail of each item is published by the programme.',
+  },
+  'em.cuanto.cita': {
+    en: 'The official Erasmus+ page about the Joint Masters. The quote is in English because it is the source’s literal text; the translation is ours.',
+  },
+  'em.requisitos.h2': { en: 'What you need' },
+  'em.requisitos.p': { en: 'The same requirements for the' },
+  'em.requisitos.programas': { en: 'programmes:' },
+  'em.requisitos.p2': {
+    en: 'Age, average grade and language are nowhere in these rules: the Commission doesn’t set them as a condition of the scholarship. Each programme can also ask for its own things —a portfolio, an interview, a specific language—, and those live on the website of each master, which is the place to look.',
+  },
+  'em.queEs.h2': { en: 'What they actually are' },
+  'em.nota.1': { en: 'Type of programme' },
+  'em.nota.1.valor': {
+    en: 'A high-level international master, taught in English by a consortium of at least three institutions from three different countries',
+  },
+  'em.nota.2': { en: 'How many people have been through them' },
+  'em.nota.2.valor': { en: 'Almost 50,000 students since 2004' },
+  'em.nota.3': { en: 'Where each programme’s requirements are' },
+  'em.nota.3.valor': {
+    en: 'On the website of each master: the entry requirements, the participating universities and the application steps are all there',
+  },
+  'em.programas.h2': { en: 'The' },
+  'em.programas.h2b': { en: 'programmes' },
+  'em.programas.p': {
+    en: 'This is the complete list from the official catalogue, with a link to the project record on the Erasmus+ portal and to the website where applications are filed. They are ordered by nothing: the order is the catalogue’s order.',
+  },
+  'em.tabla.programa': { en: 'Programme' },
+  'em.tabla.ficha': { en: 'Official record' },
+  'em.tabla.solicitud': { en: 'Apply' },
+  'em.tabla.fichaProyecto': { en: 'Project record' },
+  'em.tabla.webPrograma': { en: 'Programme website' },
+  'em.nosabemos.h2': { en: 'What we don’t know' },
+  'em.nosabemos.p1': {
+    en: '<strong>The exact dates.</strong> Erasmus+ says applications are made between October and January, but each programme has its own dates and its own way of selecting. We don’t have them, and that is why we don’t write them: an approximate deadline is worse than a gap, because it is the piece of data someone builds their decision on.',
+  },
+  'em.nosabemos.p2': {
+    en: '<strong>The requirements specific to each programme.</strong> The official project record and the website of each master carry them, and that is why we link to both. What is here is what the Commission says for everyone, with its quote.',
+  },
+  'em.fuentes.h2': { en: 'Where this comes from' },
+  'em.fuentes.li1': {
+    en: '<a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus Joint Masters catalogue</a> (EACEA): the list of programmes and their links comes from here.',
+  },
+  'em.fuentes.li2': {
+    en: '<a href="https://erasmus-plus.ec.europa.eu/opportunities/organisations/cooperation-among-organisations-and-institutions/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (official Erasmus+ portal, organisations): the amount of the scholarship and its maximum duration come from here.',
+  },
+  'em.fuentes.li3': {
+    en: '<a href="https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (official Erasmus+ portal, students): the previous degree, the application window, the ECTS and the type of programme come from here.',
+  },
+  'em.fuentes.p': {
+    en: 'Each programme links to its own website, which is where you apply. The only thing in between is this list.',
+  },
 };
 
 /* ── Estado ─────────────────────────────────────────────────────────────── */

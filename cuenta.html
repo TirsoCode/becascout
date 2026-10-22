@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear cuenta — BecasScout</title>
+<meta name="description" content="Crea tu cuenta de BecasScout: un aviso cuando se acerque el plazo de una beca.">
+<meta name="theme-color" content="#12463A">
+<!-- Página utilitaria, como la de privacidad: el alta se abre en otra
+     pestaña desde las puertas de la portada y del buscador, y lo que aquí
+     pasa no debe competir en el índice con las páginas que sí son contenido. -->
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M6 3.4h8l4.6 4.6v12.6H6z' fill='%23F7F4EC'/%3E%3Cpath d='M14 3.4v4.6h4.6z' fill='%23D8D0BF'/%3E%3Cpath d='M8.4 10.4h4.4M8.4 13.2h3' stroke='%23C2B9A6' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M18.9 4.6 12 14.2' stroke='%231A2A24' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M12 14.2 9.9 17.2' stroke='%231A2A24' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16.6 7.7 14.6 10.3' stroke='%23A9BFB4' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
+</head>
+<body class="body-cuenta">
+
+<!-- La barra no es la cabecera del sitio: aquí no se viene a navegar. La
+     marca, que vuelve a la página desde donde se abrió esta pestaña (la
+     escribe js/cuenta.js), y el chip de idioma, hermano del resto — nunca
+     dentro de una zona que JavaScript vacía. -->
+<header class="cuenta-top">
+  <div class="cuenta-top-in">
+    <a class="brand" id="marca" href="/becas.html">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6.6 3.2h7.2l4.4 4.4v13.2H6.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M13.8 3.2v4.4h4.4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M19.2 5 12.3 14.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M12.3 14.4 10.4 17.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">Becas<b>Scout</b></span>
+    </a>
+    <div class="top-lang" data-lang-switch></div>
+  </div>
+</header>
+
+<main class="cuenta">
+  <aside class="auth-side">
+    <div class="auth-pitch">
+      <h2 data-i18n="cuenta.pitch.h">Cada requisito, con la cita del boletín.</h2>
+      <p data-i18n="cuenta.pitch.p">Nada se enseña sin el fragmento que lo sostiene. Lo que la convocatoria no dice, no lo sabemos.</p>
+    </div>
+
+    <dl class="auth-stats">
+      <div><dt>0</dt><dd data-i18n="cuenta.stat1">requisitos sin cita</dd></div>
+      <div><dt>0</dt><dd data-i18n="cuenta.stat2">analítica y publicidad</dd></div>
+    </dl>
+  </aside>
+
+  <section class="auth-main">
+    <div class="cuenta-cajon">
+      <!-- El título y el subtítulo los escribe js/cuenta.js con el modo y el
+           idioma del momento (cambian entre crear y entrar), así que no llevan
+           data-i18n ni texto final: lo que se ve aquí es el arranque. -->
+      <h1 id="modal-t">Crea tu cuenta</h1>
+      <p id="modal-sub">Te avisamos cuando se acerque el plazo de una beca.</p>
+      <div class="modal-msg"></div>
+
+      <!-- El botón de Google lo añade js/cuenta.js solo si /api/config trae
+           googleId. Con las claves ausentes, un botón que abre una ventana de
+           Google que contesta con un error de client_id es un callejón sin
+           salida; mejor un formulario que funciona siempre. -->
+      <div id="google-sitio"></div>
+
+      <form id="form">
+        <label class="flab" for="f-correo" data-i18n="cuenta.correo">Correo</label>
+        <input id="f-correo" type="email" required autocomplete="email"
+               placeholder="tu@correo.com" data-i18n-ph="cuenta.correo.ph">
+        <label class="flab" for="f-pass" data-i18n="cuenta.pass">Contraseña</label>
+        <!-- El marcador y el mínimo los maneja js/cuenta.js según el modo:
+             crear pide 10, entrar no exige nada tal como lo pinta. -->
+        <input id="f-pass" type="password" required minlength="10" autocomplete="new-password"
+               placeholder="Mínimo 10 caracteres">
+        <p class="fhint" id="f-hint">Al menos 10 caracteres.</p>
+        <button class="btn btn-brand" type="submit" id="f-enviar">Crear cuenta</button>
+      </form>
+
+      <!-- El enlace que cambia entre crear y entrar. Vacío de nacimiento:
+           js/cuenta.js lo escribe con el modo. -->
+      <p class="auth-alt" id="modal-alt"></p>
+
+      <p class="modal-fine">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="5" y="10.5" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.9"/>
+          <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.9"/>
+        </svg>
+        <span data-i18n="cuenta.fino">Tu nota, tu edad y tu destino no salen de tu navegador.</span>
+      </p>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/cuenta.js"></script>
+</body>
+</html>

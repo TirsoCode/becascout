@@ -255,35 +255,53 @@ const titular = await evaluar(`(() => {
 })()`);
 ok(titular && titular.length > 20, 'el titular no se lee');
 
-// ── El modal, sin claves de Google ────────────────────────────────────────
+// ── La página del alta, sin claves de Google ─────────────────────────────
 
 /* Aquí no hay `GOOGLE_CLIENT_ID` en `.env.local`, así que `/api/config` no
-   devuelve `googleId` y el modal tiene que abrirse con el formulario y sin el
-   botón de Google. Se comprueban las tres piezas porque las tres se rompen
-   por su lado: el botón que no debe estar, el separador «o con tu correo»
-   —que sin botón queda huérfano, anunciando una alternativa que no hay— y el
-   formulario, que es lo que sí tiene que funcionar siempre. */
-console.log('El modal sin Google');
+   devuelve `googleId` y la página del alta carga con el formulario y sin el
+   botón de Google. Se comprueba la puerta y la página, cada una por su lado:
+   la de la portada tiene que ser un enlace a cuenta.html que abra su propia
+   pestaña, y esa página, cargada, ocupa la pantalla entera y no trae ni el
+   botón de Google ni el separador «o con tu correo», que sin botón queda
+   huérfano anunciando una alternativa que no hay. */
+console.log('La página del alta');
 
 await ir(`${BASE}/`);
-await evaluar(`document.querySelector('[data-open-auth]')?.click()`);
+const puerta = await evaluar(`(() => {
+  const a = document.querySelector('[data-open-auth]');
+  return a ? { href: a.getAttribute('href'), target: a.getAttribute('target') } : null;
+})()`);
+ok(puerta, 'la portada no trae la puerta de crear cuenta');
+ok(puerta && puerta.href.includes('cuenta.html'), `la puerta de crear cuenta no lleva a la página del alta («${puerta ? puerta.href : ''}»)`);
+ok(puerta && puerta.target === '_blank', 'la puerta del alta no abre otra pestaña');
+
+await ir(`${BASE}/cuenta.html`);
 await new Promise((r) => setTimeout(r, 600));
 
-const modal = await evaluar(`(() => {
-  const m = document.querySelector('#scrim');
-  if (!m) return { abierto: false };
+const alta = await evaluar(`(() => {
+  const caja = document.querySelector('.cuenta');
+  const d = document.documentElement;
   return {
-    abierto: true,
-    google: !!m.querySelector('#btn-google'),
-    sep: !!m.querySelector('.modal-sep'),
-    form: !!m.querySelector('#form'),
+    caja: !!caja,
+    // El viewport de maquetación —clientHeight— y no innerHeight: con la
+    // emulación móvil la ventana visual mide 866 en un viewport de 844 y
+    // contra esa cuenta ninguna página alcanza el fondo.
+    ocupa: caja ? Math.round(caja.getBoundingClientRect().bottom) >= d.clientHeight - 1 : false,
+    desborda: d.scrollWidth > d.clientWidth + 1,
+    form: !!document.querySelector('#form'),
+    titulo: document.querySelector('#modal-t')?.textContent ?? '',
+    google: !!document.querySelector('#btn-google'),
+    sep: !!document.querySelector('.modal-sep'),
   };
 })()`);
 
-ok(modal.abierto, 'el modal de la cuenta no se abre');
-ok(modal.form, 'el modal no trae el formulario de correo y contraseña');
-ok(!modal.google, 'sale el botón de Google sin claves configuradas');
-ok(!modal.sep, 'queda el separador «o con tu correo» sin botón de Google encima');
+ok(alta.caja, 'cuenta.html no trae la página del alta');
+ok(alta.form, 'la página del alta no trae el formulario de correo y contraseña');
+ok(alta.ocupa, 'la página del alta no llega hasta el fondo de la pantalla');
+ok(!alta.desborda, 'la página del alta desborda en 390 px');
+ok(/Crea tu cuenta|Create your account/.test(alta.titulo), `la página del alta no trae su título («${alta.titulo}»)`);
+ok(!alta.google, 'sale el botón de Google sin claves configuradas');
+ok(!alta.sep, 'queda el separador «o con tu correo» sin botón de Google encima');
 
 // ── El buscador ───────────────────────────────────────────────────────────
 

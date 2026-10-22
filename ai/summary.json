@@ -3,7 +3,7 @@
   "url": "https://becascout.vercel.app/",
   "description": "Buscador de becas europeas que lee la convocatoria oficial (BOE y otros boletines) y devuelve los requisitos como lista comprobable. Cada requisito lleva la cita literal del párrafo del documento del que salió.",
   "type": "WebSite",
-  "inLanguage": "es",
+  "inLanguage": ["es", "en"],
   "category": "Becas y educación",
   "areaServed": ["ES", "EU"],
   "contact": "privacidad@becascout.com",

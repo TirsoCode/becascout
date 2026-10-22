@@ -7,12 +7,17 @@
  * texto tapado— sin ningún dato real.
  */
 
-import { sesion, pedirAcceso, abrirAjustes, revisarEncuesta } from './auth.js';
+import { sesion, sesionFresca, abrirAjustes, revisarEncuesta } from './auth.js';
 import { t } from './i18n.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
 async function pintarCabecera() {
   const s = await sesion();
+  // Lo que esta pintada representa es también el estado que `alVolver`
+  // compara. Empezar en `null` era una trampa: el primer repinte tras el alta
+  // en la otra pestaña ve `null`, no repinta, y deja escrito el nuevo valor —
+  // el «Crear cuenta» se quedaría ahí para siempre con la cuenta ya hecha.
+  vista = s ? (s.local ? 'local' : 'si') : 'no';
   const cont = document.querySelector('.top-act');
   if (!cont) return;
 
@@ -21,6 +26,19 @@ async function pintarCabecera() {
 
   if (crear) crear.remove();
   if (cont.querySelector('.session')) return;
+
+  /* La otra puerta de la portada —la grande del héroe— también anuncia
+     «Crear cuenta gratis». Con sesión es un problema doble: la cuenta ya
+     está y el enlace manda al alta de todos modos, en otra pestaña, como si
+     nada hubiera pasado. Pasa a ser el camino siguiente: «Buscar becas» al
+     buscador. */
+  const hero = document.querySelector('[data-open-auth]');
+  if (hero) {
+    hero.removeAttribute('data-open-auth');
+    hero.setAttribute('href', '/becas.html');
+    hero.setAttribute('data-i18n', 'nav.buscar');
+    hero.textContent = t('nav.buscar');
+  }
 
   // El correo se pinta con `textContent` y no con `innerHTML`.
   //
@@ -63,23 +81,31 @@ async function pintarCabecera() {
   cont.appendChild(div);
 }
 
-/* Todos los botones de la portada abren el mismo modal. Y al cerrarse con
-   sesión confirmada, la cabecera se repinta: quedarse el «Crear cuenta»
-   escrito un rato más, con la cuenta ya hecha, es exactamente el momento en
-   que alguien vuelve a empezar. */
-function conectarBotones() {
-  document.querySelectorAll('[data-open-auth]').forEach((b) => {
-    b.addEventListener('click', () => {
-      pedirAcceso().then((s) => { if (s) pintarCabecera(); });
-    });
-  });
+/* La pestaña, cuando recupera el foco.
+ *
+ * El alta vive en `cuenta.html`, que las puertas de esta página abren en
+ * OTRA PESTAÑA — son enlaces, no botones: el navegador la abre y esta página
+ * no tiene nada que hacer con el clic. Pero mientras el alta se hacía, aquí
+ * uno quedaba mirando el «Crear cuenta» de siempre con la cuenta ya hecha
+ * en la otra pestaña. Al volver, se repregunta sin cache (`sesionFresca`)
+ * y solo si cambió se repinta la cabecera. */
+let vista = null;
+async function alVolver() {
+  if (document.visibilityState !== 'visible') return;
+  const s = await sesionFresca();
+  const ahora = s ? (s.local ? 'local' : 'si') : 'no';
+  if (vista !== null && ahora !== vista) pintarCabecera();
+  vista = ahora;
 }
+document.addEventListener('visibilitychange', alVolver);
+window.addEventListener('focus', alVolver);
 
 /* La cabecera ya trae el botón en la plantilla, así que aquí no se inserta
    otro: `pintarCabecera()` es para páginas que no lo tienen escrito a mano. */
 pintarCabecera();
-conectarBotones();
 
-// Si se aterriza aquí después de crear cuenta con Google, toca la pregunta de
-// llegada. La bandera la dejó /auth/callback (ver js/auth.js).
+// Si se aterriza aquí después de crear cuenta con Google —o tras el salto de
+// vuelta de cuenta.html con el alta recién hecha—, toca la pregunta de
+// llegada. La bandera la dejó auth/callback.js o js/cuenta.js (ver
+// js/auth.js).
 revisarEncuesta();

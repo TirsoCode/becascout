@@ -53,6 +53,20 @@ test('?lang=en aplica el inglés y se gasta', async ({ page }) => {
 test('el inglés no deja castellano suelto en las páginas de texto', async ({ page }) => {
   for (const ruta of ['/', '/sobre.html', '/erasmus-mundus.html']) {
     await irA(page, ruta);
+
+    // El bucle comparte la pestaña y el idioma vive en localStorage: si la
+    // ruta anterior acabó en inglés, esta cargó ya traducida y el chip nace
+    // con «ES». Cada ruta se mide desde la misma salida, así que se vuelve
+    // al castellano de partida.
+    if ((await page.locator('html').getAttribute('lang')) === 'en') {
+      await page.evaluate(() => localStorage.removeItem('becascout.idioma'));
+      await page.reload({ waitUntil: 'domcontentloaded' });
+    }
+
+    // El chip no está en el HTML: lo pinta el módulo de idioma al arrancar y
+    // en la misma creación engancha su listener. Esperar su texto espera de
+    // paso al módulo, que es quien tiene que estar dentro antes del clic.
+    await expect(page.locator('.lang-btn')).toHaveText('EN');
     await page.locator('.lang-btn').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
