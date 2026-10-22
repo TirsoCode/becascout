@@ -22,6 +22,10 @@
  *     de fingir que es una cuenta. Un producto que aparenta seguridad que no
  *     tiene es peor que uno que no promete nada.
  *
+ * La primera **solo existe si el despliegue trae sus claves**: el botón se
+ * pinta cuando `/api/config` devuelve un `googleId`, y no antes. Las otras dos
+ * no dependen de nada de fuera. Ver `abrirModal`.
+ *
  * ── Por qué el token de Google no se guarda ─────────────────────────────
  *
  * Porque no hace falta. Lo que hace falta es el correo. Se pide el token, se
@@ -40,8 +44,18 @@
  */
 
 import { iniciarSupabase, entrarConGoogle, salirSupabase } from './supabase.js';
+// Los textos del modal salen del diccionario: el mismo formulario sirve en
+// castellano y en inglés sin duplicar el marcado. Importar `t` arranca también
+// i18n.js, así que el conmutador de la cabecera funciona aunque esta página no
+// cargue ningún otro módulo.
+import { t } from './i18n.js';
 
 const API = '/api';
+
+// El id del proyecto de Google —el mismo de `GOOGLE_CLIENT_ID` en Vercel—. No
+// es un secreto: viaja al navegador en cualquier flujo OAuth. Queda aquí como
+// último recurso del camino sin Supabase; el id que manda es el que sirve
+// `/api/config`, que además es el que decide si hay botón.
 const GOOGLE_CLIENT_ID = '436706781551-o1nquf0ib9lp1p1vs1st0g08bs2a4k8m.apps.googleusercontent.com';
 const PERFIL = 'becascout.perfil';
 
@@ -154,8 +168,48 @@ const GOOGLE_SVG = `<svg width="17" height="17" viewBox="0 0 18 18" aria-hidden=
   <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 1 4.94l2.97 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
 </svg>`;
 
-function abrirModal() {
+/**
+ * Lo que el servidor dice que hay configurado: `url` y `anon` de Supabase, y
+ * el `googleId`.
+ *
+ * Hace falta **antes** de pintar el modal, porque de `googleId` depende que el
+ * botón de Google exista. Se pide al cargar la página y se guarda la promesa:
+ * el clic tiene que abrir el modal ya, no después de un viaje de red. Si la
+ * petición falla —sin servidor delante— queda un objeto vacío, que quiere decir
+ * exactamente lo mismo: no hay claves.
+ */
+let clavesPromesa = null;
+function clavesDeConfig() {
+  if (!clavesPromesa) {
+    clavesPromesa = fetch(`${API}/config`)
+      .then((r) => (r.ok ? r.json() : {}))
+      .catch(() => ({}));
+  }
+  return clavesPromesa;
+}
+
+clavesDeConfig();
+
+async function abrirModal() {
   if (document.getElementById('scrim')) return;
+
+  // Sin `googleId` el botón no se pinta. Y no es un adorno: con las claves
+  // ausentes, pulsarlo abre una ventana de Google que contesta con un error
+  // sobre `client_id` y orígenes autorizados, que es justo lo que no se puede
+  // explicar a quien solo quería entrar. Mejor un modal con el formulario
+  // —que funciona siempre— que un botón que lleva a un callejón.
+  //
+  // El código del flujo se queda entero (`conGoogle`, `lanzar`): el día que
+  // lleguen las claves, el botón vuelve solo, sin tocar nada más.
+  const { googleId } = await clavesDeConfig();
+  const hayGoogle = Boolean(googleId);
+
+  // El separador «o con tu correo» solo tiene sentido si hay algo arriba.
+  const bloqueGoogle = hayGoogle
+    ? `<button class="gbtn" id="btn-google">${GOOGLE_SVG} ${t('cuenta.google')}</button>
+
+        <div class="modal-sep">${t('cuenta.sep')}</div>`
+    : '';
 
   const scrim = document.createElement('div');
   scrim.className = 'scrim';
@@ -174,41 +228,37 @@ function abrirModal() {
         </span>
 
         <div class="auth-pitch">
-          <h2>Cada requisito, con la cita del boletín del que sale.</h2>
-          <p>Nada se enseña sin el fragmento literal que lo sostiene, y no
-             inventamos probabilidades: lo que la convocatoria no dice, no lo
-             sabemos.</p>
+          <h2>${t('cuenta.pitch.h')}</h2>
+          <p>${t('cuenta.pitch.p')}</p>
         </div>
 
         <dl class="auth-stats">
-          <div><dt>100 %</dt><dd>requisitos con cita</dd></div>
-          <div><dt>0</dt><dd>analítica y publicidad</dd></div>
+          <div><dt>0</dt><dd>${t('cuenta.stat1')}</dd></div>
+          <div><dt>0</dt><dd>${t('cuenta.stat2')}</dd></div>
         </dl>
       </aside>
 
       <div class="auth-main">
-        <button class="modal-x" aria-label="Cerrar">
+        <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
             <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
 
-        <h3 id="modal-t">Crea tu cuenta</h3>
-        <p id="modal-sub">Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.</p>
+        <h3 id="modal-t">${t('cuenta.titulo.registro')}</h3>
+        <p id="modal-sub">${t('cuenta.sub.registro')}</p>
         <div class="modal-msg"></div>
 
-        <button class="gbtn" id="btn-google">${GOOGLE_SVG} Continuar con Google</button>
-
-        <div class="modal-sep">o con tu correo</div>
+        ${bloqueGoogle}
 
         <form id="form">
-          <label class="flab" for="f-correo">Correo</label>
-          <input id="f-correo" type="email" required autocomplete="email" placeholder="tu@correo.com">
-          <label class="flab" for="f-pass">Contraseña</label>
+          <label class="flab" for="f-correo">${t('cuenta.correo')}</label>
+          <input id="f-correo" type="email" required autocomplete="email" placeholder="${t('cuenta.correo.ph')}">
+          <label class="flab" for="f-pass">${t('cuenta.pass')}</label>
           <input id="f-pass" type="password" required minlength="10" autocomplete="new-password"
-                 placeholder="Mínimo 10 caracteres">
-          <p class="fhint" id="f-hint">Al menos 10 caracteres.</p>
-          <button class="btn btn-brand" type="submit" id="f-enviar">Crear cuenta</button>
+                 placeholder="${t('cuenta.pass.ph')}">
+          <p class="fhint" id="f-hint">${t('cuenta.pista')}</p>
+          <button class="btn btn-brand" type="submit" id="f-enviar">${t('cuenta.enviar.registro')}</button>
         </form>
 
         <p class="auth-alt" id="modal-alt"></p>
@@ -218,8 +268,7 @@ function abrirModal() {
             <rect x="5" y="10.5" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.9"/>
             <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke="currentColor" stroke-width="1.9"/>
           </svg>
-          Tu nota media, tu edad y tu destino se quedan en tu navegador y no se
-          envían a ningún sitio.
+          ${t('cuenta.fino')}
         </p>
       </div>
     </div>`;
@@ -253,25 +302,29 @@ function abrirModal() {
 
   const pintarModo = (modo) => {
     accion = modo;
-    enviar.textContent = accion === 'registro' ? 'Crear cuenta' : 'Iniciar sesión';
+    enviar.textContent = accion === 'registro'
+      ? t('cuenta.enviar.registro')
+      : t('cuenta.enviar.login');
     pass.minLength = accion === 'registro' ? 10 : 1;
     pass.autocomplete = accion === 'registro' ? 'new-password' : 'current-password';
-    pass.placeholder = accion === 'registro' ? 'Mínimo 10 caracteres' : 'Tu contraseña';
-    hint.textContent = accion === 'registro' ? 'Al menos 10 caracteres.' : '';
+    pass.placeholder = accion === 'registro'
+      ? t('cuenta.pass.ph')
+      : t('cuenta.pass.ph.login');
+    hint.textContent = accion === 'registro' ? t('cuenta.pista') : '';
     hint.style.display = accion === 'registro' ? '' : 'none';
     scrim.querySelector('.modal-msg').innerHTML = '';
     // El encabezado sigue al modo. Poner «Crea tu cuenta» encima de un
     // formulario de iniciar sesión confunde: quien ya tiene cuenta no viene a
     // crearse nada, viene a entrar.
-    document.getElementById('modal-t').textContent =
-      accion === 'registro' ? 'Crea tu cuenta' : 'Inicia sesión';
-    document.getElementById('modal-sub').textContent =
-      accion === 'registro'
-        ? 'Con una cuenta te avisamos cuando se acerque el plazo de algo que te sirve.'
-        : 'Escribe tu correo y tu contraseña para volver a entrar.';
+    document.getElementById('modal-t').textContent = accion === 'registro'
+      ? t('cuenta.titulo.registro')
+      : t('cuenta.titulo.login');
+    document.getElementById('modal-sub').textContent = accion === 'registro'
+      ? t('cuenta.sub.registro')
+      : t('cuenta.sub.login');
     alt.innerHTML = accion === 'registro'
-      ? '¿Ya tienes cuenta? <button type="button" id="modal-cambia">Inicia sesión</button>'
-      : '¿No tienes cuenta? <button type="button" id="modal-cambia">Crea una</button>';
+      ? `${t('cuenta.alt.login')} <button type="button" id="modal-cambia">${t('cuenta.alt.login.btn')}</button>`
+      : `${t('cuenta.alt.crear')} <button type="button" id="modal-cambia">${t('cuenta.alt.crear.btn')}</button>`;
     alt.querySelector('#modal-cambia').onclick =
       () => pintarModo(accion === 'registro' ? 'login' : 'registro');
   };
@@ -287,7 +340,9 @@ function abrirModal() {
     if (modo === 'local') return cerrar(sesionJuguete(correo));
 
     enviar.disabled = true;
-    enviar.textContent = accion === 'registro' ? 'Creando cuenta…' : 'Entrando…';
+    enviar.textContent = accion === 'registro'
+      ? t('cuenta.enviando.registro')
+      : t('cuenta.enviando.login');
 
     const r = await api(accion, { correo, password });
 
@@ -301,39 +356,42 @@ function abrirModal() {
     }
 
     enviar.disabled = false;
-    enviar.textContent = accion === 'registro' ? 'Crear cuenta' : 'Iniciar sesión';
+    enviar.textContent = accion === 'registro'
+      ? t('cuenta.enviar.registro')
+      : t('cuenta.enviar.login');
 
     if (r.status === 0 || r.status === 404) {
       // No hay servidor. Se ofrece el modo local en lugar de un error seco,
       // pero se dice que es de juguete: si alguien lo toma por una cuenta de
       // verdad, el sitio le ha mentido.
       modo = 'local';
-      msg.innerHTML = `<div class="modal-msg amber">No hay servidor en marcha. Puedes seguir con una
-        sesión local de prueba, que <b>no es una cuenta</b>: solo vive en este navegador.
-        <button id="btn-local" style="margin-top:8px;width:100%">Seguir en modo local</button></div>`;
+      msg.innerHTML = `<div class="modal-msg amber">${t('cuenta.local.aviso')}
+        <button id="btn-local" style="margin-top:8px;width:100%">${t('cuenta.local.btn')}</button></div>`;
       msg.querySelector('#btn-local').onclick = () => cerrar(sesionJuguete(correo));
       return;
     }
 
-    msg.innerHTML = `<div class="modal-err">${esc(r.error ?? 'No se pudo completar.')}</div>`;
+    msg.innerHTML = `<div class="modal-err">${esc(r.error ?? t('cuenta.error.generico'))}</div>`;
   };
 
-  scrim.querySelector('#btn-google').onclick = async () => {
-    // Se intenta Supabase primero. Si no está configurado —en desarrollo, o
-    // antes de crear el proyecto— se cae al flujo con Google Identity Services,
-    // que funciona sin ningún servicio de por medio. Tener las dos rutas
-    // significa que el botón nunca queda muerto.
-    if (await iniciarSupabase()) {
-      try {
-        sessionStorage.setItem('bs.destino', location.pathname);
-        await entrarConGoogle();
-        return;   // Supabase redirige; no hay callback
-      } catch (err) {
-        msgDelModal(scrim, err.message);
+  if (hayGoogle) {
+    scrim.querySelector('#btn-google').onclick = async () => {
+      // Se intenta Supabase primero. Si no está configurado —en desarrollo, o
+      // antes de crear el proyecto— se cae al flujo con Google Identity
+      // Services, que funciona sin ningún servicio de por medio. Tener las dos
+      // rutas significa que el botón nunca queda muerto.
+      if (await iniciarSupabase()) {
+        try {
+          sessionStorage.setItem('bs.destino', location.pathname);
+          await entrarConGoogle();
+          return;   // Supabase redirige; no hay callback
+        } catch (err) {
+          msgDelModal(scrim, err.message);
+        }
       }
-    }
-    conGoogle(scrim, cerrar);
-  };
+      conGoogle(scrim, cerrar, googleId);
+    };
+  }
 }
 
 function msgDelModal(scrim, texto) {
@@ -395,7 +453,8 @@ const ORIGENES = [
   ['tiktok', 'TikTok'],
   ['youtube', 'YouTube'],
   ['reddit', 'Reddit'],
-  ['amigo', 'Un amigo'],
+  // «Un amigo» no es una marca: es lo único de la lista que se traduce.
+  ['amigo', null],
 ];
 
 /**
@@ -419,21 +478,20 @@ function abrirEncuesta() {
   scrim.id = 'scrim';
   scrim.innerHTML = `
     <div class="modal modal-wrap encuesta" role="dialog" aria-modal="true" aria-labelledby="enc-t" tabindex="-1">
-      <button class="modal-x" aria-label="Pasar">
+      <button class="modal-x" aria-label="${t('cuenta.pasar')}">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
           <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
 
-      <h3 id="enc-t">¿Cómo nos has conocido?</h3>
-      <p class="enc-sub">Sirve para saber por dónde llega la gente. Si no quieres
-         contestar, pasa sin más.</p>
+      <h3 id="enc-t">${t('cuenta.encuesta.h')}</h3>
+      <p class="enc-sub">${t('cuenta.encuesta.p')}</p>
 
       <div class="enc-opts">
-        ${ORIGENES.map(([v, t]) => `<button type="button" data-origen="${v}"><span class="enc-ico">${ICONOS[v]}</span>${t}</button>`).join('')}
+        ${ORIGENES.map(([v, nombre]) => `<button type="button" data-origen="${v}"><span class="enc-ico">${ICONOS[v]}</span>${nombre ?? t('cuenta.origen.amigo')}</button>`).join('')}
       </div>
 
-      <p class="enc-skip"><button type="button">Prefiero no contestar</button></p>
+      <p class="enc-skip"><button type="button">${t('cuenta.encuesta.skip')}</button></p>
     </div>`;
 
   document.body.appendChild(scrim);
@@ -473,8 +531,8 @@ function abrirEncuesta() {
       // Un acuse breve antes de cerrar. Sin él, un clic que cierra en el acto
       // no se distingue de un clic que no hizo nada.
       scrim.querySelector('.encuesta').innerHTML = `
-        <h3>Anotado</h3>
-        <p class="enc-sub">Gracias: con esto sabemos por dónde llega la gente.</p>`;
+        <h3>${t('cuenta.encuesta.ok')}</h3>
+        <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
       setTimeout(() => cerrar(v), 850);
     };
   });
@@ -549,30 +607,30 @@ export async function abrirAjustes() {
 
   function pasoInicio() {
     caja.innerHTML = `
-      <button class="modal-x" aria-label="Cerrar">
+      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
           <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
 
-      <h3 id="ajs-t">Tu cuenta</h3>
+      <h3 id="ajs-t">${t('cuenta.ajustes.t')}</h3>
 
       <p class="ajs-correo"></p>
 
       <div class="avisos-fila">
         <div class="avisos-txt">
-          <span class="avisos-t">Avisos de plazo</span>
-          <p>Un correo solo cuando una convocatoria de la lista cierra en los próximos 7 días. Lo quitas aquí mismo.</p>
+          <span class="avisos-t">${t('cuenta.avisos.t')}</span>
+          <p>${t('cuenta.avisos.p')}</p>
         </div>
         <button type="button" class="switch" id="ajs-avisos" role="switch"
-                aria-checked="false" aria-label="Avisos de plazo">
+                aria-checked="false" aria-label="${t('cuenta.avisos.t')}">
           <span class="switch-dot"></span>
         </button>
       </div>
 
       <div class="ajs-act">
-        <button type="button" class="btn btn-quiet" id="ajs-salir">Cerrar sesión</button>
-        <button type="button" class="btn btn-rust" id="ajs-borrar">Eliminar la cuenta</button>
+        <button type="button" class="btn btn-quiet" id="ajs-salir">${t('cuenta.ajustes.salir')}</button>
+        <button type="button" class="btn btn-rust" id="ajs-borrar">${t('cuenta.ajustes.borrar')}</button>
       </div>
 
       <div class="modal-msg"></div>`;
@@ -633,8 +691,8 @@ export async function abrirAjustes() {
         // el servidor; quien tiene el modal delante necesita saber que tiene
         // que volver a entrar.
         msgDelModal(caja, res?.status === 401
-          ? 'Tu sesión ha caducado. Entra otra vez para cambiar los avisos.'
-          : (res?.error ?? 'Los avisos no se han podido cambiar ahora mismo.'));
+          ? t('cuenta.ajustes.caducada')
+          : (res?.error ?? t('cuenta.avisos.error')));
       }
 
       pinta();
@@ -644,27 +702,25 @@ export async function abrirAjustes() {
 
   function pasoBorrar() {
     caja.innerHTML = `
-      <button class="modal-x" aria-label="Cerrar">
+      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
           <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
 
-      <h3>Eliminar la cuenta</h3>
-      <p class="enc-sub">Se acaba aquí: se pierde la cuenta y la sesión, y no
-         llegarán más avisos de plazo. Para confirmar, escribe tu dirección
-         de correo.</p>
+      <h3>${t('cuenta.borrar.h')}</h3>
+      <p class="enc-sub">${t('cuenta.borrar.p')}</p>
 
       <form id="ajs-form">
-        <label class="flab" for="ajs-conf">Tu correo</label>
+        <label class="flab" for="ajs-conf">${t('cuenta.borrar.lab')}</label>
         <input id="ajs-conf" type="email" required autocomplete="email"
-               placeholder="El correo con el que creaste la cuenta">
-        <button type="submit" class="btn btn-rust" id="ajs-si">Borrar definitivamente</button>
+               placeholder="${t('cuenta.borrar.ph')}">
+        <button type="submit" class="btn btn-rust" id="ajs-si">${t('cuenta.borrar.btn')}</button>
       </form>
 
       <div class="modal-msg"></div>
 
-      <p class="enc-skip"><button type="button" id="ajs-no">Volver</button></p>`;
+      <p class="enc-skip"><button type="button" id="ajs-no">${t('cuenta.borrar.volver')}</button></p>`;
 
     caja.querySelector('#ajs-no').onclick = pasoInicio;
     caja.querySelector('#ajs-form').onsubmit = alEnviar;
@@ -677,7 +733,7 @@ export async function abrirAjustes() {
     const confirmar = caja.querySelector('#ajs-conf').value.trim();
 
     btn.disabled = true;
-    btn.textContent = 'Borrando…';
+    btn.textContent = t('cuenta.borrar.haciendo');
 
     try {
       const res = await fetch(`${API}/cuenta`, {
@@ -700,13 +756,13 @@ export async function abrirAjustes() {
       }
 
       const d = await res.json().catch(() => ({}));
-      msgDelModal(caja, d.error ?? 'No se pudo borrar la cuenta.');
+      msgDelModal(caja, d.error ?? t('cuenta.borrar.error'));
     } catch {
-      msgDelModal(caja, 'No se pudo borrar la cuenta.');
+      msgDelModal(caja, t('cuenta.borrar.error'));
     }
 
     btn.disabled = false;
-    btn.textContent = 'Borrar definitivamente';
+    btn.textContent = t('cuenta.borrar.btn');
   }
 
   pasoInicio();
@@ -714,36 +770,38 @@ export async function abrirAjustes() {
 
 /* ── Google ─────────────────────────────────────────────────────────────── */
 
-function conGoogle(scrim, cerrar) {
+function conGoogle(scrim, cerrar, clientId) {
   const btn = scrim.querySelector('#btn-google');
   const msg = scrim.querySelector('.modal-msg');
   btn.disabled = true;
-  btn.innerHTML = 'Conectando…';
+  btn.innerHTML = t('cuenta.google.cargando');
 
   if (!window.google?.accounts?.oauth2) {
     const s = document.createElement('script');
     s.src = 'https://accounts.google.com/gsi/client';
     s.async = true;
     s.defer = true;
-    s.onload = () => lanzar(scrim, cerrar, msg);
+    s.onload = () => lanzar(scrim, cerrar, msg, clientId);
     s.onerror = () => {
-      msg.innerHTML = `<div class="modal-err">No se pudo cargar Google. Revisa la conexión.</div>`;
+      msg.innerHTML = `<div class="modal-err">${t('cuenta.google.error')}</div>`;
       btn.disabled = false;
-      btn.innerHTML = `${GOOGLE_SVG} Continuar con Google`;
+      btn.innerHTML = `${GOOGLE_SVG} ${t('cuenta.google')}`;
     };
     document.head.appendChild(s);
     return;
   }
-  lanzar(scrim, cerrar, msg);
+  lanzar(scrim, cerrar, msg, clientId);
 }
 
-function lanzar(scrim, cerrar, msg) {
+function lanzar(scrim, cerrar, msg, clientId) {
   try {
     const client = window.google.accounts.oauth2.initTokenClient({
-      client_id: GOOGLE_CLIENT_ID,
+      // El id del servidor manda; el de arriba es el del proyecto, para cuando
+      // el modal se abrió sin que `/api/config` contestara.
+      client_id: clientId || GOOGLE_CLIENT_ID,
       scope: 'email',
       callback: async (r) => {
-        if (r.error) { msg.innerHTML = `<div class="modal-err">Google devolvió un error: ${esc(r.error)}</div>`; return; }
+        if (r.error) { msg.innerHTML = `<div class="modal-err">${esc(t('cuenta.google.devuelto', { c: r.error }))}</div>`; return; }
         try {
           // Se manda el **access token**, no el correo que devuelve el perfil.
           // El servidor no puede fiarse de lo que dice esta página: si aceptara
@@ -756,7 +814,7 @@ function lanzar(scrim, cerrar, msg) {
           // Google y se metía en `cache` sin contrastar: dos verdades, y la que
           // se enseñaba era justo la que nadie había verificado.
           const res = await api('registro-google', { token: r.access_token });
-          if (!res.ok) throw new Error(res.error ?? 'No se pudo crear la cuenta.');
+          if (!res.ok) throw new Error(res.error ?? t('cuenta.error.generico'));
           cache = { email: res.correo };
           cerrar(cache);
           // `nuevo` lo dice el servidor al escribir la cuenta: si ya existía
@@ -766,7 +824,7 @@ function lanzar(scrim, cerrar, msg) {
           msg.innerHTML = `<div class="modal-err">${esc(err.message)}</div>`;
         }
       },
-      error_callback: () => { msg.innerHTML = `<div class="modal-err">Se canceló el acceso.</div>`; },
+      error_callback: () => { msg.innerHTML = `<div class="modal-err">${t('cuenta.google.cancelado')}</div>`; },
     });
     client.requestAccessToken({ prompt: '' });
   } catch (err) {

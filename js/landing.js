@@ -8,6 +8,7 @@
  */
 
 import { sesion, pedirAcceso, abrirAjustes, revisarEncuesta } from './auth.js';
+import { t } from './i18n.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
 async function pintarCabecera() {
@@ -51,7 +52,7 @@ async function pintarCabecera() {
   if (!s.local) {
     const pf = document.createElement('button');
     pf.className = 'session-perfil';
-    pf.title = 'Ajustes de la cuenta';
+    pf.title = t('cuenta.ajustes.tooltip');
     pf.append(av, nombre);
     pf.onclick = abrirAjustes;
     div.append(pf);

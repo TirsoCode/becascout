@@ -18,26 +18,55 @@
  */
 
 import { sesion, haySesion, pedirAcceso, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
-import { CODIGOS, NOMBRES, nombreDe } from './paises.js';
+import { CODIGOS, nombreDe } from './paises.js';
+import { t, alCambiarIdioma, idiomaActual } from './i18n.js';
 
 const R = 34;                  // radio del anillo
 const CIRC = 2 * Math.PI * R;
-const ETIQUETA = {
-  nota_minima: 'Nota media mínima',
-  edad_max: 'Edad máxima',
-  edad_min: 'Edad mínima',
-  idioma: 'Idioma',
-  titulacion: 'Titulación',
-  destino: 'Destino',
-  ingresos: 'Ingresos',
-  justificacion: 'Documentación',
-  importe: 'Importe',
-  presupuesto: 'Presupuesto de la convocatoria',
-  fecha_limite: 'Plazo',
-  plazo: 'Plazo de solicitud',
-  duracion_max: 'Duración máxima',
-  ects: 'ECTS',
+
+/* El nivel del perfil se guarda con su nombre castellano —es el `value` del
+   `<select>` y lo que comparan los datos—, pero se enseña en el idioma que
+   toque. La clave del diccionario va por nombre y no por posición: si algún
+   día hay un nivel nuevo, se queda sin traducir en vez de enseñar otro. */
+const CLAVE_NIVEL = {
+  Grado: 'nivel.grado',
+  'Máster': 'nivel.master',
+  Doctorado: 'nivel.doctorado',
 };
+
+/* Un tipo de requisito que no esté en el diccionario se enseña tal cual, con
+   su nombre técnico. Es feo y se ve, que es lo que se quiere: un hueco en
+   blanco en la lista no lo delata nadie. */
+function etiqueta(tipo) {
+  const clave = `etiqueta.${tipo}`;
+  const texto = t(clave);
+  return texto === clave ? String(tipo) : texto;
+}
+
+function nivelDe(nivel) {
+  const clave = CLAVE_NIVEL[nivel];
+  return clave ? t(clave) : String(nivel ?? '');
+}
+
+/** El nombre de un país en el idioma de la página.
+ *
+ *  El castellano no se duplica en el diccionario: es el de `js/paises.js`,
+ *  que es la lista única. Solo el inglés vive en `i18n.js`, y los países que
+ *  se escriben igual —Malta, Austria— no están ahí y caen al castellano, que
+ *  en esos casos ya es el nombre inglés. */
+function paisDe(cod) {
+  if (!cod) return '';
+  if (idiomaActual() === 'es') return nombreDe(cod);
+  const clave = `pais.${cod}`;
+  const texto = t(clave);
+  return texto === clave ? nombreDe(cod) : texto;
+}
+
+/** El separador de miles y el decimal, según el idioma: «2.619» y «7,5» en
+ *  castellano, «2,619» y «7.5» en inglés. */
+function num(n) {
+  return Number(n).toLocaleString(idiomaActual() === 'en' ? 'en-GB' : 'es-ES');
+}
 
 let becas = [];
 
@@ -66,8 +95,8 @@ async function cargar() {
   } catch {
     document.getElementById('zona-lista').innerHTML = `
       <div class="empty">
-        <h3>No hay datos cargados</h3>
-        <p>Ejecuta <code>node ingest/run.mjs</code> para generar <code>data/becas.json</code>.</p>
+        <h3>${t('error.datos.h')}</h3>
+        <p>${t('error.datos.p')}</p>
       </div>`;
     return;
   }
@@ -100,7 +129,7 @@ function rellenarPerfil() {
  *
  * Los que no tienen ninguna convocatoria **no se enseñan**: un destino que
  * no tiene nada es ruido en un desplegable, y lo que el estudiante quiere es
- * ver que hay algo. Los que sí hay, con el nombre en castellano.
+ * ver que hay algo. Los que sí hay, con el nombre en el idioma de la página.
  */
 function llenarPaises() {
   const sel = $('#pais');
@@ -117,7 +146,7 @@ function llenarPaises() {
     if (!conBeca.has(cod)) continue;
     const o = document.createElement('option');
     o.value = cod;
-    o.textContent = NOMBRES[cod] ?? cod;
+    o.textContent = paisDe(cod);
     frag.append(o);
   }
   sel.append(frag);
@@ -128,6 +157,21 @@ function llenarPaises() {
   const elegido = sel.value;
   if (elegido && ![...sel.options].some((o) => o.value === elegido)) {
     sel.value = '';
+  }
+}
+
+/**
+ * Vuelve a escribir los países del desplegable en el idioma nuevo.
+ *
+ * `llenarPaises()` solo corre una vez —la lista de destinos no cambia—, así
+ * que sin esto el desplegable se quedaría en el idioma con el que se cargó la
+ * página mientras el resto ya está en el otro.
+ */
+function traducirPaises() {
+  const sel = $('#pais');
+  if (!sel || sel.dataset.lleno !== '1') return;
+  for (const o of sel.options) {
+    if (o.value) o.textContent = paisDe(o.value);
   }
 }
 
@@ -155,7 +199,7 @@ async function pintarCabecera() {
     const b = document.createElement('b');
     b.textContent = String(s.email ?? '').split('@')[0];
     nombre.appendChild(b);
-    if (s.local) nombre.appendChild(document.createTextNode(' (local)'));
+    if (s.local) nombre.appendChild(document.createTextNode(t('cab.local')));
 
     // El perfil abre los ajustes —salir y borrar la cuenta—, salvo en la
     // sesión de juguete, que no es cuenta y ahí no hay nada que ajustar.
@@ -165,7 +209,7 @@ async function pintarCabecera() {
     if (!s.local) {
       const pf = document.createElement('button');
       pf.className = 'session-perfil';
-      pf.title = 'Ajustes de la cuenta';
+      pf.title = t('cuenta.ajustes.tooltip');
       pf.append(av, nombre);
       pf.onclick = abrirAjustes;
       d.append(pf);
@@ -174,7 +218,8 @@ async function pintarCabecera() {
     }
 
     const x = document.createElement('button');
-    x.textContent = 'Salir';
+    x.className = 'session-salir';
+    x.textContent = t('cab.salir');
     x.onclick = salir;
 
     d.append(x);
@@ -182,7 +227,7 @@ async function pintarCabecera() {
   } else {
     const b = document.createElement('button');
     b.className = 'btn btn-brand';
-    b.textContent = 'Crear cuenta';
+    b.textContent = t('cab.crear');
     b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
     zona.appendChild(b);
   }
@@ -229,12 +274,12 @@ function motivo(r, ok) {
   const p = perfil.leer();
   const n = notaNum(p.nota);
   if (r.tipo === 'nota_minima' && n !== null) {
-    return ok ? `Tu nota es ${String(n).replace('.', ',')} y piden ${r.valor}`
-              : `Piden ${r.valor} y tu nota es ${String(n).replace('.', ',')}`;
+    return ok ? t('motivo.notaOk', { n: num(n), v: r.valor })
+              : t('motivo.notaNo', { v: r.valor, n: num(n) });
   }
   if (r.tipo === 'edad_max' && p.edad) {
-    return ok ? `Tienes ${p.edad} y el máximo es ${r.valor}`
-              : `El máximo es ${r.valor} y tienes ${p.edad}`;
+    return ok ? t('motivo.edadOk', { n: p.edad, v: r.valor })
+              : t('motivo.edadNo', { v: r.valor, n: p.edad });
   }
   return '';
 }
@@ -247,8 +292,9 @@ function motivo(r, ok) {
  * La cifra es de **toda** la base, no del recorte que saldrá después: lo que
  * se está mirando es el corpus entero —igual que la referencia, «Searching
  * 53,481 professors»—, y lo que pasa el filtro es lo que enseña la lista al
- * caer el telón. El número va con el formato castellano: hoy son 390, y el
- * día que sean 2.619 sale «2.619» y no «2619».
+ * caer el telón. El número va con el separador de miles del idioma: hoy son
+ * 390, y el día que sean 2.619 sale «2.619» en castellano y «2,619» en
+ * inglés, que es como se escribe en cada uno.
  *
  * Aquí es donde más tienta copiar a la referencia, y la única parte que no
  * se puede: allí cada ficha lleva un «MATCH 87». Un encaje con porcentaje
@@ -257,39 +303,118 @@ function motivo(r, ok) {
  * verdad que hay que contar: cuántas hay.
  *
  * Va dentro de `#zona-lista` porque el titular **sustituye** a la lista
- * durante el beat: no hay fichas detrás de él que tapar. Y trae la página
- * arriba —con `scrollIntoView`—, porque si se comprobó desde media lista
- * bajada, el nuevo marco queda lejos del sitio donde se lee.
+ * durante el beat: no hay fichas detrás de él que tapar.
+ *
+ * ── El desplazamiento, y por qué ya no es `block: 'start'` ───────────────
+ *
+ * Traer el marco a la vista con `start` parecía inofensivo y no lo era: al
+ * entrar en la página dejaba la ventana bajada —607 px medidos en un móvil de
+ * 390 × 844— con la barra de filtros por encima del pliegue. Y no se podía
+ * bajar, que es lo que se reportó como «no puedo bajar mientras busca»: al
+ * sustituir la lista de 390 fichas por el cartel, el documento pasa de 250.000
+ * px a 1.700, así que el navegador recorta la posición al nuevo final y el
+ * estudiante se queda contra el borde sin haber tocado nada.
+ *
+ * Y `nearest` tampoco basta, que es lo que se probó primero: el marco es más
+ * alto que la ventana, y con un elemento así hasta `nearest` alinea su borde
+ * de arriba con el de la ventana. Seguía bajando la página 663 px. Lo que
+ * queda es mirar si el titular ya se ve y, solo si no se ve, subir lo justo.
+ * Quien lo tenga fuera de la pantalla tiene además el botón «Cambiar filtros»
+ * dentro del propio cartel.
  */
 function cartelBusqueda() {
+  const zona = $('#zona-lista');
+  // El alto que tenía la lista antes de sustituirla. Sin esto, el documento
+  // pasa de 250.000 px a 1.700 y el navegador recorta la posición al nuevo
+  // final: es lo que se sintió como «no puedo bajar mientras busca». Se
+  // presta al contenedor durante el beat y se devuelve al pintar.
+  const altoAntes = zona.offsetHeight;
+
   const p = perfil.leer();
   const partes = [];
-  if (p.nivel) partes.push(`de ${p.nivel}`);
-  if (p.pais) partes.push(`para ${nombreDe(p.pais)}`);
+  if (p.nivel) partes.push(t('buscando.nivel', { n: nivelDe(p.nivel) }));
+  if (p.pais) partes.push(t('buscando.pais', { p: paisDe(p.pais) }));
   // Sin filtro se dice el ámbito que sí es verdad: lo que hay en la base
   // es de aquí. No se pone «para ti», que finge un mérito que no hay.
-  const objetivo = partes.length ? partes.join(' ') : 'en toda Europa';
-  const num = becas.length.toLocaleString('es-ES');
+  const objetivo = partes.length ? partes.join(' ') : t('buscando.toda');
+  const total = num(becas.length);
+
+  // El filtro, aparte del titular y en píldoras. Dentro de la frase, el
+  // titular cambiaba de forma según lo que hubiera puesto —y con dos filtros
+  // se iba a tres líneas—; fuera, se lee como lo que es: el estado con el que
+  // se ha comprobado. Es la misma píldora que lleva cada ficha para el
+  // destino, así que no hay dos maneras de decir lo mismo.
+  const activos = [];
+  if (p.nivel) activos.push(nivelDe(p.nivel));
+  if (p.pais) activos.push(paisDe(p.pais));
+  const filtro = `
+      <p class="buscando-filtro" aria-hidden="true">${
+        (activos.length ? activos : [t('buscando.todaPill')]).map((x) => `<span>${esc(x)}</span>`).join('')
+      }</p>
+      <span class="sr-only">${esc(t('buscando.filtros', {
+        x: activos.join(', ') || t('buscando.ninguno'),
+      }))}</span>`;
 
   $('#zona-lista').innerHTML = `
     <div class="buscando" role="status">
-      <p class="buscando-k">Convocatorias de Europa</p>
-      <p class="buscando-h"><span aria-hidden="true">Buscando <b class="cuenta">0</b> becas ${esc(objetivo)}</span>
-        <span class="sr-only">Buscando ${num} becas ${esc(objetivo)}</span></p>
-      <p class="buscando-lede">Leemos las bases oficiales publicadas por el BOE, el catálogo de Erasmus Mundus, el DAAD y la Comisión Europea. De cada convocatoria: los requisitos, los plazos y los importes.</p>
+      <p class="buscando-k">${esc(t('buscando.k'))}</p>
+      <p class="buscando-h"><span aria-hidden="true">${esc(t('buscando.verbo'))} <b class="cuenta">0</b> ${esc(t('buscando.sust'))}</span>
+        <span class="sr-only">${esc(t('buscando.sr', { n: total, obj: objetivo }))}</span></p>
+      ${filtro}
+      <p class="buscando-lede">${esc(t('buscando.lede'))}</p>
       <ul class="buscando-pasos">
-        <li><span class="n">01</span>Las bases, tal como se publican</li>
-        <li><span class="n">02</span>Los requisitos, sacados del texto</li>
-        <li><span class="n">03</span>La cita, en cada dato</li>
+        <li><span class="n">01</span>${esc(t('buscando.paso1'))}</li>
+        <li><span class="n">02</span>${esc(t('buscando.paso2'))}</li>
+        <li><span class="n">03</span>${esc(t('buscando.paso3'))}</li>
       </ul>
-      <p class="buscando-sub"><span class="buscando-spin"></span>requisito a requisito contra tu perfil</p>
+      <p class="buscando-sub"><span class="buscando-spin"></span>${esc(t('buscando.sub'))}</p>
+      <button type="button" class="buscando-volver" id="buscando-volver">${esc(t('buscando.volver'))}</button>
+      ${esqueletos()}
     </div>`;
-  // Puesta en escena: el marco tiene que estar A LA VISTA. `#zona-lista`
-  // queda debajo de la barra del perfil —en un móvil, casi un formulario
-  // entero—, así que un `scrollTo(0,0)` era el plano equivocado: se veía el
-  // formulario y el titular detrás del pliegue. El propio marco manda.
-  $('#zona-lista .buscando').scrollIntoView({ block: 'start', behavior: 'instant' });
+
+  // El alto, prestado un rato. Al menos pantalla y media: en la primera carga
+  // no hay lista anterior que prestar, y sin este suelo el marco se queda solo,
+  // el documento encoge y no hay a dónde bajar mientras se busca.
+  zona.style.minHeight = `${Math.max(altoAntes, innerHeight * 1.8)}px`;
+
+  // El marco a la vista, pero **solo si no se ve**. `scrollIntoView` no sirve
+  // aquí: el marco es más alto que la ventana, y hasta `block: 'nearest'`
+  // alinea su borde de arriba con el de arriba y se lleva la página 663 px
+  // abajo —el «Convocatorias abiertas» y la barra del perfil quedaban cortados
+  // bajo la cabecera—. Mirándolo a mano: en escritorio el titular ya se ve y
+  // la página no se toca; en un móvil, donde el formulario ocupa casi la
+  // pantalla, se sube lo justo para que el arranque caiga por encima de la
+  // barra de abajo. Lo de atrás se alcanza con «Cambiar los filtros».
+  const caja = $('#zona-lista .buscando').getBoundingClientRect();
+  const cabecera = document.querySelector('header.top')?.getBoundingClientRect().height ?? 0;
+  const barraFija = document.querySelector('#cartel-acceso')?.getBoundingClientRect().height ?? 0;
+  const seVe = innerHeight - barraFija;
+  if (caja.top < cabecera || caja.top + 80 > seVe) {
+    window.scrollTo({
+      top: Math.max(0, scrollY + caja.top - cabecera - 8),
+      behavior: 'instant',
+    });
+  }
+
+  $('#buscando-volver').onclick = () => {
+    document.querySelector('.profile-bar')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  };
+
   contarHasta($('#zona-lista .buscando-h .cuenta'), becas.length);
+}
+
+/**
+ * Los huecos de ficha que van debajo del titular.
+ *
+ * La referencia —ProfScout— los pone ahí, y no son adorno: son la promesa de
+ * que la espera acaba en una lista. Aquí no llevan dato dentro ni pueden
+ * llevarlo; son huecos. Van `aria-hidden` porque un lector de pantalla no gana
+ * nada leyendo tres «cargando», y **no llevan `data-beca`**: el test del velo
+ * cuenta esas y un esqueleto no es una convocatoria.
+ */
+function esqueletos() {
+  const uno = `<div class="esq"><span class="esq-l esq-t"></span><span class="esq-l"></span><span class="esq-l esq-c"></span></div>`;
+  return `<div class="buscando-esqueletos" aria-hidden="true">${uno.repeat(3)}</div>`;
 }
 
 /**
@@ -310,7 +435,7 @@ function cartelBusqueda() {
 function contarHasta(nodo, total, duracion = 1100) {
   if (!nodo) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    nodo.textContent = total.toLocaleString('es-ES');
+    nodo.textContent = num(total);
     return;
   }
   const ficha = ++cuentaAbierta;
@@ -323,7 +448,7 @@ function contarHasta(nodo, total, duracion = 1100) {
     // becas»—, que es lo que se vio una vez. El reloj va de 0 a 1 y ni una
     // palabra más.
     const p = Math.min(Math.max((t - t0) / duracion, 0), 1);
-    nodo.textContent = Math.round(total * (1 - Math.pow(1 - p, 3))).toLocaleString('es-ES');
+    nodo.textContent = num(Math.round(total * (1 - Math.pow(1 - p, 3))));
     if (p === 1) { nodo.classList.add('contado'); return; }
     requestAnimationFrame(paso);
   };
@@ -449,17 +574,17 @@ async function pintar() {
   // principio de la línea siguiente. Con los `<span>` los tres datos son
   // bloques que bajan enteros.
   const cuenta = [
-    `<span><b>${filtradas.length}</b> ${filtradas.length === 1 ? 'convocatoria' : 'convocatorias'}</span>`,
-    `<span><b>${conReq}</b> con requisitos</span>`,
-    `<span><b>${filtradas.length - conReq}</b> sin requisitos aún</span>`,
+    `<span><b>${num(filtradas.length)}</b> ${t(filtradas.length === 1 ? 'contador.una' : 'contador.varias')}</span>`,
+    `<span><b>${num(conReq)}</b> ${t('contador.conReq')}</span>`,
+    `<span><b>${num(filtradas.length - conReq)}</b> ${t('contador.sinReq')}</span>`,
   ];
   // Y el aviso de las que no dicen dónde, que es la parte honesta: si no
   // se dice, el estudiante cree que la lista entera es de ese país.
   if (sinPaisConocido) {
-    cuenta.push(`<span><b>${sinPaisConocido}</b> sin destino conocido (también salen)</span>`);
+    cuenta.push(`<span><b>${num(sinPaisConocido)}</b> ${t('contador.sinPais')}</span>`);
   }
   if (sinNivelConocido) {
-    cuenta.push(`<span><b>${sinNivelConocido}</b> sin nivel conocido (también salen)</span>`);
+    cuenta.push(`<span><b>${num(sinNivelConocido)}</b> ${t('contador.sinNivel')}</span>`);
   }
   $('#counts').innerHTML = cuenta.join('\n     ');
 
@@ -471,15 +596,16 @@ async function pintar() {
     // ese filtro*». En el segundo caso, el aviso de las que no dicen
     // dónde dice cuántas se han quedado fuera.
     const filtrado = paisElegido || nivelElegido;
+    const destino = paisDe(paisElegido) || paisElegido || t('vacio.cualquierDestino');
     $('#zona-lista').innerHTML = `
       <div class="empty">
-        <h3>${filtrado ? 'No hay ninguna convocatoria con ese filtro' : 'Todavía no hay convocatorias'}</h3>
+        <h3>${t(filtrado ? 'vacio.filtro.h' : 'vacio.base.h')}</h3>
         <p>${filtrado
-          ? `Prueba con <b>${esc(nombreDe(paisElegido) || paisElegido || 'cualquier destino')}</b> o quita el filtro.
-             ${sinPaisConocido ? `Hay ${sinPaisConocido} que no dicen dónde y no se pueden filtrar por país.` : ''}`
-          : `La base se llena con <code>node ingest/run.mjs</code>, que lee el sumario del BOE
-             y descarga las Bases completas de las que hay que leer.`}</p>
+          ? `${t('vacio.filtro.p', { p: `<b>${esc(destino)}</b>` })}
+             ${sinPaisConocido ? t('vacio.filtro.sinPais', { n: num(sinPaisConocido) }) : ''}`
+          : t('vacio.base.p')}</p>
       </div>`;
+    $('#zona-lista').style.minHeight = '';
     return;
   }
 
@@ -489,6 +615,9 @@ async function pintar() {
     </div>`;
 
   $('#zona-lista').innerHTML = html;
+  // El alto prestado se devuelve aquí, con la lista ya dentro. Quitarlo antes
+  // encogería la página mientras se espera a la sesión, que va por red.
+  $('#zona-lista').style.minHeight = '';
   if (!abierta) velar();
   cartelAcceso(abierta);
 }
@@ -530,11 +659,11 @@ function cartelAcceso(abierta) {
   barra.className = 'cartel-acceso';
 
   const txt = document.createElement('p');
-  txt.textContent = 'Inicia sesión para ver las becas';
+  txt.textContent = t('velo.texto');
 
   const b = document.createElement('button');
   b.className = 'btn cartel-btn';
-  b.textContent = 'Crear cuenta gratis';
+  b.textContent = t('velo.btn');
   b.onclick = () => pedirAcceso().then((s) => { if (s) { pintarCabecera(); pintar(); } });
 
   barra.append(txt, b);
@@ -585,11 +714,11 @@ function tarjeta(b) {
       <h2 class="beca-h">${esc(b.titulo)}</h2>
 
       <div class="beca-meta">
-        ${b.cierra ? pillPlazo(b.cierra) : '<span class="pill">Plazo no extraído</span>'}
+        ${b.cierra ? pillPlazo(b.cierra) : `<span class="pill">${t('tarjeta.plazoNo')}</span>`}
         ${b.presupuesto ? `<span class="pill brand mono">${euros(b.presupuesto)}</span>` : ''}
         ${b.fuente === 'erasmus-mundus' ? '<span class="pill brand">Erasmus Mundus</span>' : ''}
         ${b.fuente === 'daad' ? '<span class="pill brand">DAAD</span>' : ''}
-        ${b.fuente === 'ue' ? '<span class="pill brand">UE</span>' : ''}
+        ${b.fuente === 'ue' ? `<span class="pill brand">${t('fuente.ue')}</span>` : ''}
         ${b.id.startsWith('BDNS') ? '<span class="pill mono">BDNS</span>' : ''}
         ${b.pagina ? `<span class="pill mono">BOE p. ${b.pagina}</span>` : ''}
         ${pillDestino(b)}
@@ -598,9 +727,7 @@ function tarjeta(b) {
       <div class="reqs">
         ${b.requisitos.length
           ? b.requisitos.map(fila).join('')
-          : `<p class="req-none">${b.boeIdBases
-              ? 'Tenemos las Bases pero aún no hemos sacado los requisitos.'
-              : 'Todavía no hemos extraído los requisitos. Puedes leerla entera en la fuente.'}</p>`}
+          : `<p class="req-none">${t(b.boeIdBases ? 'tarjeta.reqNoneBases' : 'tarjeta.reqNone')}</p>`}
       </div>
     </div>
 
@@ -609,15 +736,15 @@ function tarjeta(b) {
     <div class="beca-foot">
       <span class="pill ${total && conPerfil ? 'brand' : ''}">
         ${!cond.length
-          ? 'Sin requisitos extraídos'
+          ? t('tarjeta.sinReq')
           : !total
-            ? `${cond.length} requisitos, ninguno comprobable todavía`
+            ? t(cond.length === 1 ? 'tarjeta.nadaComprobable.una' : 'tarjeta.nadaComprobable', { n: cond.length })
             : conPerfil
-              ? `<b>${ok}</b> de ${total} requisitos comprobados`
-              : 'Añade tu nota para comprobar'}
+              ? `<b>${ok}</b> ${t(total === 1 ? 'tarjeta.de.uno' : 'tarjeta.de', { n: total })}`
+              : t('tarjeta.anadeNota')}
       </span>
       <a class="src" href="${b.url}" target="_blank" rel="noopener">
-        ${b.id.startsWith('BDNS') ? 'Ver convocatoria' : 'Ver en el BOE'}
+        ${t(b.id.startsWith('BDNS') ? 'tarjeta.verConv' : 'tarjeta.verBoe')}
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -646,9 +773,9 @@ function fila(r) {
   return `<div class="req ${clase}">
     <svg class="req-ico" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">${ICONO[clase]}</svg>
     <span>
-      <span class="req-k">${esc(ETIQUETA[r.tipo] ?? r.tipo)}</span>${valor}
+      <span class="req-k">${esc(etiqueta(r.tipo))}</span>${valor}
       ${motivo(r, ok) ? `<span class="req-why">${esc(motivo(r, ok))}</span>` : ''}
-      <span class="req-src">«${esc(corta(r.cita, 170))}»</span>
+      <span class="req-src">${comillas(esc(corta(r.cita, 170)))}</span>
     </span>
   </div>`;
 }
@@ -656,7 +783,7 @@ function fila(r) {
 function anillo(ok, total, conPerfil) {
   const pct = total ? ok / total : 0;
   const off = CIRC * (1 - pct);
-  const cap = !total ? 'sin datos' : !conPerfil ? 'añade tu nota' : `${pct * 100 | 0}%`;
+  const cap = !total ? t('anillo.sinDatos') : !conPerfil ? t('anillo.anadeNota') : `${pct * 100 | 0}%`;
 
   return `<div class="ringbox">
     <div class="ring">
@@ -673,9 +800,11 @@ function anillo(ok, total, conPerfil) {
 
 function pillPlazo(cierra) {
   const dias = Math.ceil((new Date(cierra) - Date.now()) / 86400000);
-  if (dias < 0) return `<span class="pill rust">Cerrada</span>`;
+  if (dias < 0) return `<span class="pill rust">${t('tarjeta.cerrada')}</span>`;
   const cls = dias <= 15 ? 'amber' : '';
-  const txt = dias === 0 ? 'Vence hoy' : dias === 1 ? 'Vence mañana' : `${dias} días`;
+  const txt = dias === 0 ? t('tarjeta.venceHoy')
+    : dias === 1 ? t('tarjeta.venceManana')
+    : t('tarjeta.dias', { n: dias });
   return `<span class="pill ${cls}">${txt}</span>`;
 }
 
@@ -701,30 +830,42 @@ function pillDestino(b) {
   const paises = b.paises ?? [];
   if (!paises.length) return '';
 
+  // Se ordena por el nombre que se está leyendo, no por el castellano: en
+  // inglés «Germany» va antes que «Spain», y con el orden castellano la
+  // lista parecería desordenada sin motivo.
   const ordenados = [...paises].sort((a, b) => {
-    const na = nombreDe(a), nb = nombreDe(b);
-    return na.localeCompare(nb, 'es');
+    const na = paisDe(a), nb = paisDe(b);
+    return na.localeCompare(nb, idiomaActual());
   });
 
   const MAX = 3;
   const visibles = ordenados.slice(0, MAX);
   const resto = ordenados.length - visibles.length;
 
-  const texto = visibles.map((c) => nombreDe(c)).join(', ') + (resto ? ` +${resto}` : '');
-  const completo = ordenados.map((c) => nombreDe(c)).join(', ');
+  const texto = visibles.map((c) => paisDe(c)).join(', ') + (resto ? ` +${resto}` : '');
+  const completo = ordenados.map((c) => paisDe(c)).join(', ');
 
-  return `<span class="pill mono" title="Destino: ${esc(completo)}">${esc(texto)}</span>`;
+  return `<span class="pill mono" title="${esc(t('tarjeta.destino', { p: completo }))}">${esc(texto)}</span>`;
 }
 
 /* ── Utilidades ─────────────────────────────────────────────────────────── */
 
 const $ = (s) => document.querySelector(s);
+/** El importe, con el separador y el sitio del símbolo de cada idioma:
+ *  «1.234.568 €» en castellano, «€1,234,568» en inglés. El símbolo solo
+ *  cambia de lado; la cifra es la misma. */
 function euros(n) {
-  return n >= 1000 ? `${Math.round(n).toLocaleString('es-ES')} €` : `${n} €`;
+  const cifra = n >= 1000 ? num(Math.round(n)) : String(n);
+  return idiomaActual() === 'en' ? `€${cifra}` : `${cifra} €`;
+}
+/** Las comillas de la cita, las de cada idioma. El texto citado no se toca:
+ *  solo cambia la raya que lo envuelve. */
+function comillas(s) {
+  return idiomaActual() === 'en' ? `“${s}”` : `«${s}»`;
 }
 function corta(s, n) {
-  const t = String(s ?? '');
-  return t.length > n ? `${t.slice(0, n).trimEnd()}…` : t;
+  const texto = String(s ?? '');
+  return texto.length > n ? `${texto.slice(0, n).trimEnd()}…` : texto;
 }
 function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) =>
@@ -737,6 +878,22 @@ $('#buscar').addEventListener('click', comprobar);
 
 $('#pais').addEventListener('change', () => $('#buscar').click());
 $('#nivel').addEventListener('change', () => $('#buscar').click());
+
+/* Al cambiar de idioma hay que repintar lo que nace en este fichero: la
+ * cabecera, el desplegable de países, la lista y la barra de abajo. i18n.js
+ * solo repinta lo que lleva `data-i18n` en el HTML, y aquí casi todo se
+ * construye con plantillas.
+ *
+ * Si el cartel de la búsqueda está en pantalla se vuelve a montar entero en
+ * vez de pintar la lista: el beat sigue corriendo y su temporizador es el que
+ * acaba enseñando las fichas. Sustituirlo por la lista ahora convertiría el
+ * cambio de idioma en un atajo para saltarse la espera. */
+alCambiarIdioma(() => {
+  pintarCabecera();
+  traducirPaises();
+  if ($('#zona-lista .buscando')) cartelBusqueda();
+  else if (becas.length) pintar();
+});
 
 pintarCabecera();
 cargar();

@@ -1,0 +1,80 @@
+/* lang.css — el conmutador de idioma.
+
+   Vive aparte de styles.css a propósito: styles.css es el sistema de diseño y
+   esto es una pieza suelta, para que se pueda enganchar en becas.html sin
+   tocar la hoja grande. Todo lo que hay aquí cuelga de `.top-lang` o de
+   `.lang-btn`; no toca ningún componente del sitio.
+
+   El botón es pequeño por obligación, no por gusto: en la portada, a 390 px,
+   la cabecera ya va llena con la marca y las dos acciones. Un control ancho
+   empujaría la página a scroll horizontal, que es el fallo que `test/web.mjs`
+   vigila. */
+
+.top-lang {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+/* En la pantalla de configuración no hay cabecera; el conmutador va suelto
+   en la esquina para no tener que inventar una ahí. */
+.top-lang-suelto {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 5;
+}
+
+.lang-btn {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 6px;
+  min-width: 30px;
+  color: var(--ink-2, #5E686D);
+  background: transparent;
+  border: 1px solid var(--rule-2, #D8D0BF);
+  border-radius: 3px;
+  cursor: pointer;
+  /* La caja no crece con el idioma: «EN» y «ES» ocupan lo mismo y el botón no
+     se mueve al pulsarlo. */
+  text-align: center;
+}
+
+@media (hover: hover) {
+  .lang-btn:hover {
+    color: var(--ink, #1A2A24);
+    border-color: var(--ink-2, #5E686D);
+  }
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--brand, #12463A);
+  outline-offset: 2px;
+}
+
+/* Por debajo de 480 px la cabecera de la portada no da para todo: marca,
+   «Buscar», «Crear cuenta» y el conmutador juntos se salen de la pantalla
+   —medido: 402 px de ancho de documento en una ventana de 390—. Se retira el
+   botón «Buscar», que es el único de los tres que tiene otro camino en la
+   misma pantalla: el hero enlaza a la lista dos líneas más abajo y el pie
+   también. «Crear cuenta» no se toca: es la acción de la portada.
+   La marca la pone el HTML con `data-ocultar-movil`, y no un selector de
+   clase, para que se vea en el marcado de qué botón se está hablando. */
+@media (max-width: 480px) {
+  .top-act [data-ocultar-movil] {
+    display: none;
+  }
+}
+
+/* Por debajo de 360 px el hueco se acaba: el botón se queda en el código de
+   dos letras y su relleno, sin letra espaciada, para no empujar la cabecera. */
+@media (max-width: 360px) {
+  .lang-btn {
+    letter-spacing: 0;
+    padding: 6px 4px;
+    min-width: 26px;
+  }
+}

@@ -152,12 +152,38 @@ async function evaluar(expr) {
   return r.result.value;
 }
 
+/**
+ * Va a una página y espera a que esté de verdad.
+ *
+ * Antes eran 1200 ms fijos. Con la máquina cargada —tres agentes midiendo a
+ * la vez— esa espera no bastaba y el test medía la página a medio cargar: el
+ * titular salía vacío, el chip de idioma no existía todavía y no se veían
+ * fichas. Los fallos que salían no eran fallos del sitio, y encimatapaban
+ * los que sí lo son.
+ *
+ * Ahora se espera a `document.readyState`, que no vuelve a «complete» hasta
+ * que los módulos se han ejecutado, y luego se comprueba que la página tiene
+ * algo dentro. Si en tres segundos no está, se sigue adelante: el fallo lo
+ * tiene que dar la comprobación de después, con su mensaje.
+ */
 async function ir(url, ancho = 390, movil = true) {
   await enviar('Emulation.setDeviceMetricsOverride', {
     width: ancho, height: 844, deviceScaleFactor: movil ? 2 : 1, mobile: movil,
   });
   await enviar('Page.navigate', { url });
-  await new Promise((r) => setTimeout(r, 1200));
+
+  for (let i = 0; i < 60; i++) {
+    let listo = false;
+    try {
+      listo = await evaluar('document.readyState === "complete" && document.body && document.body.children.length > 0');
+    } catch { /* la página todavía no responde */ }
+    if (listo) break;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+
+  // Un respiro: los módulos ya se han ejecutado, pero el primer pintado
+  // —y el fetch de `data/becas.json` en el buscador— van detrás.
+  await new Promise((r) => setTimeout(r, 300));
 }
 
 /**
@@ -229,6 +255,36 @@ const titular = await evaluar(`(() => {
 })()`);
 ok(titular && titular.length > 20, 'el titular no se lee');
 
+// ── El modal, sin claves de Google ────────────────────────────────────────
+
+/* Aquí no hay `GOOGLE_CLIENT_ID` en `.env.local`, así que `/api/config` no
+   devuelve `googleId` y el modal tiene que abrirse con el formulario y sin el
+   botón de Google. Se comprueban las tres piezas porque las tres se rompen
+   por su lado: el botón que no debe estar, el separador «o con tu correo»
+   —que sin botón queda huérfano, anunciando una alternativa que no hay— y el
+   formulario, que es lo que sí tiene que funcionar siempre. */
+console.log('El modal sin Google');
+
+await ir(`${BASE}/`);
+await evaluar(`document.querySelector('[data-open-auth]')?.click()`);
+await new Promise((r) => setTimeout(r, 600));
+
+const modal = await evaluar(`(() => {
+  const m = document.querySelector('#scrim');
+  if (!m) return { abierto: false };
+  return {
+    abierto: true,
+    google: !!m.querySelector('#btn-google'),
+    sep: !!m.querySelector('.modal-sep'),
+    form: !!m.querySelector('#form'),
+  };
+})()`);
+
+ok(modal.abierto, 'el modal de la cuenta no se abre');
+ok(modal.form, 'el modal no trae el formulario de correo y contraseña');
+ok(!modal.google, 'sale el botón de Google sin claves configuradas');
+ok(!modal.sep, 'queda el separador «o con tu correo» sin botón de Google encima');
+
 // ── El buscador ───────────────────────────────────────────────────────────
 
 console.log('El buscador');
@@ -255,6 +311,45 @@ ok(buscador.paises > 1, 'el desplegable de destino no tiene países');
 ok(buscador.fichas > 0, 'no se ve ninguna ficha');
 ok(buscador.velo === buscador.fichas, 'el velo no tapa todas las fichas');
 ok(buscador.barra, 'no está la barra de acceso al pie');
+
+// ── El momento de la búsqueda deja bajar ──────────────────────────────────
+
+/* «No puedo bajar mientras está buscando», reportado el 21 de octubre de
+   2026. El cartel sustituye a las 390 fichas, así que el documento pasaba de
+   250.000 px a 1.700: el navegador recortaba la posición al nuevo final y el
+   estudiante se quedaba contra el borde sin haber tocado nada. Lo que se mide
+   es lo que pidió: que se pueda bajar de verdad mientras busca. Se intenta, y
+   se vuelve. Y de paso, que el marco no nazca detrás de la barra fija, que en
+   un móvil es media pantalla de abajo. */
+console.log('El momento de la búsqueda');
+
+await evaluar(`document.querySelector('#buscar').click()`);
+await new Promise((r) => setTimeout(r, 300));
+
+const beat = await evaluar(`(() => {
+  const barra = document.querySelector('#cartel-acceso');
+  const marco = document.querySelector('.buscando');
+  const caja = marco ? marco.getBoundingClientRect() : { top: 0 };
+  const seVe = innerHeight - (barra ? barra.getBoundingClientRect().height : 0);
+  const y = Math.round(scrollY);
+  window.scrollTo({ top: y + 300, behavior: 'instant' });
+  const avance = Math.round(scrollY) - y;
+  window.scrollTo({ top: y, behavior: 'instant' });
+  return {
+    cartel: !!marco,
+    top: Math.round(caja.top),
+    seVe: Math.round(seVe),
+    avance,
+    esqueletos: document.querySelectorAll('.esq').length,
+    volver: !!document.querySelector('#buscando-volver'),
+  };
+})()`);
+
+ok(beat.cartel, 'el momento de la búsqueda no aparece');
+ok(beat.top < beat.seVe, `el cartel nace tapado por la barra de abajo (arriba en ${beat.top}, se ve hasta ${beat.seVe})`);
+ok(beat.avance >= 240, `mientras busca solo se puede bajar ${beat.avance} px: la página parece congelada`);
+ok(beat.esqueletos > 0, 'el beat no enseña ningún hueco de ficha');
+ok(beat.volver, 'el beat no tiene la salida a los filtros');
 
 // ── El filtro, medido ─────────────────────────────────────────────────────
 
@@ -324,6 +419,26 @@ const escritorio = await evaluar(`(() => {
 
 ok(escritorio.scroll <= escritorio.client + 1, 'el buscador desborda en escritorio');
 ok(escritorio.columnas.includes(' '), 'la tarjeta no tiene dos columnas en escritorio');
+
+/* En escritorio el marco ya cabe en la ventana al pulsar «Comprobar», así que
+   la página no se toca. Es la otra mitad del fallo del 21 de octubre de 2026:
+   el `scrollIntoView` bajaba la página 663 px y el titular «Convocatorias
+   abiertas» aparecía cortado bajo la cabecera. */
+await evaluar(`document.querySelector('#buscar').click()`);
+await new Promise((r) => setTimeout(r, 300));
+
+const beatEscritorio = await evaluar(`(() => {
+  const h1 = document.querySelector('.find-top h1');
+  return {
+    y: Math.round(scrollY),
+    h1: Math.round(h1.getBoundingClientRect().top),
+    cabecera: Math.round(document.querySelector('header.top').getBoundingClientRect().height),
+  };
+})()`);
+
+ok(beatEscritorio.y === 0, `en escritorio el beat baja la página ${beatEscritorio.y} px`);
+ok(beatEscritorio.h1 >= beatEscritorio.cabecera,
+  `el titular queda cortado bajo la cabecera (${beatEscritorio.h1} < ${beatEscritorio.cabecera})`);
 
 // ── Los errores de consola ────────────────────────────────────────────────
 

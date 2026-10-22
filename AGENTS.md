@@ -46,6 +46,15 @@ sabemos», y se dice en la interfaz.
 Cero dependencias en tiempo de ejecución. Si añades una, justifica aquí por
 qué no se puede evitar.
 
+La única dependencia del proyecto es de desarrollo: `@playwright/test`, para
+las pruebas de navegador de `test/e2e/`. No la carga la web, no entra en el
+despliegue —`.vercelignore` saca `node_modules/` y `test/`— y en el
+repositorio solo está el `package.json` con la versión. Existe porque las
+pruebas de antes, que hablan con Chrome por el protocolo de depuración, se
+medían a mitad de carga cuando la máquina iba cargada: el titular salía
+vacío y el chip de idioma no existía todavía, y eso se leía como un fallo
+del sitio. Playwright espera a que la página esté de verdad.
+
 ## Estructura
 
 ```
@@ -57,6 +66,7 @@ privacidad.html       política de privacidad
 cookies.html          política de cookies
 404.html              cuando la URL no existe. Vercel la sirve con estado 404
 styles.css            sistema de diseño
+lang.css              el chip de idioma. Aparte porque lo cargan todas las páginas
 robots.txt            quién puede rastrear. Los bots de IA, permitidos a propósito
 sitemap.xml           las páginas indexables (portada, sobre.html y erasmus-mundus)
 llms.txt              resumen del sitio para modelos, formato de llmstxt.org
@@ -73,6 +83,7 @@ js/
   landing.js          portada
   becas.js            buscador, matching y el bloqueo
   auth.js             Google OAuth y sesión
+  i18n.js             castellano e inglés: el diccionario, t() y el chip
 js/
   config.js           URL de la API y configuración pública
   supabase.js         inicio de sesión con Google vía Supabase
@@ -106,6 +117,7 @@ test/
   pais.mjs            el filtro de destino y de nivel
   avisos.mjs          los avisos de plazo, de punta a punta
   web.mjs             lo que se ve en el navegador
+  idioma.mjs          el cambio castellano/inglés, de punta a punta
 data/becas.json       salida de la ingesta
 ```
 
@@ -309,12 +321,12 @@ correo llegue a una bandeja real: eso no se puede simular.
 ## El momento de la búsqueda
 
 Al comprobar, la lista se sustituye un beat (~1,4 s) por un marco a página
-entera, que se trae a la vista con `scrollIntoView` —la lista está debajo de
-la barra del perfil, y en un móvil medio formulario antes del titular.
-Contenido: antetítulo, titular («Buscando 390 becas para Alemania», con el
-formato castellano de número), un párrafo con las fuentes que se leen (BOE,
-Erasmus Mundus, DAAD, Comisión), los tres pasos del método y una promesa.
-Tres decisiones que convienen no deshacer:
+entera. Contenido: antetítulo, titular («Buscando 390 becas», con el formato
+castellano de número), una fila de píldoras con el nivel y el destino con los
+que se ha comprobado, un párrafo con las fuentes que se leen (BOE, Erasmus
+Mundus, DAAD, Comisión), los tres pasos del método, una promesa, la salida
+«Cambiar los filtros» y tres fichas de esqueleto. Cuatro decisiones que
+convienen no deshacer:
 
 - **La cifra es de toda la base, no del recorte del filtro.** Lo que se está
   buscando es el corpus entero —igual que en la referencia, «Searching
@@ -332,11 +344,28 @@ Tres decisiones que convienen no deshacer:
   golpe, y el contador fijo en el total. El valor que lee un lector de
   pantalla va estático en `.sr-only` (la cuenta que cambia cada frame es
   ruido, no información).
+- **Al empezar la búsqueda la página no se queda sin sitio.** El 21 de
+  octubre de 2026 se reportó como «no puedo bajar mientras está buscando», y
+  no era el scroll del navegador: el cartel sustituye a las 390 fichas, así
+  que el documento pasa de 250.000 px a 1.700 y el navegador recorta la
+  posición al nuevo final. Hacen falta las dos cosas: `#zona-lista` recibe
+  prestado el alto que tenía (`min-height`, con un suelo de pantalla y media
+  porque en la primera carga no hay lista que prestar) y se devuelve al
+  pintar; y el marco **no** se trae con `scrollIntoView` —ni `start` ni
+  `nearest`: con un elemento más alto que la ventana, los dos bajan la página
+  663 px y cortan el «Convocatorias abiertas» bajo la cabecera—, sino con una
+  comprobación: si el titular ya se ve no se toca, y si no se sube lo justo
+  para que caiga por encima de la barra fija. En escritorio no se mueve nada.
+  Lo vigilan dos bloques de `test/web.mjs`: «El momento de la búsqueda» (se
+  puede bajar de verdad, el cartel no nace tapado y hay esqueletos) y «En
+  escritorio» (la página no se mueve y el titular no se corta).
 - **Este es el sitio donde NO se imita del todo a la referencia.**
-  ProfScout acompaña el titular con un «MATCH 87» en cada ficha. Aquí jamás:
-  un encaje con porcentaje sería la probabilidad inventada que este producto
-  no enseña (ver «El otro límite»). El momento acaba en requisitos y citas,
-  no en un número de suerte.
+  ProfScout acompaña el titular con un «MATCH 87» en cada ficha y con un
+  «RANKING BY WHO'S LIKELY TO REPLY» sobre la lista. Aquí jamás: un encaje
+  con porcentaje sería la probabilidad inventada que este producto no enseña
+  (ver «El otro límite»). Lo que sí se copia es la forma —titular grande,
+  píldoras del filtro y fichas de esqueleto debajo—, que no afirma nada. El
+  momento acaba en requisitos y citas, no en un número de suerte.
 
 ## Fuentes de datos
 
@@ -562,7 +591,23 @@ node test/ensamblar.mjs                                        # lo que llega al
 node test/pais.mjs                                             # el filtro de destino
 node test/avisos.mjs                                           # los avisos de plazo
 node test/web.mjs                                              # lo que se ve en el navegador
+node test/idioma.mjs                                           # el cambio castellano/inglés
+npm run test:e2e                                               # todo el sitio, con Playwright
 ```
+
+La suite de Playwright (`test/e2e/`) es la que mira **el sitio entero**: las
+ocho páginas en móvil y en escritorio, el interruptor de idioma en todas
+ellas, el buscador con sus filtros y su cartel, la cuenta —el modal, el alta,
+la encuesta de llegada y los ajustes— y la página de Erasmus. Levanta su
+propio servidor en el 5174 y no necesita el 5173.
+
+```bash
+npm install          # solo para las pruebas: @playwright/test
+npm run test:e2e     # las dos vistas: móvil (390×844) y escritorio (1280×900)
+```
+
+Usa el Chrome del sistema (`channel: 'chrome'`), así que no hace falta
+`npx playwright install`.
 
 `test/store.mjs` levanta un Supabase de mentira y comprueba que el almacén
 forma bien las peticiones REST; si algún día se cambia una consulta, esa es la
@@ -675,6 +720,49 @@ Las claves van aparte y una sola vez, con `vercel env add … production`. Cada
 cambio de entorno **exige un redesplie**: Vercel no las injecta en caliente, y
 una función que se desplegó sin ellas sigue sin ellas dando 503 aunque las
 añadas después. Para reventar una clave: `vercel env rm CLAVE production`.
+
+## El idioma: castellano e inglés
+
+El 21 de octubre de 2026 entró un interruptor de idioma. La razón no es
+decorativa: buena parte del tráfico de un sitio así llega desde ChatGPT o
+Claude, y llega en inglés. Un sitio que solo habla castellano les pide que
+se lean una nota antes de ver nada.
+
+Cuatro decisiones que conviene no deshacer:
+
+- **El chip va como hermano de `.top-act`, nunca dentro.** Las dos
+  implementaciones de `pintarCabecera()` —la de `js/landing.js` y la de
+  `js/becas.js`— vacían ese contenedor con `innerHTML = ''`. Un chip dentro
+  desaparece en el primer repintado, sin error y sin que se note hasta que
+  alguien pasa el ratón por donde ya no está.
+- **Los metadatos no se traducen.** El `<title>`, la `meta description`, los
+  `og:*`, el `canonical` y el JSON-LD se quedan en castellano, escritos a
+  mano. El rastreo no ejecuta JavaScript: un título traducido en el
+  navegador no lo ve nadie de Google. El inglés es para quien lee; el
+  castellano es para quien indexa.
+- **`?lang=en` se consume una vez y desaparece de la URL.** Si el
+  parámetro se queda, cada página compartida con él es una URL distinta y el
+  `canonical` deja de ser canónico. De ahí en adelante manda lo que hay
+  guardado en `localStorage`.
+- **El inglés no suaviza ni inventa obligaciones.** En `privacidad.html` y
+  `cookies.html` el castellano se traduce literal: si aquí se dice «no
+  vendemos tus datos», allí se dice que no se venden. Un resumen cómodo de
+  la política de privacidad es una violation de la política de privacidad.
+
+Y dos cosas de mecanismo:
+
+- **`js/i18n.js` es el diccionario y el que pinta.** `t(clave)` devuelve el
+  texto del idioma actual y `alCambiarIdioma(fn)` avisa a lo que tenga que
+  repintarse. Lo que se genera en JavaScript —la lista, el cartel de la
+  búsqueda, el velo, la barra de abajo— no pasa por `data-i18n`: va por `t()`
+  y se repinta con `alCambiarIdioma(() => pintar())`.
+- **Los nombres propios no se traducen.** Los programas de Erasmus Mundus,
+  los países, los importes y las fechas son del catálogo oficial: se citan
+  tal cual.
+
+Lo vigila `test/idioma.mjs`, que además barre los anchos de las seis
+páginas. Y `erasmus-mundus.html`, que la genera `ingest/paginas.mjs`, no es
+una excepción: su plantilla lleva los mismos `data-i18n` que las demás.
 
 ## SEO: lo que se decidió y por qué
 

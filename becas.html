@@ -30,13 +30,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 
-  <style>
-    /* Los enlaces legales van en el pie de todas las páginas, con un punto más
-       de peso para que se encuentren cuando se buscan. */
-    .foot-links a[href$="privacidad.html"],
-    .foot-links a[href$="cookies.html"] { font-weight: 600; color: var(--ink-2); }
-  </style>
+  <!-- El pie llevaba aquí un `font-weight: 600` para Privacidad y Cookies,
+       «para que se encuentren». Lo que hacía era que las dos parecieran el
+       enlace activo del pie y las demás, apagadas. Ya no: todos los enlaces
+       del pie pesan lo mismo y se distinguen por el subrayado al pasar. -->
 </head>
 <body>
 
@@ -52,58 +51,67 @@
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="/#como">Cómo funciona</a>
-      <a href="/#metodo">Nuestro método</a>
-      <a href="/erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="/sobre.html">Sobre</a>
-      <a href="/#fuentes">Fuentes</a>
+      <a href="/#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="/#metodo" data-i18n="nav.metodo">Nuestro método</a>
+      <a href="/erasmus-mundus.html" data-i18n="nav.erasmus">Erasmus Mundus</a>
+      <a href="/sobre.html" data-i18n="nav.sobre">Sobre</a>
+      <a href="/#fuentes" data-i18n="nav.fuentes">Fuentes</a>
     </nav>
     <div class="top-act" id="sesion-zona"></div>
+    <!-- El chip de idioma es hermano de `.top-act`, nunca hijo: al entrar,
+         `pintarCabecera()` vacía esa zona con `innerHTML = ''` y el chip
+         desaparecería sin ningún error. -->
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main>
   <section class="find-top">
     <div class="shell">
-      <h1 style="font-family:var(--display);font-size:clamp(30px,4vw,42px);font-weight:400;letter-spacing:-.022em;line-height:1.05;margin-bottom:8px">
+      <h1 style="font-family:var(--display);font-size:clamp(30px,4vw,42px);font-weight:400;letter-spacing:-.022em;line-height:1.05;margin-bottom:8px" data-i18n="becas.h1">
         Convocatorias abiertas
       </h1>
-      <p style="font-size:15px;color:var(--ink-3);margin-bottom:22px">
+      <p style="font-size:15px;color:var(--ink-3);margin-bottom:22px" data-i18n="becas.lede">
         Rellena tu perfil y mira requisito a requisito cuáles cumples.
       </p>
 
       <div class="profile-bar">
         <div class="f">
-          <label for="nota">Nota media</label>
+          <label for="nota" data-i18n="becas.nota">Nota media</label>
           <!-- type="text" y no "number" a propósito: la coma decimal —que es
                como se escribe una nota en España— no es válida en un input
                numérico, y el navegador la descarta en silencio. Con
                inputmode="decimal" sale el teclado numérico igual. -->
-          <input id="nota" type="text" inputmode="decimal" placeholder="7,5" maxlength="5">
+          <input id="nota" type="text" inputmode="decimal" placeholder="7,5" maxlength="5" data-i18n-ph="becas.nota.ph">
         </div>
         <div class="f">
-          <label for="edad">Edad</label>
+          <label for="edad" data-i18n="becas.edad">Edad</label>
           <input id="edad" type="number" min="15" max="80" placeholder="21" inputmode="numeric">
         </div>
         <div class="f">
-          <label for="nivel">Nivel</label>
+          <label for="nivel" data-i18n="becas.nivel">Nivel</label>
+          <!-- El `value` va escrito y no se deja que el navegador lo tome del
+               texto: `data-i18n` cambia el texto y con él el valor, y el
+               perfil guardaría «Bachelor's» mientras los datos dicen
+               «Grado». El filtro dejaría de encontrar nada y no habría
+               ningún error que lo dijera. -->
           <select id="nivel">
-            <option value="">Cualquiera</option>
-            <option>Grado</option>
-            <option>Máster</option>
-            <option>Doctorado</option>
+            <option value="" data-i18n="becas.cualquiera">Cualquiera</option>
+            <option value="Grado" data-i18n="nivel.grado">Grado</option>
+            <option value="Máster" data-i18n="nivel.master">Máster</option>
+            <option value="Doctorado" data-i18n="nivel.doctorado">Doctorado</option>
           </select>
         </div>
         <div class="f">
-          <label for="pais">Destino</label>
+          <label for="pais" data-i18n="becas.destino">Destino</label>
           <!-- Los países los pone `js/becas.js` desde `js/paises.js`: la
                lista y el conector de la ingesta tienen que ser la misma, y
                si son dos se desincronizan. -->
           <select id="pais">
-            <option value="">Cualquiera</option>
+            <option value="" data-i18n="becas.cualquiera">Cualquiera</option>
           </select>
         </div>
-        <button class="btn btn-brand" id="buscar">Comprobar</button>
+        <button class="btn btn-brand" id="buscar" data-i18n="becas.comprobar">Comprobar</button>
       </div>
 
       <div class="counts" id="counts"></div>
@@ -112,19 +120,19 @@
 
   <section class="shell">
     <div id="zona-lista">
-      <div class="loading">Cargando convocatorias…</div>
+      <div class="loading" data-i18n="becas.cargando">Cargando convocatorias…</div>
     </div>
   </section>
 </main>
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. Cada convocatoria enlaza a su fuente oficial.</small>
+    <small data-i18n="becas.pie">BecasScout · Proyecto independiente. Cada convocatoria enlaza a su fuente oficial.</small>
         <div class="foot-links">
-      <a href="becas.html">Buscar becas</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>

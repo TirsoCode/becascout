@@ -2,6 +2,13 @@ node_modules/
 .env
 .env*
 
+# Lo que deja Playwright al correr: las trazas de los fallos y las capturas.
+# No van al repositorio porque son de una máquina concreta y ocupan.
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # …salvo el ejemplo, que es la lista de variables SIN VALOR: sin él, quien
 # clone el repositorio no sabe qué claves hacen falta ni para qué. Es la
 # excepción va DESPUÉS de la regla, que es lo que la anula.

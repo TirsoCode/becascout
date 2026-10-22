@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 </head>
 <body>
 
@@ -42,78 +43,79 @@
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="/#como">Cómo funciona</a>
-      <a href="/#metodo">Nuestro método</a>
-      <a href="/erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="/sobre.html">Sobre</a>
-      <a href="/#fuentes">Fuentes</a>
+      <a href="/#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="/#metodo" data-i18n="nav.metodo">El método</a>
+      <a href="/erasmus-mundus.html" data-i18n="nav.erasmus">Erasmus Mundus</a>
+      <a href="/sobre.html" data-i18n="nav.sobre">Sobre</a>
+      <a href="/#fuentes" data-i18n="nav.fuentes">Fuentes</a>
     </nav>
-    <div class="top-act"><a class="btn btn-ghost" href="/">Portada</a></div>
+    <div class="top-act"><a class="btn btn-ghost" href="/" data-i18n="nav.portada">Portada</a></div>
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main class="doc">
-  <div class="doc-meta">Última actualización: 18 de octubre de 2026 · Versión 1.1</div>
+  <div class="doc-meta" data-i18n="cook.meta">Última actualización: 18 de octubre de 2026 · Versión 1.1</div>
 
-  <h1>Política de cookies</h1>
-  <p class="doc-lede">
+  <h1 data-i18n="cook.h1">Política de cookies</h1>
+  <p class="doc-lede" data-i18n-html="cook.lede">
     Usamos <strong>una</strong> cookie. La mínima que hace falta para saber
     quién eres. No hay analítica, ni publicidad, ni seguimiento.
   </p>
 
   <div class="callout">
-    <p><strong>Resumen:</strong> si no inicias sesión, no se guarda ninguna
+    <p data-i18n-html="cook.resumen"><strong>Resumen:</strong> si no inicias sesión, no se guarda ninguna
     cookie en tu navegador. La única se crea cuando te registras, y desaparece
     a los 30 días o cuando cierras sesión.</p>
   </div>
 
-  <h2 id="cuales">1. Qué cookies usamos</h2>
+  <h2 id="cuales" data-i18n="cook.cuales.h2">1. Qué cookies usamos</h2>
   <table>
     <thead>
       <tr>
-        <th>Nombre</th><th>Qué es</th><th>Para qué</th><th>Duración</th>
+        <th data-i18n="cook.cuales.th1">Nombre</th><th data-i18n="cook.cuales.th2">Qué es</th><th data-i18n="cook.cuales.th3">Para qué</th><th data-i18n="cook.cuales.th4">Duración</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><code>bs_sesion</code></td>
-        <td>Cookie técnica, <code>HttpOnly</code>, <code>SameSite=Lax</code></td>
-        <td>Mantener la sesión abierta. Sin ella, cada recarga te pediría la contraseña otra vez.</td>
-        <td>30 días, se renueva al entrar</td>
+        <td data-i18n-html="cook.cuales.tipo">Cookie técnica, <code>HttpOnly</code>, <code>SameSite=Lax</code></td>
+        <td data-i18n="cook.cuales.para">Mantener la sesión abierta. Sin ella, cada recarga te pediría la contraseña otra vez.</td>
+        <td data-i18n="cook.cuales.dura">30 días, se renueva al entrar</td>
       </tr>
     </tbody>
   </table>
-  <p><strong>Eso es todo.</strong> No hay más cookies propias.</p>
+  <p data-i18n-html="cook.cuales.pie"><strong>Eso es todo.</strong> No hay más cookies propias.</p>
 
-  <h2 id="google">2. Cookies de terceros</h2>
-  <p>
+  <h2 id="google" data-i18n="cook.google.h2">2. Cookies de terceros</h2>
+  <p data-i18n-html="cook.google.p1">
     Al pulsar <strong>«Continuar con Google»</strong>, Google abre su propia
     ventana de autorización y puede instalar sus cookies. Eso depende de la
     <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">política de cookies de Google</a>,
     no de la nuestra, y solo ocurre si tú lo pulsas.
   </p>
-  <p>
+  <p data-i18n-html="cook.google.p2">
     Si te registras con correo y contraseña, <strong>no hay cookies de
     terceros</strong>: el formulario es nuestro y no llama a ningún servicio
     externo.
   </p>
 
-  <h3>Los portales de origen</h3>
-  <p>
+  <h3 data-i18n="cook.google.h3">Los portales de origen</h3>
+  <p data-i18n="cook.google.p3">
     Al cargar los datos de una convocatoria no se envían cookies a ningún
     servidor nuestro: la petición sale desde tu navegador al portal oficial
     correspondiente y lo que hacemos es leer la respuesta. Ese portal es quien
     puede poner sus propias cookies, bajo su propia política.
   </p>
 
-  <h2 id="local">3. Lo que guardamos sin cookies</h2>
-  <p>
+  <h2 id="local" data-i18n="cook.local.h2">3. Lo que guardamos sin cookies</h2>
+  <p data-i18n-html="cook.local.p1">
     Tu nota media, edad, nivel y destino se guardan en el
     <code>localStorage</code> del navegador. Son datos locales, no cookies: no
     viajan, no los ve el servidor y se borran cuando borras los datos del
     sitio o pulsas «Borrar perfil».
   </p>
-  <p>
+  <p data-i18n-html="cook.local.p2">
     Además, al crear la cuenta te preguntamos una vez —puedes pasar— de dónde
     nos has conocido. La respuesta, si la das, se guarda <strong>en tu
     cuenta</strong>, en el servidor, porque es lo que nos ayuda a saber por
@@ -122,25 +124,25 @@
     <code>becascout.origen</code>, también en <code>localStorage</code>.
   </p>
 
-  <h2 id="rechazar">4. Cómo rechazarlas</h2>
-  <p>
+  <h2 id="rechazar" data-i18n="cook.rechazar.h2">4. Cómo rechazarlas</h2>
+  <p data-i18n-html="cook.rechazar.p1">
     Puedes borrar o bloquear las cookies desde los ajustes de tu navegador.
     Ten en cuenta que si bloqueas <code>bs_sesion</code> la web sigue
     funcionando: simplemente no recuerda que has entrado y te lo vuelven a
     pedir cada vez. No hay ninguna parte que deje de estar disponible por
     rechazarlas.
   </p>
-  <p>
+  <p data-i18n="cook.rechazar.p2">
     En los navegadores principales:
   </p>
   <ul>
-    <li><strong>Firefox</strong> — Privacidad y seguridad › Cookies y datos de sitios</li>
-    <li><strong>Chrome</strong> — Privacidad y seguridad › Cookies de terceros</li>
-    <li><strong>Safari</strong> — Ajustes › Privacidad › Cookies y datos de sitios web</li>
+    <li data-i18n-html="cook.rechazar.li1"><strong>Firefox</strong> — Privacidad y seguridad › Cookies y datos de sitios</li>
+    <li data-i18n-html="cook.rechazar.li2"><strong>Chrome</strong> — Privacidad y seguridad › Cookies de terceros</li>
+    <li data-i18n-html="cook.rechazar.li3"><strong>Safari</strong> — Ajustes › Privacidad › Cookies y datos de sitios web</li>
   </ul>
 
-  <h2 id="base">5. Base legal</h2>
-  <p>
+  <h2 id="base" data-i18n="cook.base.h2">5. Base legal</h2>
+  <p data-i18n-html="cook.base.p">
     La <code>bs_sesion</code> es una cookie estrictamente necesaria para
     prestarte un servicio que has pedido tú —iniciar sesión—, así que se apoya
     en el <strong>artículo 22.2.c del RGPD</strong>: no requiere consentimiento
@@ -148,23 +150,24 @@
     de consentimiento en esta web.
   </p>
 
-  <p style="margin-top:44px">
+  <p style="margin-top:44px" data-i18n-html="cook.verTambien">
     Ver también la <a href="privacidad.html">política de privacidad</a>.
   </p>
 </main>
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente.</small>
+    <small data-i18n="pie.solo">BecasScout · Proyecto independiente.</small>
         <div class="foot-links">
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="becas.html">Buscar becas</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>
 </footer>
 
+<script type="module" src="js/i18n.js"></script>
 </body>
 </html>

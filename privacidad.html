@@ -27,6 +27,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 </head>
 <body>
 
@@ -42,124 +43,125 @@
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="/#como">Cómo funciona</a>
-      <a href="/#metodo">Nuestro método</a>
-      <a href="/erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="/sobre.html">Sobre</a>
-      <a href="/#fuentes">Fuentes</a>
+      <a href="/#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="/#metodo" data-i18n="nav.metodo">El método</a>
+      <a href="/erasmus-mundus.html" data-i18n="nav.erasmus">Erasmus Mundus</a>
+      <a href="/sobre.html" data-i18n="nav.sobre">Sobre</a>
+      <a href="/#fuentes" data-i18n="nav.fuentes">Fuentes</a>
     </nav>
-    <div class="top-act"><a class="btn btn-ghost" href="/">Portada</a></div>
+    <div class="top-act"><a class="btn btn-ghost" href="/" data-i18n="nav.portada">Portada</a></div>
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main class="doc">
-  <div class="doc-meta">Última actualización: 20 de octubre de 2026 · Versión 1.2</div>
+  <div class="doc-meta" data-i18n="priv.meta">Última actualización: 20 de octubre de 2026 · Versión 1.2</div>
 
-  <h1>Política de privacidad</h1>
-  <p class="doc-lede">
+  <h1 data-i18n="priv.h1">Política de privacidad</h1>
+  <p class="doc-lede" data-i18n="priv.lede">
     Esta política explica qué datos guarda BecasScout, por qué, cuánto tiempo y cómo
     consigues que desaparezcan. Está escrita para leerse, no para cubrirse.
   </p>
 
   <div class="callout">
-    <p><strong>En corto:</strong> guardamos tu correo y una sesión para que la web
+    <p data-i18n-html="priv.corto"><strong>En corto:</strong> guardamos tu correo y una sesión para que la web
     funcione, y —solo si decides contestarla— la respuesta a una pregunta que te
     hacemos una única vez: de dónde nos has conocido. Tu nota media, tu edad y tu
     destino <strong>se quedan en tu navegador y nunca salen de tu dispositivo</strong>.
     No hay analítica, ni publicidad, ni perfiles, y no vendemos nada a nadie.</p>
   </div>
 
-  <h2 id="quien">1. Quién es el responsable</h2>
-  <p>
+  <h2 id="quien" data-i18n="priv.quien.h2">1. Quién es el responsable</h2>
+  <p data-i18n-html="priv.quien.p1">
     BecasScout es un proyecto independiente. <strong>No es un ministerio, una
     universidad ni un organismo público</strong>, y no tenemos ningún acuerdo con
     ninguno de ellos. BecasScout no tramita solicitudes ni gestiona becas: solo lee
     convocatorias publicadas por otros y las resume.
   </p>
-  <p>
+  <p data-i18n-html="priv.quien.p2">
     Responsable del tratamiento: <strong>BecasScout</strong><br>
     Contacto para ejercicio de derechos: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>
   </p>
   <p>
-    <em>Nota para el responsable del sitio: antes de publicar esto hay que sustituir
+    <em data-i18n="priv.quien.nota">Nota para el responsable del sitio: antes de publicar esto hay que sustituir
     el nombre y el correo por los datos reales, y añadir la identificación fiscal y
     el domicilio que exige el artículo 13 del RGPD. Un aviso legal sin identificar a
     nadie no cumple el artículo.</em>
   </p>
 
-  <h2 id="datos">2. Qué datos tratamos</h2>
+  <h2 id="datos" data-i18n="priv.datos.h2">2. Qué datos tratamos</h2>
 
-  <h3>2.1 Datos de la cuenta</h3>
+  <h3 data-i18n="priv.datos.h3a">2.1 Datos de la cuenta</h3>
   <ul>
-    <li><strong>Correo electrónico.</strong> Identifica la cuenta y permite avisarte de plazos.</li>
-    <li><strong>Contraseña, pero no la tuya.</strong> Guardamos un hash calculado con
+    <li data-i18n-html="priv.datos.li1"><strong>Correo electrónico.</strong> Identifica la cuenta y permite avisarte de plazos.</li>
+    <li data-i18n-html="priv.datos.li2"><strong>Contraseña, pero no la tuya.</strong> Guardamos un hash calculado con
     <code>scrypt</code> y una sal aleatoria distinta por usuario. Es una dirección
     unidireccional: no se puede recuperar desde el hash, solo comparar. Si pierdes la
     contraseña hay que crear otra cuenta.</li>
-    <li><strong>Fecha de creación de la cuenta.</strong></li>
-    <li><strong>Cómo nos conociste, si lo contestas.</strong> Al crear la cuenta te
+    <li data-i18n-html="priv.datos.li3"><strong>Fecha de creación de la cuenta.</strong></li>
+    <li data-i18n-html="priv.datos.li4"><strong>Cómo nos conociste, si lo contestas.</strong> Al crear la cuenta te
     preguntamos una vez —y puedes pasar— por dónde nos has encontrado (ChatGPT,
     YouTube, Instagram…). Se guarda como una palabra en tu cuenta, no como un
     historial de visitas: una respuesta por cuenta, y ahí se queda.</li>
   </ul>
 
-  <h3>2.2 Datos que NO llegan a nuestro servidor</h3>
-  <p>
+  <h3 data-i18n="priv.datos.h3b">2.2 Datos que NO llegan a nuestro servidor</h3>
+  <p data-i18n-html="priv.datos.p1">
     La nota media, la edad, el nivel de estudios y el país de destino se guardan en
     el <code>localStorage</code> de tu navegador y <strong>se quedan ahí</strong>. Se
     usan para calcular el anillo de requisitos que ves en pantalla, y para eso
     únicamente. No viajan a ningún servidor porque no hay servidor al que viajan:
     el comparador entero corre en tu dispositivo.
   </p>
-  <p>
+  <p data-i18n-html="priv.datos.p2">
     Esto significa que si borras los datos del navegador o pulsas «Borrar perfil»,
     esa información desaparece sin pasar por nosotros. También significa que
     <strong>no podemos recuperarla</strong> si la pierdes: no la tenemos.
   </p>
 
-  <h3>2.3 Registro de conexión</h3>
-  <p>
+  <h3 data-i18n="priv.datos.h3c">2.3 Registro de conexión</h3>
+  <p data-i18n="priv.datos.p3">
     El alojamiento web que aloja esta página registra, como hace cualquier servidor,
     la dirección IP, la fecha y el navegador de cada petición. Sirve para detectar
     ataques y errores. No lo usamos para perfilar y no lo conservamos más de lo que
     permite el proveedor de alojamiento.
   </p>
 
-  <h2 id="para-que">3. Para qué y con qué base legal</h2>
+  <h2 id="para-que" data-i18n="priv.base.h2">3. Para qué y con qué base legal</h2>
   <table>
     <thead>
-      <tr><th>Finalidad</th><th>Datos</th><th>Base legal</th></tr>
+      <tr><th data-i18n="priv.base.th1">Finalidad</th><th data-i18n="priv.base.th2">Datos</th><th data-i18n="priv.base.th3">Base legal</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td>Mantener la sesión abierta y que la web sepa quién eres</td>
-        <td>Correo, hash de contraseña, token de sesión</td>
-        <td>Art. 6.1.b RGPD — ejecución del contrato que celebras al crear la cuenta</td>
+        <td data-i18n="priv.base.f1a">Mantener la sesión abierta y que la web sepa quién eres</td>
+        <td data-i18n="priv.base.f1b">Correo, hash de contraseña, token de sesión</td>
+        <td data-i18n="priv.base.f1c">Art. 6.1.b RGPD — ejecución del contrato que celebras al crear la cuenta</td>
       </tr>
       <tr>
-        <td>Avisarte de que se acerca un plazo de solicitud</td>
-        <td>Correo</td>
-        <td>Art. 6.1.b RGPD — ejecución del contrato que celebras al crear la cuenta (el aviso de plazos es la razón por la que existe la cuenta). Se desactiva con un interruptor en tu cuenta, y borrar la cuenta lo termina del todo.</td>
+        <td data-i18n="priv.base.f2a">Avisarte de que se acerca un plazo de solicitud</td>
+        <td data-i18n="priv.base.f2b">Correo</td>
+        <td data-i18n="priv.base.f2c">Art. 6.1.b RGPD — ejecución del contrato que celebras al crear la cuenta (el aviso de plazos es la razón por la que existe la cuenta). Se desactiva con un interruptor en tu cuenta, y borrar la cuenta lo termina del todo.</td>
       </tr>
       <tr>
-        <td>Seguridad del servicio y diagnóstico de errores</td>
-        <td>Registro de conexión</td>
-        <td>Art. 6.1.f RGPD — interés legítimo en mantener el servicio en pie</td>
+        <td data-i18n="priv.base.f3a">Seguridad del servicio y diagnóstico de errores</td>
+        <td data-i18n="priv.base.f3b">Registro de conexión</td>
+        <td data-i18n="priv.base.f3c">Art. 6.1.f RGPD — interés legítimo en mantener el servicio en pie</td>
       </tr>
       <tr>
-        <td>Saber por dónde llega la gente, para decidir en qué merece la pena insistir</td>
-        <td>Cómo nos conociste</td>
-        <td>Art. 6.1.a RGPD — consentimiento; la pregunta es opcional y puedes pasar sin contestarla</td>
+        <td data-i18n="priv.base.f4a">Saber por dónde llega la gente, para decidir en qué merece la pena insistir</td>
+        <td data-i18n="priv.base.f4b">Cómo nos conociste</td>
+        <td data-i18n="priv.base.f4c">Art. 6.1.a RGPD — consentimiento; la pregunta es opcional y puedes pasar sin contestarla</td>
       </tr>
       <tr>
-        <td>Calcular qué requisitos cumples</td>
-        <td>Nota, edad, nivel, destino</td>
-        <td>No hay base legal porque <strong>no tratamos</strong>: se procesa en tu navegador</td>
+        <td data-i18n="priv.base.f5a">Calcular qué requisitos cumples</td>
+        <td data-i18n="priv.base.f5b">Nota, edad, nivel, destino</td>
+        <td data-i18n-html="priv.base.f5c">No hay base legal porque <strong>no tratamos</strong>: se procesa en tu navegador</td>
       </tr>
     </tbody>
   </table>
 
-  <p>
+  <p data-i18n-html="priv.base.p">
     Los avisos de plazo avisan de las convocatorias <strong>de nuestra base</strong>,
     no de nada que esté fuera de ella: las que están publicadas en BecasScout, con
     su fecha de cierre y el enlace a la convocatoria oficial, que es donde se
@@ -169,108 +171,109 @@
     también el registro de lo que se te avisó.
   </p>
 
-  <h2 id="google">4. Google como tercero</h2>
-  <p>
+  <h2 id="google" data-i18n="priv.google.h2">4. Google como tercero</h2>
+  <p data-i18n-html="priv.google.p1">
     Puedes crear la cuenta con Google. Al hacerlo, Google abre su propia ventana de
     autorización y <strong>Google es responsable independiente</strong> del
     tratamiento que haga de esos datos conforme a sus propias políticas.
   </p>
-  <p>Pedimos <strong>un solo permiso: tu dirección de correo</strong>. Concretamente:</p>
+  <p data-i18n-html="priv.google.p2">Pedimos <strong>un solo permiso: tu dirección de correo</strong>. Concretamente:</p>
   <ul>
-    <li>No pedimos tu nombre, tu perfil, tus contactos, tus archivos ni tu ubicación.</li>
-    <li>No guardamos el token de acceso de Google. Lo usamos una vez para leer tu
+    <li data-i18n="priv.google.li1">No pedimos tu nombre, tu perfil, tus contactos, tus archivos ni tu ubicación.</li>
+    <li data-i18n="priv.google.li2">No guardamos el token de acceso de Google. Lo usamos una vez para leer tu
     correo, lo descartamos, y en tu navegador queda solo el correo y la marca de
     tiempo. No hay ninguna credencial de Google almacenada en nuestro disco ni en el tuyo.</li>
-    <li>Al abrir esa ventana, Google puede instalar sus propias cookies, que son
+    <li data-i18n-html="priv.google.li3">Al abrir esa ventana, Google puede instalar sus propias cookies, que son
     suyas y no nuestras: están descritas en su
     <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">política de cookies</a>.</li>
   </ul>
 
-  <h2 id="terceros">5. Otros terceros</h2>
-  <p>No hay más terceros. En concreto:</p>
+  <h2 id="terceros" data-i18n="priv.terceros.h2">5. Otros terceros</h2>
+  <p data-i18n="priv.terceros.p">No hay más terceros. En concreto:</p>
   <ul>
-    <li><strong>No hay analítica.</strong> Ni Google Analytics, ni Plausible, ni nada
+    <li data-i18n-html="priv.terceros.li1"><strong>No hay analítica.</strong> Ni Google Analytics, ni Plausible, ni nada
     que mida por dónde te mueves.</li>
-    <li><strong>No hay publicidad</strong> ni redes de anuncios.</li>
-    <li><strong>No vendemos, alquilamos ni cedemos datos.</strong> Nunca.</li>
-    <li>Los datos de las convocatorias (nota, importe, plazos) salen de fuentes
+    <li data-i18n-html="priv.terceros.li2"><strong>No hay publicidad</strong> ni redes de anuncios.</li>
+    <li data-i18n-html="priv.terceros.li3"><strong>No vendemos, alquilamos ni cedemos datos.</strong> Nunca.</li>
+    <li data-i18n="priv.terceros.li4">Los datos de las convocatorias (nota, importe, plazos) salen de fuentes
     públicas oficiales y no son tuyos.</li>
   </ul>
 
-  <h2 id="conservacion">6. Cuánto tiempo los guardamos</h2>
+  <h2 id="conservacion" data-i18n="priv.conservacion.h2">6. Cuánto tiempo los guardamos</h2>
   <table>
-    <thead><tr><th>Qué</th><th>Cuánto</th></tr></thead>
+    <thead><tr><th data-i18n="priv.conservacion.th1">Qué</th><th data-i18n="priv.conservacion.th2">Cuánto</th></tr></thead>
     <tbody>
-      <tr><td>Cuenta (correo, hash y la respuesta de llegada, si la diste)</td><td>Hasta que pidas que la eliminemos</td></tr>
-      <tr><td>Cookie de sesión</td><td>30 días, y se renueva al entrar</td></tr>
-      <tr><td>Perfil académico (nota, edad…)</td><td>En tu navegador, hasta que lo borres</td></tr>
-      <tr><td>Registro de conexión</td><td>Lo que fije el proveedor de alojamiento, habitualmente entre 30 y 90 días</td></tr>
+      <tr><td data-i18n="priv.conservacion.f1a">Cuenta (correo, hash y la respuesta de llegada, si la diste)</td><td data-i18n="priv.conservacion.f1b">Hasta que pidas que la eliminemos</td></tr>
+      <tr><td data-i18n="priv.conservacion.f2a">Cookie de sesión</td><td data-i18n="priv.conservacion.f2b">30 días, y se renueva al entrar</td></tr>
+      <tr><td data-i18n="priv.conservacion.f3a">Perfil académico (nota, edad…)</td><td data-i18n="priv.conservacion.f3b">En tu navegador, hasta que lo borres</td></tr>
+      <tr><td data-i18n="priv.conservacion.f4a">Registro de conexión</td><td data-i18n="priv.conservacion.f4b">Lo que fije el proveedor de alojamiento, habitualmente entre 30 y 90 días</td></tr>
     </tbody>
   </table>
 
-  <h2 id="derechos">7. Tus derechos</h2>
-  <p>Puedes pedirnos en cualquier momento, y responderemos en un mes:</p>
+  <h2 id="derechos" data-i18n="priv.derechos.h2">7. Tus derechos</h2>
+  <p data-i18n="priv.derechos.p1">Puedes pedirnos en cualquier momento, y responderemos en un mes:</p>
   <ul>
-    <li><strong>Acceso</strong> (art. 15): saber qué datos tuyos tenemos.</li>
-    <li><strong>Rectificación</strong> (art. 16): corregir un dato equivocado.</li>
-    <li><strong>Supresión</strong> (art. 17): borrar tu cuenta y tus datos.</li>
-    <li><strong>Limitación</strong> (art. 18): suspender el tratamiento mientras se revisa una queja.</li>
-    <li><strong>Portabilidad</strong> (art. 20): llevarte tus datos en formato legible por máquina.</li>
-    <li><strong>Oposición</strong> (art. 21): oponerte al tratamiento por interés legítimo.</li>
-    <li><strong>Retirar el consentimiento</strong> cuando lo hayas dado, sin que ello afecte a lo anterior.</li>
+    <li data-i18n-html="priv.derechos.li1"><strong>Acceso</strong> (art. 15): saber qué datos tuyos tenemos.</li>
+    <li data-i18n-html="priv.derechos.li2"><strong>Rectificación</strong> (art. 16): corregir un dato equivocado.</li>
+    <li data-i18n-html="priv.derechos.li3"><strong>Supresión</strong> (art. 17): borrar tu cuenta y tus datos.</li>
+    <li data-i18n-html="priv.derechos.li4"><strong>Limitación</strong> (art. 18): suspender el tratamiento mientras se revisa una queja.</li>
+    <li data-i18n-html="priv.derechos.li5"><strong>Portabilidad</strong> (art. 20): llevarte tus datos en formato legible por máquina.</li>
+    <li data-i18n-html="priv.derechos.li6"><strong>Oposición</strong> (art. 21): oponerte al tratamiento por interés legítimo.</li>
+    <li data-i18n-html="priv.derechos.li7"><strong>Retirar el consentimiento</strong> cuando lo hayas dado, sin que ello afecte a lo anterior.</li>
   </ul>
-  <p>
+  <p data-i18n-html="priv.derechos.p2">
     Para ejercerlos, escribe a <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>.
     Borrar tu cuenta es tan fácil como escribirnos: no te pediremos que lo justifiques.
   </p>
-  <p>
+  <p data-i18n-html="priv.derechos.p3">
     Si consideras que no hemos atendido tu solicitud, puedes reclamar ante la
     <a href="https://www.aepd.es" target="_blank" rel="noopener">Agencia Española de
     Protección de Datos</a>.
   </p>
 
-  <h2 id="menores">8. Menores de edad</h2>
-  <p>
+  <h2 id="menores" data-i18n="priv.menores.h2">8. Menores de edad</h2>
+  <p data-i18n="priv.menores.p">
     BecasScout está dirigido a mayores de 14 años. Si tienes menos, necesitas la
     autorización de quien te tutore para crear la cuenta. No tratamos datos de
     menores de esa edad sin ese consentimiento.
   </p>
 
-  <h2 id="seguridad">9. Seguridad</h2>
-  <p>
+  <h2 id="seguridad" data-i18n="priv.seguridad.h2">9. Seguridad</h2>
+  <p data-i18n-html="priv.seguridad.p1">
     La contraseña nunca se guarda en claro. La sesión viaja en una cookie
     <code>HttpOnly</code>, de modo que el JavaScript de la página no puede leerla, y
     <code>SameSite=Lax</code>, que impide que se envíe desde sitios ajenos. El sitio
     se sirve por HTTPS en producción.
   </p>
-  <p>
+  <p data-i18n="priv.seguridad.p2">
     Ninguna medida es absoluta. Si se produce una brecha que afecte a tus datos,
     lo comunicaremos a la autoridad de control en 72 horas y te avisaremos por correo.
   </p>
 
-  <h2 id="cambios">10. Cambios en esta política</h2>
-  <p>
+  <h2 id="cambios" data-i18n="priv.cambios.h2">10. Cambios en esta política</h2>
+  <p data-i18n="priv.cambios.p">
     Si cambiamos algo que afecte a tus derechos, lo publicamos aquí con la fecha
     arriba actualizada y, si el cambio es importante, te avisamos por correo.
   </p>
 
-  <p style="margin-top:44px">
+  <p style="margin-top:44px" data-i18n-html="priv.verTambien">
     Ver también la <a href="cookies.html">política de cookies</a>.
   </p>
 </main>
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente.</small>
+    <small data-i18n="pie.solo">BecasScout · Proyecto independiente.</small>
         <div class="foot-links">
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="becas.html">Buscar becas</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>
 </footer>
 
+<script type="module" src="js/i18n.js"></script>
 </body>
 </html>

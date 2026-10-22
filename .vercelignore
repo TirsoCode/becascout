@@ -41,6 +41,13 @@ data/avisos.tmp.json
 # Las pruebas corren en local; no hay motivo para servirlas.
 test/
 
+# Y lo que dejan al correr: trazas, capturas e informes. `test/` ya no está,
+# pero estas carpetas caen en la raíz.
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
 # La contraseña de la base de datos y las claves viven aquí. Vercel no las
 # sube nunca: se meten con `vercel env add`. Este fichero es la razón por la
 # que esa línea está puesta, porque `.gitignore` solo protege del git.

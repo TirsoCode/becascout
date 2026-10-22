@@ -114,7 +114,7 @@ img, svg { display: block; max-width: 100%; }
   border-radius: var(--r-pill); transition: color .16s, background .16s;
 }
 .top-nav a:hover { color: var(--ink); background: var(--paper-2); }
-.top-act { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.top-act { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 
 /* ── Botones ───────────────────────────────────────────────── */
 .btn {
@@ -123,9 +123,14 @@ img, svg { display: block; max-width: 100%; }
   font-size: 14.5px; font-weight: 550; letter-spacing: -.005em;
   white-space: nowrap; transition: all .18s var(--ease);
 }
+/* Todos los botones se levantan al pasar por encima. Los primarios ya lo
+   hacían y el resto se quedaba quieto, que se leía como dos gestos
+   distintos para lo mismo. Dos píxeles y una sombra breve: se nota vivo sin
+   que el botón parezca una tarjeta flotando por encima del papel. */
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -14px rgba(22,25,27,.45); }
+.btn:active { transform: translateY(0); box-shadow: none; }
 .btn-brand { background: var(--brand); color: #F7F4EC; }
-.btn-brand:hover { background: #0C362B; transform: translateY(-1px); box-shadow: 0 8px 20px -8px rgba(18,70,58,.6); }
-.btn-brand:active { transform: translateY(0); }
+.btn-brand:hover { background: #0C362B; box-shadow: 0 8px 20px -8px rgba(18,70,58,.6); }
 .btn-ghost { color: var(--ink-2); border: 1px solid var(--rule-2); }
 .btn-ghost:hover { border-color: var(--ink-4); background: var(--paper-2); }
 .btn-quiet { color: var(--ink-3); padding: 11px 15px; }
@@ -224,6 +229,11 @@ img, svg { display: block; max-width: 100%; }
 .sec-head p { font-size: 16.5px; color: var(--ink-3); }
 
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border-block: 1px solid var(--rule); }
+/* Una rejilla con dos tarjetas en una de tres columnas deja la tercera
+   celda vacía, y como el fondo de la rejilla es `--rule` —un beige— lo que
+   se ve es un rectángulo marrón sin nada dentro. Con dos columnas la fila se
+   llena y el filete sigue ahí. */
+.steps-2 { grid-template-columns: repeat(2, 1fr); }
 .step { background: var(--paper); padding: 32px 28px; }
 .band-2 .step { background: var(--paper-2); }
 .step-n { font-family: var(--mono); font-size: 12px; color: var(--brand-mid); margin-bottom: 16px; letter-spacing: .08em; }
@@ -368,6 +378,21 @@ img, svg { display: block; max-width: 100%; }
   35% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
+/* El filtro con el que se ha comprobado, en píldoras y **fuera** del titular.
+   Dentro de la frase, el titular cambiaba de forma según lo que hubiera
+   puesto, y con nivel y destino se iba a tres líneas; fuera, se lee como lo
+   que es: el estado de la búsqueda. Es la misma píldora que cada ficha usa
+   para el destino, así que no hay dos maneras de decir lo mismo. */
+.buscando-filtro {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+  margin: -6px auto 18px;
+  animation: rise .5s var(--ease) .08s backwards;
+}
+.buscando-filtro span {
+  padding: 4px 11px; border-radius: var(--r-pill);
+  border: 1px solid var(--rule-2); background: var(--paper-2);
+  font-size: 12px; color: var(--ink-3);
+}
 .buscando-lede {
   font-size: 15px; line-height: 1.6; color: var(--ink-3);
   max-width: 46ch; margin: 0 auto;
@@ -407,6 +432,50 @@ img, svg { display: block; max-width: 100%; }
   animation: girar .7s linear infinite;
 }
 @keyframes girar { to { transform: rotate(1turn); } }
+
+/* La salida a los filtros, dentro del propio cartel.
+ *
+ * Va aquí y no arriba a la derecha porque en 390 px una fila de dos cosas deja
+ * el antetítulo sin sitio. Y va antes de los esqueletos para que caiga en la
+ * primera pantalla: es la respuesta a «no puedo subir a cambiar los filtros»
+ * cuando el marco ocupa la ventana entera. */
+.buscando-volver {
+  /* En su línea y centrado: `.buscando-sub` es `inline-flex`, y un botón
+     suelto detrás se pegaba a la promesa —«… CONTRA TU PERFIL Cambiar los
+     filtros»— sin aire y a distinta altura. */
+  display: block; width: fit-content; margin: 18px auto 0;
+  font-size: 13px; font-weight: 550; color: var(--brand);
+  text-decoration: underline; text-underline-offset: 3px;
+  animation: rise .5s var(--ease) .46s backwards;
+}
+.buscando-volver:hover { color: var(--brand-lit); }
+
+/* Los huecos de ficha que van debajo del titular.
+ *
+ * No son adorno: son la promesa de que la espera acaba en una lista, que es
+ * justo lo que la referencia —ProfScout— enseña mientras busca. Fondo plano y
+ * un latido de opacidad, **no** un degradado que barre: en este sitio no hay
+ * gradientes (AGENTS.md, «Diseño»), y el latido dice «en camino» sin fingir
+ * ningún dato. */
+.buscando-esqueletos {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  max-width: 980px; margin: 34px auto 0;
+  animation: rise .5s var(--ease) .54s backwards;
+}
+.esq {
+  display: grid; align-content: start; gap: 10px;
+  min-height: 124px; padding: 18px;
+  border: 1px solid var(--rule); border-radius: var(--r-lg);
+  background: var(--paper);
+}
+.esq-l {
+  display: block; height: 9px; border-radius: 5px;
+  background: var(--paper-2);
+  animation: latido 1.5s var(--ease) infinite;
+}
+.esq-t { height: 13px; width: 74%; }
+.esq-c { width: 48%; }
+@keyframes latido { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
 
 /* Filete entre convocatorias.
  *
@@ -579,8 +648,7 @@ img, svg { display: block; max-width: 100%; }
 .cartel-acceso p { margin: 0; font-size: 14.5px; font-weight: 450; color: #F7F4EC; }
 .cartel-acceso .btn { flex: none; }
 .cartel-btn { background: var(--paper); color: var(--brand); }
-.cartel-btn:hover { background: #fff; transform: translateY(-1px); box-shadow: 0 8px 20px -10px rgba(0,0,0,.5); }
-.cartel-btn:active { transform: translateY(0); }
+.cartel-btn:hover { background: #fff; box-shadow: 0 8px 20px -10px rgba(0,0,0,.5); }
 
 /* La barra va por encima del final de la página: se le reserva su alto más el
    margen de abajo para que la última tarjeta no quede detrás de ella. */
@@ -719,13 +787,33 @@ body.con-cartel { padding-bottom: 104px; }
   font-size: 13.5px; color: var(--ink-2);
   background: var(--paper-2); border: 1px solid var(--rule);
   border-radius: var(--r-pill); padding: 5px 6px 5px 12px;
+  /* La píldora se encoge dentro de la cabecera.
+   *
+   * Un correo de 27 caracteres —nombre.apellido@correo.es— medía 216 px y
+   * dejaba la fila en 367 px dentro de una ventana de 320: el chip de idioma
+   * se iba fuera y la página ganaba scroll horizontal. Aquí no se esconde el
+   * correo: se parte con puntos suspensivos. Lo que no puede pasar es que el
+   * nombre empuje a «Salir» ni al chip, que es lo que hacía antes. */
+  min-width: 0; max-width: 100%;
 }
 .session b { font-weight: 600; }
+/* Los dos trozos que pueden encogerse: el nombre (dentro del botón que abre
+   los ajustes) y, en la sesión de juguete, el texto suelto. Sin `min-width: 0`
+   un elemento flex no baja de su contenido y la píldora vuelve a crecer. */
+.session-perfil,
+.session > span:not(.session-av) { min-width: 0; }
+.session-perfil > span {
+  min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
 .session-av {
   width: 25px; height: 25px; border-radius: 50%; flex: none;
   display: grid; place-items: center; font-size: 11.5px; font-weight: 700;
   background: var(--brand); color: #F7F4EC;
 }
+/* «Salir» no se encoge nunca: es la salida, y una salida a medias no se
+   encuentra. */
+.session .session-salir { flex: none; }
 .session button { font-size: 13px; color: var(--ink-4); padding: 5px 9px; border-radius: var(--r-pill); }
 .session button:hover { color: var(--rust); background: var(--rust-wash); }
 /* El perfil es un botón —abre los ajustes— pero no uno de «salir de aquí»:
@@ -737,6 +825,7 @@ body.con-cartel { padding-bottom: 104px; }
   background: none; border: 0; border-radius: var(--r-pill);
   font-size: 13.5px; color: var(--ink-2); text-align: left;
   cursor: pointer; transition: color .16s var(--ease), background .16s var(--ease);
+  min-width: 0;
 }
 .session .session-perfil:hover { color: var(--ink); background: #fff; }
 
@@ -870,8 +959,40 @@ body.con-cartel { padding-bottom: 104px; }
      móvil de 390 el texto de cada paso se parte en dos líneas y la lista
      deja de leerse. */
   .buscando-pasos { grid-template-columns: 1fr; }
+  /* Un esqueleto por fila: tres columnas de 110 px no se leen como fichas,
+     se leen como un código de barras. Y la tercera se cae, que para prometer
+     una lista bastan dos. */
+  .buscando-esqueletos { grid-template-columns: 1fr; }
+  .esq:nth-child(3) { display: none; }
   .foot-in { flex-direction: column; align-items: flex-start; }
   .foot-links { margin-left: 0; }
+}
+
+/* La cabecera a 320–420 px, que es donde el chip de idioma no cabía.
+ *
+ * El chip ocupa 26–30 px que antes no estaban, y a esa anchura la fila se
+ * salía: con una sesión de correo largo medía 367 px dentro de una ventana de
+ * 320. Se aprieta el aire y se retira el avatar, pero no se oculta ni el
+ * nombre, ni «Salir», ni el chip. El correo se parte con puntos suspensivos
+ * (ver `.session`). */
+@media (max-width: 420px) {
+  .top-in { gap: 8px; }
+  .top-act .btn { padding: 10px 13px; font-size: 14px; }
+  .session { padding: 4px 4px 4px 8px; gap: 6px; }
+  .session .session-perfil { padding: 3px 6px 3px 3px; gap: 0; }
+  .session button { padding: 5px 6px; }
+  /* El avatar se retira antes que el nombre: la inicial ya la dice el
+     nombre, y sus 25 px más el hueco son justo lo que le falta al correo
+     para no quedarse en dos letras. */
+  .session-av { display: none; }
+}
+
+/* A 320 px el hueco se acaba de verdad. La marca pierde un punto de cuerpo
+   y la fila un par de píxeles de aire; la palabra sigue entera. */
+@media (max-width: 360px) {
+  .top-in { gap: 6px; }
+  .brand-name { font-size: 15.5px; }
+  .top-act .btn { padding: 9px 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -879,5 +1000,11 @@ body.con-cartel { padding-bottom: 104px; }
      `backwards` quedarían ocultos todo su retardo y luego aparecerían de un
      golpe: peor que sin animación. */
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+  /* El latido del esqueleto se apaga del todo: con la duración global de
+     .01 ms se queda temblando, que es peor que quieto. */
+  .esq-l { animation: none; opacity: .7; }
+  /* El levantamiento del botón no es animación, pero un cambio de posición
+     instantáneo también incomoda a quien pidió menos movimiento. */
+  .btn:hover { transform: none; }
   html { scroll-behavior: auto; }
 }

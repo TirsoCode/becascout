@@ -28,6 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 
 <script type="application/ld+json">
 {
@@ -106,126 +107,128 @@
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="/#como">Cómo funciona</a>
-      <a href="/#metodo">Nuestro método</a>
-      <a href="/erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="/sobre.html">Sobre</a>
-      <a href="/#fuentes">Fuentes</a>
+      <a href="/#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="/#metodo" data-i18n="nav.metodo">El método</a>
+      <a href="/erasmus-mundus.html" data-i18n="nav.erasmus">Erasmus Mundus</a>
+      <a href="/sobre.html" data-i18n="nav.sobre">Sobre</a>
+      <a href="/#fuentes" data-i18n="nav.fuentes">Fuentes</a>
     </nav>
-    <div class="top-act"><a class="btn btn-ghost" href="becas.html">Buscar becas</a></div>
+    <!-- «Buscar», no «Buscar becas»: a 320 px la cabecera va justa y en inglés
+         («Find scholarships») empujaba el chip de idioma fuera de la pantalla.
+         Es la misma etiqueta corta que lleva la portada. -->
+    <div class="top-act"><a class="btn btn-ghost" href="becas.html" data-i18n="nav.buscarCorto">Buscar</a></div>
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main class="doc">
-  <div class="doc-meta">Última actualización: 21 de octubre de 2026</div>
+  <div class="doc-meta" data-i18n="sobre.meta">Última actualización: 21 de octubre de 2026</div>
 
-  <h1>Sobre BecasScout</h1>
-  <p class="doc-lede">
-    BecasScout lee las convocatorias oficiales de becas y las convierte en una
-    lista de requisitos que puedes comprobar. Esta página explica de dónde sale
-    cada dato y por qué ninguno se enseña sin la cita del documento original.
+  <h1 data-i18n="sobre.h1">Sobre BecasScout</h1>
+  <p class="doc-lede" data-i18n="sobre.lede">
+    BecasScout lee convocatorias oficiales y las convierte en una lista de
+    requisitos que puedes comprobar. Aquí está de dónde sale cada dato y por qué
+    ninguno se enseña sin su cita.
   </p>
 
   <div class="callout">
-    <p><strong>En corto:</strong> no somos un ministerio, ni una universidad, ni
+    <p data-i18n-html="sobre.corto"><strong>En corto:</strong> no somos un ministerio, ni una universidad, ni
     tramitamos nada. Solo leemos convocatorias publicadas por otros, les sacamos
     los requisitos y los enlazamos a su fuente. Cada requisito que ves lleva la
     cita literal del párrafo del que salió, con su página en el boletín.</p>
   </div>
 
-  <h2 id="que-hacemos">1. Qué hacemos y qué no</h2>
-  <p>
-    <strong>Hacemos</strong> una cosa: convertir 40–80 páginas de Bases escritas
-    para un funcionario en la pregunta que de verdad importa —«¿cumplo o no
-    cumplo, y qué me falta?»— y responderla requisito a requisito.
+  <h2 id="que-hacemos" data-i18n="sobre.hacemos.h2">1. Qué hacemos y qué no</h2>
+  <p data-i18n-html="sobre.hacemos.p1">
+    <strong>Hacemos</strong> una cosa: coger 40–80 páginas de bases escritas para
+    un funcionario y contestar la pregunta que importa: «¿cumplo o no, y qué me
+    falta?». Lo hacemos requisito a requisito.
   </p>
-  <p>
+  <p data-i18n-html="sobre.hacemos.p2">
     <strong>No hacemos</strong> el resto: no presentamos tu solicitud, no
-    gestionamos el trámite, no cobramos comisión y no tenemos ningún acuerdo con
-    quien convoca. Si un requisito es decisivo, la consecuencia la lleva quien
-    solicita, y por eso el diseño está orientado a que el error se vea antes de
-    que ocurra.
+    gestionamos el trámite, no cobramos comisión y no tenemos acuerdos con quien
+    convoca. Un requisito mal leído lo paga quien solicita, así que el diseño
+    está hecho para que el error se vea antes de que ocurra.
   </p>
 
-  <h2 id="cita">2. La regla que gobierna todo: la cita</h2>
-  <p>
+  <h2 id="cita" data-i18n="sobre.cita.h2">2. La regla que gobierna todo: la cita</h2>
+  <p data-i18n-html="sobre.cita.p1">
     <strong>Ningún requisito se guarda ni se muestra sin el fragmento literal
     del documento del que salió.</strong> No es una preferencia de estilo: es lo
     único que separa esto de un invento con buena interfaz.
   </p>
-  <p>
+  <p data-i18n-html="sobre.cita.p2">
     La razón es práctica. Si la extracción se equivoca en un requisito y no hay
     cita, el error es invisible y el estudiante puede perder la beca. Con la
     cita, el error se ve en diez segundos y se corrige. Un dato sin fuente no es
     un dato flojo: es un dato que perjudica.
   </p>
 
-  <h2 id="extraccion">3. Cómo se extraen los requisitos</h2>
-  <p>
-    La extracción va <strong>por reglas</strong>, sin modelo de lenguaje:
-    determinista, gratuita y sin depender de ninguna clave. Del sumario oficial
-    se baja el documento entero y se buscan los requisitos —nota mínima, edad,
-    idioma, plazo, importe—, y cada uno guarda el fragmento literal del que se
-    sacó.
+  <h2 id="extraccion" data-i18n="sobre.extraccion.h2">3. Cómo se extraen los requisitos</h2>
+  <p data-i18n-html="sobre.extraccion.p1">
+    La extracción va <strong>por reglas</strong>, sin modelo de lenguaje. Es
+    determinista, no cuesta nada y no necesita ninguna clave. Se baja el
+    documento entero y se buscan los requisitos: nota mínima, edad, idioma,
+    plazo, importe. Cada uno guarda el fragmento literal del que se sacó.
   </p>
-  <p>
-    Hoy las reglas cubren una parte de lo que hay en las Bases: el texto son
+  <p data-i18n-html="sobre.extraccion.p2">
+    Hoy las reglas cubren una parte de lo que hay en las bases. El texto son
     entre 20.000 y 50.000 caracteres de prosa jurídica y no todo encaja en un
-    patrón. Cuando una convocatoria no concreta un requisito, se deja como
-    <strong>«no lo sabemos»</strong> en vez de rellenarlo: un hueco visible
+    patrón. Cuando una convocatoria no concreta un requisito, se queda en
+    <strong>«no lo sabemos»</strong> en vez de rellenarse: un hueco visible
     informa más que un dato que parece bueno y no lo es. Mejorar esa cobertura
     es trabajo de las reglas, no de volver a meter un modelo.
   </p>
 
-  <h2 id="fuentes">4. De dónde salen los datos</h2>
+  <h2 id="fuentes" data-i18n="sobre.fuentes.h2">4. De dónde salen los datos</h2>
   <ul>
-    <li><strong>BOE</strong> (Boletín Oficial del Estado): sumario diario en
+    <li data-i18n-html="sobre.fuentes.boe"><strong>BOE</strong> (Boletín Oficial del Estado): sumario diario en
     abierto y XML de cada anuncio. Es la fuente primaria de las convocatorias
     del Estado y de las universidades.</li>
-    <li><strong>Erasmus Mundus</strong>: el catálogo oficial de los programas de
+    <li data-i18n-html="sobre.fuentes.erasmus"><strong>Erasmus Mundus</strong>: el catálogo oficial de los programas de
     máster de consorcios europeos, con los países de cada consorcio.</li>
-    <li><strong>La Comisión</strong>: el portal de financiación de la UE. Solo
+    <li data-i18n-html="sobre.fuentes.ue"><strong>La Comisión</strong>: el portal de financiación de la UE. Solo
     entran las convocatorias que se piden en nombre propio, no las que van a
     organizaciones.</li>
-    <li><strong>DAAD</strong>: la base de datos de becas de la agencia
+    <li data-i18n-html="sobre.fuentes.daad"><strong>DAAD</strong>: la base de datos de becas de la agencia
     alemana, con el nivel de cada programa.</li>
-    <li><strong>BDNS</strong>: el registro administrativo del Estado, que da
-    el presupuesto, el plazo y el enlace a las Bases completas.</li>
+    <li data-i18n-html="sobre.fuentes.bdns"><strong>BDNS</strong>: el registro administrativo del Estado, que da
+    el presupuesto, el plazo y el enlace a las bases completas.</li>
   </ul>
-  <p>
+  <p data-i18n="sobre.fuentes.pie">
     Cada ficha enlaza a la fuente original. No republicamos el texto íntegro:
     resumimos y enlazamos.
   </p>
 
-  <h2 id="corregir">5. Cómo corregir un requisito</h2>
-  <p>
+  <h2 id="corregir" data-i18n="sobre.corregir.h2">5. Cómo corregir un requisito</h2>
+  <p data-i18n-html="sobre.corregir.p">
     Si ves un requisito mal extraído, con una cita que no corresponde o con un
     plazo equivocado, escríbenos: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>.
-    La cita está para que puedas detectarlo; el siguiente paso es que podamos
+    La cita está para que puedas detectarlo. El siguiente paso es que podamos
     arreglarlo.
   </p>
 
-  <h2 id="quien">6. Quién está detrás</h2>
-  <p>
+  <h2 id="quien" data-i18n="sobre.quien.h2">6. Quién está detrás</h2>
+  <p data-i18n="sobre.quien.p1">
     BecasScout es un proyecto independiente. No es un organismo público, no
-    representa a ninguna administración educativa y no tiene ningún acuerdo
-    con quien convoca las becas. Lee lo que otros publican y lo ordena.
+    representa a ninguna administración educativa y no tiene ningún acuerdo con
+    quien convoca las becas. Lee lo que otros publican y lo ordena.
   </p>
-  <p>
-    Para lo que sea —una cita que no corresponde, un plazo que parece
-    equivocado, una duda sobre una convocatoria— el sitio es
-    <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>.
-    Las Bases oficiales son la fuente, y el enlace a ellas está en cada ficha
-    para que puedas comprobarlas sin fiarte de nadie.
+  <p data-i18n-html="sobre.quien.p2">
+    Para cualquier cosa, escribe a
+    <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>: una
+    cita que no corresponde, un plazo que parece mal, una duda sobre una
+    convocatoria. Las bases oficiales son la fuente, y el enlace está en cada
+    ficha para que las compruebes sin fiarte de nadie.
   </p>
-  <p>
+  <p data-i18n-html="sobre.quien.p3">
     El <a href="https://www.boe.es/" target="_blank" rel="noopener">Boletín
     Oficial del Estado</a> y el <a href="https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals" target="_blank" rel="noopener">portal
     de Erasmus+</a> son las dos fuentes de las que sale todo lo que se enseña
-    aquí. Ningún dato propio, ningún dato comprado, ningún dato inventado.
+    aquí. Ningún dato inventado.
   </p>
 
-  <p style="margin-top:44px">
+  <p style="margin-top:44px" data-i18n-html="sobre.verTambien">
     Ver también la <a href="privacidad.html">política de privacidad</a> y la
     <a href="cookies.html">política de cookies</a>.
   </p>
@@ -233,17 +236,18 @@
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+    <small data-i18n="pie.independiente">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
     <div class="foot-links">
-      <a href="becas.html">Buscar becas</a>
-      <a href="erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
+      <a href="erasmus-mundus.html" data-i18n="pie.erasmus">Erasmus Mundus</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>
 </footer>
 
+<script type="module" src="js/i18n.js"></script>
 </body>
 </html>

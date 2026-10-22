@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 </head>
 <body>
 
@@ -28,38 +29,43 @@
       </svg>
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
-    <div class="top-act"><a class="btn btn-ghost" href="/">Portada</a></div>
+    <div class="top-act"><a class="btn btn-ghost" href="/" data-i18n="nav.portada">Portada</a></div>
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main class="doc">
-  <div class="doc-meta">Error 404</div>
-  <h1>Esta página no existe</h1>
-  <p class="doc-lede">
-    Puede que el enlace venga mal escrito o que hayamos movido algo de sitio.
-    Desde aquí llegas a donde sí hay algo que leer.
+  <div class="doc-meta" data-i18n="e404.meta">Error 404</div>
+  <h1 data-i18n="e404.h1">Esta página no existe</h1>
+  <p class="doc-lede" data-i18n="e404.lede">
+    El enlace puede estar mal escrito, o hemos movido algo de sitio. Desde aquí
+    llegas a lo que sí existe.
   </p>
 
   <div class="callout">
-    <p>Lo que buscabas casi seguro está en uno de estos sitios:</p>
-    <p><a href="/">La portada</a> · <a href="becas.html">Buscar becas</a> ·
-    <a href="sobre.html">Sobre BecasScout</a> ·
-    <a href="privacidad.html">Privacidad</a> ·
-    <a href="cookies.html">Cookies</a></p>
+    <p data-i18n="e404.callout">Lo que buscabas está en uno de estos sitios:</p>
+    <p>
+      <a href="/" data-i18n="e404.portada">La portada</a> ·
+      <a href="/becas.html" data-i18n="e404.becas">Buscar becas</a> ·
+      <a href="/sobre.html" data-i18n="e404.sobre">Sobre BecasScout</a> ·
+      <a href="/privacidad.html" data-i18n="e404.privacidad">Privacidad</a> ·
+      <a href="/cookies.html" data-i18n="e404.cookies">Cookies</a>
+    </p>
   </div>
 </main>
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+    <small data-i18n="pie.independiente">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
     <div class="foot-links">
-      <a href="becas.html">Buscar becas</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
+      <a href="/becas.html" data-i18n="pie.buscar">Buscar becas</a>
+      <a href="/sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="/privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="/cookies.html" data-i18n="pie.cookies">Cookies</a>
     </div>
   </div>
 </footer>
 
+<script type="module" src="js/i18n.js"></script>
 </body>
 </html>

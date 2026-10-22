@@ -35,13 +35,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
 
-  <style>
-    /* Los enlaces legales van en el pie de todas las páginas, con un punto más
-       de peso para que se encuentren cuando se buscan. */
-    .foot-links a[href$="privacidad.html"],
-    .foot-links a[href$="cookies.html"] { font-weight: 600; color: var(--ink-2); }
-  </style>
+  <!-- El pie llevaba aquí un `font-weight: 600` para Privacidad y Cookies,
+       «para que se encuentren». Lo que hacía era que las dos parecieran el
+       enlace activo del pie y las demás, apagadas. Ya no: todos los enlaces
+       del pie pesan lo mismo y se distinguen por el subrayado al pasar. -->
 
 <script type="application/ld+json">
 {
@@ -156,16 +155,19 @@
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="#como">Cómo funciona</a>
-      <a href="#metodo">Nuestro método</a>
-      <a href="erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="#fuentes">Fuentes</a>
+      <a href="#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="#metodo" data-i18n="nav.metodo">El método</a>
+      <a href="erasmus-mundus.html" data-i18n="nav.erasmus">Erasmus Mundus</a>
+      <a href="sobre.html" data-i18n="nav.sobre">Sobre</a>
+      <a href="#fuentes" data-i18n="nav.fuentes">Fuentes</a>
     </nav>
     <div class="top-act">
-      <a class="btn btn-quiet" href="becas.html">Buscar</a>
-      <button class="btn btn-brand" data-open-auth>Crear cuenta</button>
+      <a class="btn btn-quiet" href="becas.html" data-i18n="nav.buscarCorto" data-ocultar-movil>Buscar</a>
+      <button class="btn btn-brand" data-open-auth data-i18n="nav.crear">Crear cuenta</button>
     </div>
+    <!-- El conmutador es hermano de `.top-act` y no va dentro: `pintarCabecera()`
+         reescribe esa zona al entrar, y lo que viva ahí desaparece. -->
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
@@ -173,17 +175,16 @@
   <section class="hero">
     <div class="shell hero-grid">
       <div>
-        <h1>Hay becas que no ves porque <em>nadie las resume</em></h1>
-        <p class="hero-lede">
-          Se convocan en boletines oficiales y en el portal de cada universidad.
-          Nadie los abre. Cuando alguien los abre, encuentra 60 páginas de Bases
-          y tiene tres días para decidir.
+        <h1 data-i18n-html="inicio.hero.h1">Hay becas que no ves porque <em>nadie las resume</em></h1>
+        <p class="hero-lede" data-i18n="inicio.hero.lede">
+          Salen en el BOE y en el portal de cada universidad. Cuando por fin
+          abres las bases, son 60 páginas. El plazo ya ha empezado.
         </p>
         <div class="hero-cta">
-          <button class="btn btn-brand" data-open-auth>Crear cuenta gratis</button>
-          <a class="btn btn-ghost" href="becas.html">Ver cómo se ve</a>
+          <button class="btn btn-brand" data-open-auth data-i18n="inicio.hero.cta">Crear cuenta gratis</button>
+          <a class="btn btn-ghost" href="becas.html" data-i18n="inicio.hero.ver">Ver cómo se ve</a>
         </div>
-        <p class="hero-note">Sin tarjeta. Con correo de Gmail o cualquier otra dirección.</p>
+        <p class="hero-note" data-i18n="inicio.hero.nota">Sin tarjeta. Vale cualquier correo, no solo Gmail.</p>
       </div>
 
       <!-- El panel enseña el problema, no la solución: son filas genéricas
@@ -195,18 +196,18 @@
           <span class="panel-url">boe.es/diario_boe/txt.php?id=BOE-A-…</span>
         </div>
         <div class="panel-body">
-          <div class="mock-line"><span class="mock-n">01</span><span class="mock-t">Resolución de … por la que se convocan …… plazas</span><span class="mock-tag">pdf</span></div>
-          <div class="mock-line"><span class="mock-n">02</span><span class="mock-t">Bases reguladoras — capítulo III, requisitos</span><span class="mock-tag">47 pág</span></div>
-          <div class="mock-line"><span class="mock-n">03</span><span class="mock-t">Nota media exigida: ……… / 10</span><span class="mock-tag">pág. 8</span></div>
-          <div class="mock-line"><span class="mock-n">04</span><span class="mock-t">Plazo de presentación: …… días hábiles</span><span class="mock-tag">pág. 2</span></div>
-          <div class="mock-line"><span class="mock-n">05</span><span class="mock-t">Documentación a aportar — …… €</span><span class="mock-tag">pág. 9</span></div>
+          <div class="mock-line"><span class="mock-n">01</span><span class="mock-t" data-i18n="inicio.panel.l1">Resolución de … por la que se convocan …… plazas</span><span class="mock-tag" data-i18n="inicio.panel.t1">pdf</span></div>
+          <div class="mock-line"><span class="mock-n">02</span><span class="mock-t" data-i18n="inicio.panel.l2">Bases reguladoras — capítulo III, requisitos</span><span class="mock-tag" data-i18n="inicio.panel.t2">47 pág</span></div>
+          <div class="mock-line"><span class="mock-n">03</span><span class="mock-t" data-i18n="inicio.panel.l3">Nota media exigida: ……… / 10</span><span class="mock-tag" data-i18n="inicio.panel.t3">pág. 8</span></div>
+          <div class="mock-line"><span class="mock-n">04</span><span class="mock-t" data-i18n="inicio.panel.l4">Plazo de presentación: …… días hábiles</span><span class="mock-tag" data-i18n="inicio.panel.t4">pág. 2</span></div>
+          <div class="mock-line"><span class="mock-n">05</span><span class="mock-t" data-i18n="inicio.panel.l5">Documentación a aportar — …… €</span><span class="mock-tag" data-i18n="inicio.panel.t5">pág. 9</span></div>
         </div>
         <div class="panel-veil">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <rect x="4" y="10.5" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
             <path d="M8 10.5V7.6a4 4 0 0 1 8 0v2.9" stroke="currentColor" stroke-width="1.8"/>
           </svg>
-          Las becas se leen con cuenta abierta.
+          <span data-i18n="inicio.panel.velo">Necesitas una cuenta para leer las becas.</span>
         </div>
       </div>
     </div>
@@ -215,24 +216,24 @@
   <section class="band" id="como">
     <div class="shell">
       <div class="sec-head">
-        <h2>Tres pasos y ninguna sorpresa</h2>
-        <p>No tramitamos nada ni cobramos comisión. Solo leemos mejor que tú las 60 páginas.</p>
+        <h2 data-i18n="inicio.como.h2">Tres pasos</h2>
+        <p data-i18n="inicio.como.p">No tramitamos nada y no cobramos comisión. Leemos las bases y te contamos qué dicen.</p>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-n">01</div>
-          <h3>Nos dices quién eres</h3>
-          <p>Nota media, edad, nivel y país de destino. Cuatro datos, se quedan en tu navegador y no se mandan a ningún sitio.</p>
+          <h3 data-i18n="inicio.como.s1.h">Nos dices cuatro cosas</h3>
+          <p data-i18n="inicio.como.s1.p">Nota media, edad, nivel y destino. Se quedan en tu navegador y no salen de ahí.</p>
         </div>
         <div class="step">
           <div class="step-n">02</div>
-          <h3>Leemos cada convocatoria</h3>
-          <p>Del sumario oficial bajamos el documento entero y extraemos los requisitos: nota mínima, edad, idioma, plazo, importe.</p>
+          <h3 data-i18n="inicio.como.s2.h">Leemos cada convocatoria</h3>
+          <p data-i18n="inicio.como.s2.p">Bajamos el documento oficial entero y sacamos los requisitos: nota mínima, edad, idioma, plazo e importe.</p>
         </div>
         <div class="step">
           <div class="step-n">03</div>
-          <h3>Te decimos qué cumples</h3>
-          <p>Un anillo cuenta cuántos requisitos satisfaces y cuáles te faltan. Cada uno con la cita literal del párrafo original.</p>
+          <h3 data-i18n="inicio.como.s3.h">Te decimos qué cumples</h3>
+          <p data-i18n="inicio.como.s3.p">Un anillo cuenta los requisitos que cumples y los que te faltan. Cada uno lleva la cita del párrafo original.</p>
         </div>
       </div>
     </div>
@@ -241,19 +242,19 @@
   <section class="band band-2" id="metodo">
     <div class="shell">
       <div class="sec-head">
-        <h2>Dos reglas que no se rompen</h2>
-        <p>Lo que dice la convocatoria, con su cita. Y lo que no dice, en blanco.</p>
+        <h2 data-i18n="inicio.metodo.h2">Dos reglas que no se rompen</h2>
+        <p data-i18n="inicio.metodo.p">Lo que dice la convocatoria, con su cita. Lo que no dice, en blanco.</p>
       </div>
-      <div class="steps">
+      <div class="steps steps-2">
         <div class="step">
           <div class="step-n">—</div>
-          <h3>Cada dato lleva su cita</h3>
-          <p>Si decimos que piden un 7,0, enseñamos el párrafo exacto donde lo dicen y la página del boletín. Compruébalo en diez segundos.</p>
+          <h3 data-i18n="inicio.metodo.s1.h">Cada dato lleva su cita</h3>
+          <p data-i18n="inicio.metodo.s1.p">Si decimos que piden un 7,0, enseñamos el párrafo donde lo dicen y la página del boletín. Lo compruebas en diez segundos.</p>
         </div>
         <div class="step">
           <div class="step-n">—</div>
-          <h3>«No lo sabemos» es respuesta</h3>
-          <p>Cuando la convocatoria no concreta un requisito, lo dejamos en gris. Preferimos un hueco visible a un dato que parece bueno y no lo es.</p>
+          <h3 data-i18n="inicio.metodo.s2.h">«No lo sabemos» es una respuesta</h3>
+          <p data-i18n="inicio.metodo.s2.p">Cuando la convocatoria no concreta un requisito, lo dejamos en gris. Preferimos un hueco visible a un dato que parece bueno y no lo es.</p>
         </div>
       </div>
     </div>
@@ -262,39 +263,39 @@
   <section class="band" id="fuentes">
     <div class="shell">
       <div class="sec-head">
-        <h2>De dónde sale cada línea</h2>
-        <p>Todo requisito que enseñamos viene de un documento oficial, y siempre hay un enlace para comprobarlo.</p>
+        <h2 data-i18n="inicio.fuentes.h2">De dónde sale cada línea</h2>
+        <p data-i18n="inicio.fuentes.p">Cada requisito viene de un documento oficial. Siempre hay un enlace para comprobarlo.</p>
       </div>
       <div class="steps">
         <div class="step">
           <div class="step-n">ES</div>
-          <h3>Boletín Oficial del Estado</h3>
-          <p><a href="https://www.boe.es/diario_boe/" target="_blank" rel="noopener">Sumario diario</a> en abierto y el XML de cada anuncio. La fuente primaria de las convocatorias del Estado y de las universidades.</p>
+          <h3 data-i18n="inicio.fuentes.boe.h">Boletín Oficial del Estado</h3>
+          <p data-i18n-html="inicio.fuentes.boe.p"><a href="https://www.boe.es/diario_boe/" target="_blank" rel="noopener">Sumario diario</a> en abierto y el XML de cada anuncio. La fuente primaria de las convocatorias del Estado y de las universidades.</p>
         </div>
         <div class="step">
           <div class="step-n">UE</div>
-          <h3>Erasmus Mundus y la Comisión</h3>
-          <p><a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a> y el <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/" target="_blank" rel="noopener">portal de financiación de la UE</a>. Conector propio para cada uno, con la cita de lo que dicen.</p>
+          <h3 data-i18n="inicio.fuentes.eu.h">Erasmus Mundus y la Comisión</h3>
+          <p data-i18n-html="inicio.fuentes.eu.p"><a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a> y el <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/" target="_blank" rel="noopener">portal de financiación de la UE</a>. Un conector para cada uno, con la cita de lo que dicen.</p>
         </div>
         <div class="step">
           <div class="step-n">DE</div>
-          <h3>DAAD, la agencia alemana</h3>
-          <p><a href="https://www2.daad.de/deutschland/stipendium/datenbank/en/" target="_blank" rel="noopener">Su base de datos de becas</a>, con el nivel de cada programa. Los portales de cada país se añaden con su propio conector, porque cada uno cambia solo.</p>
+          <h3 data-i18n="inicio.fuentes.daad.h">DAAD, la agencia alemana</h3>
+          <p data-i18n-html="inicio.fuentes.daad.p"><a href="https://www2.daad.de/deutschland/stipendium/datenbank/en/" target="_blank" rel="noopener">Su base de datos de becas</a>, con el nivel de cada programa. Cada portal de país tiene su conector, porque cada uno cambia por su cuenta.</p>
         </div>
       </div>
 
       <!-- Los números van con su fuente al lado. Poner cifras sin decir de
            dónde salen es justo lo que este sitio critica. -->
-      <div class="steps" style="margin-top:1px">
+      <div class="steps steps-2" style="margin-top:1px">
         <div class="step">
           <div class="step-n">01</div>
-          <h3>217 programas</h3>
-          <p>del catálogo oficial de <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a>, con los países de cada consorcio. <a href="erasmus-mundus.html">Están todos aquí, con su ficha.</a></p>
+          <h3 data-i18n="inicio.cifras.p1.h">217 programas</h3>
+          <p data-i18n-html="inicio.cifras.p1.p">del catálogo oficial de <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a>, con los países de cada consorcio. <a href="erasmus-mundus.html">Están todos aquí, con su ficha.</a></p>
         </div>
         <div class="step">
           <div class="step-n">02</div>
-          <h3>1.400 € al mes</h3>
-          <p>hasta 24 meses, con un título universitario. La misma cifra para los 217 programas, y por eso se puede citar una vez. <a href="erasmus-mundus.html#cuanto">La cita, entera.</a></p>
+          <h3 data-i18n="inicio.cifras.p2.h">1.400 € al mes</h3>
+          <p data-i18n-html="inicio.cifras.p2.p">hasta 24 meses, con un título universitario. La misma cifra para los 217 programas, y por eso se puede citar una vez. <a href="erasmus-mundus.html#cuanto">La cita, entera.</a></p>
         </div>
       </div>
     </div>
@@ -303,25 +304,25 @@
   <section class="band band-2" id="faq">
     <div class="shell">
       <div class="sec-head">
-        <h2>Preguntas que nos hacen siempre</h2>
-        <p>Las mismas que nos escriben antes de crear la cuenta. Contestadas del derecho.</p>
+        <h2 data-i18n="inicio.faq.h2">Preguntas que nos hacen siempre</h2>
+        <p data-i18n="inicio.faq.p">Las que más nos escriben antes de crear la cuenta.</p>
       </div>
       <div class="faq">
         <div class="faq-item">
-          <h3>¿BecasScout presenta mi solicitud?</h3>
-          <p>No. Leemos la convocatoria y te decimos qué requisitos cumples; la solicitud la presentas tú en el organismo que la convoca. Cada ficha enlaza al documento original.</p>
+          <h3 data-i18n="inicio.faq.q1">¿BecasScout presenta mi solicitud?</h3>
+          <p data-i18n="inicio.faq.a1">No. Leemos la convocatoria y te decimos qué requisitos cumples; la solicitud la presentas tú en el organismo que la convoca. Cada ficha enlaza al documento original.</p>
         </div>
         <div class="faq-item">
-          <h3>¿De dónde sale cada requisito?</h3>
-          <p>Del documento oficial: el Boletín Oficial del Estado y otros boletines. Cada requisito lleva la cita literal del párrafo del que salió y la página donde está, para que lo compruebes en diez segundos.</p>
+          <h3 data-i18n="inicio.faq.q2">¿De dónde sale cada requisito?</h3>
+          <p data-i18n="inicio.faq.a2">Del documento oficial: el Boletín Oficial del Estado y otros boletines. Cada requisito lleva la cita literal del párrafo del que salió y la página donde está, para que lo compruebes en diez segundos.</p>
         </div>
         <div class="faq-item">
-          <h3>¿Cuánto cuesta usar BecasScout?</h3>
-          <p>Nada. No cobramos comisión ni tramitamos la solicitud. Crear la cuenta es gratis y sirve para una cosa: avisarte cuando se acerca un plazo.</p>
+          <h3 data-i18n="inicio.faq.q3">¿Cuánto cuesta usar BecasScout?</h3>
+          <p data-i18n="inicio.faq.a3">Nada. No cobramos comisión ni tramitamos la solicitud. Crear la cuenta es gratis y sirve para una cosa: avisarte cuando se acerca un plazo.</p>
         </div>
         <div class="faq-item">
-          <h3>¿Tenéis que saber mi nota media?</h3>
-          <p>No. Tu nota media, tu edad, tu nivel y tu país de destino se quedan en tu navegador y no se envían a ningún servidor. Solo se usan para calcular qué requisitos cumples en tu pantalla.</p>
+          <h3 data-i18n="inicio.faq.q4">¿Tenéis que saber mi nota media?</h3>
+          <p data-i18n="inicio.faq.a4">No. Tu nota media, tu edad, tu nivel y tu país de destino se quedan en tu navegador y no se envían a ningún servidor. Solo se usan para calcular qué requisitos cumples en tu pantalla.</p>
         </div>
       </div>
     </div>
@@ -330,18 +331,19 @@
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad. Última revisión: <time datetime="2026-10-21">21 de octubre de 2026</time>.</small>
+    <small data-i18n-html="pie.revisado">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad. Última revisión: <time datetime="2026-10-21">21 de octubre de 2026</time>.</small>
         <div class="foot-links">
-      <a href="becas.html">Buscar becas</a>
-      <a href="erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
+      <a href="erasmus-mundus.html" data-i18n="pie.erasmus">Erasmus Mundus</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>
 </footer>
 
+<script type="module" src="js/i18n.js"></script>
 <script type="module" src="js/landing.js"></script>
 </body>
 </html>

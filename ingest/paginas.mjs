@@ -141,12 +141,17 @@ async function main() {
   // Cada fila lleva un ancla propia: el feed apunta a ella, para que quien
   // llega desde el RSS aterrice en el programa exacto y no en el principio
   // de una lista de 75.
+  //
+  // El nombre del programa y su cifra de ECTS no llevan `data-i18n`: son el
+  // dato del catálogo oficial, y un nombre propio traducido deja de ser el
+  // que se busca en la EACEA. Lo que sí se traduce es el rótulo del enlace
+  // que hay a su lado, que es texto nuestro.
   const filas = emjm.map((b, i) => {
     const oficial = b.url && b.url.includes('erasmus-plus.ec.europa.eu')
-      ? `<a href="${escAttr(b.url)}" target="_blank" rel="noopener">ficha del proyecto</a>`
+      ? `<a href="${escAttr(b.url)}" target="_blank" rel="noopener" data-i18n="em.tabla.fichaProyecto">ficha del proyecto</a>`
       : '—';
     const web = b.url_programa
-      ? `<a href="${escAttr(b.url_programa)}" target="_blank" rel="noopener">web del programa</a>`
+      ? `<a href="${escAttr(b.url_programa)}" target="_blank" rel="noopener" data-i18n="em.tabla.webPrograma">web del programa</a>`
       : '—';
     return `        <tr id="prog-${i + 1}">
           <td>${esc(b.titulo)}</td>
@@ -155,6 +160,22 @@ async function main() {
           <td>${web}</td>
         </tr>`;
   }).join('\n');
+
+  // ── Requisitos y notas: etiqueta y valor traducibles, cita intacta ─────
+  //
+  // La clave sale del `tipo` del requisito (`em.req.titulacion`) porque el
+  // tipo no cambia nunca. La de la nota sale del índice, porque las notas no
+  // tienen tipo: siguen el orden de `NOTAS` en `ingest/erasmus.mjs`. Si se
+  // añade una nota, su clave no existirá todavía y la página enseñará el
+  // castellano, que es el fallo bueno: se ve y no se inventa una traducción.
+  //
+  // La `<cite>` no se toca ni se traduce: es el texto literal de la fuente y
+  // es lo único que permite comprobar el requisito en diez segundos.
+  const filasRequisitos = [titulacion, plazo, ects].filter(Boolean).map((r) => `    <li><strong data-i18n="em.req.${r.tipo}">${esc(r.etiqueta)}</strong>: <span data-i18n="em.req.${r.tipo}.valor">${esc(r.valor)}</span>.<br>
+      <cite style="font-size:14px">«${esc(r.cita)}»</cite></li>`).join('\n');
+
+  const filasNotas = notas.map((n, i) => `    <li><strong data-i18n="em.nota.${i + 1}">${esc(n.etiqueta)}</strong>: <span data-i18n="em.nota.${i + 1}.valor">${esc(n.valor)}</span>.<br>
+      <cite style="font-size:14px">«${esc(n.cita)}»</cite></li>`).join('\n');
 
   // ── JSON-LD ───────────────────────────────────────────────────────────
   const lista = {
@@ -198,6 +219,35 @@ async function main() {
     ],
   };
 
+  // ── El HTML ────────────────────────────────────────────────────────────
+  //
+  // Esta página es de las tres indexables, y era la única del sitio que no
+  // cambiaba de idioma: quien navegaba en inglés aterrizaba aquí y se comía
+  // el castellano entero. Los textos fijos llevan ahora `data-i18n`, con las
+  // claves que el diccionario de `js/i18n.js` tendrá que conocer. El
+  // conmutador es el fragmento de siempre —`div.top-lang`, hermano de
+  // `.top-act` y no dentro, porque al entrar la cabecera reescribe esa zona—
+  // y el módulo es el mismo `<script type="module">` que las demás páginas:
+  // nada de guiones inline, que la CSP no los deja pasar.
+  //
+  // Lo que NO se marca, y por qué:
+  //
+  // - **Los metadatos.** `<title>`, `description`, `og:*`, `canonical` y el
+  //   JSON-LD se quedan en castellano porque el rastreador no ejecuta
+  //   JavaScript: traducirlos crearía una versión inglesa que ninguna URL
+  //   sirve ni ningún sitemap anuncia.
+  // - **Los datos del catálogo.** Nombre del programa, países, importes,
+  //   fechas y ECTS. Un nombre propio traducido ya no es el nombre con el
+  //   que se busca ese máster en la EACEA.
+  // - **Las citas.** Son el texto literal de la fuente y lo único que
+  //   permite comprobar el requisito en diez segundos. Una cita traducida
+  //   deja de ser una cita.
+  //
+  // Los valores de los requisitos sí se traducen, con una salvedad: son
+  // nuestra paráfrasis del texto oficial («Grado universitario (o último año
+  // de grado)» resume «have a bachelor’s degree …»), no el texto de la
+  // Comisión. La cita literal queda debajo, así que traducir el resumen no
+  // cambia el dato; sigue habiendo de dónde tirar para comprobarlo.
   const html = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -228,6 +278,26 @@ async function main() {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
+
+<!-- La tabla del catálogo es la única del sitio con cuatro columnas, y a
+     390 px no cabe: los nombres de los programas son largos y las dos
+     columnas de enlaces no se pueden partir. Medido el 21 de octubre de
+     2026, la página salía con 448 px de ancho en una ventana de 390 —scroll
+     horizontal, que es el fallo que el resto del sitio evita—. Esto aprieta
+     el relleno, baja un punto el cuerpo y deja partir las palabras que no
+     entren. Va aquí y no en styles.css porque es de esta página: el sistema
+     de diseño no tiene tablas con enlaces en las dos últimas columnas. -->
+<style>
+  @media (max-width: 640px) {
+    .doc table { font-size: 13px; }
+    .doc th, .doc td { padding: 9px 7px; }
+    /* Solo la primera columna —los nombres de los programas— puede partir
+       palabras: son los que estiran la tabla. Los rótulos de las otras dos
+       se parten por los espacios, que se leen mejor que un «Fich/a». */
+    .doc td:first-child { overflow-wrap: anywhere; }
+  }
+</style>
 
 <script type="application/ld+json">
 ${JSON.stringify(jsonld, null, 2)}
@@ -247,18 +317,22 @@ ${JSON.stringify(jsonld, null, 2)}
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
-      <a href="/#como">Cómo funciona</a>
-      <a href="sobre.html">Sobre</a>
+      <a href="/#como" data-i18n="nav.como">Cómo funciona</a>
+      <a href="sobre.html" data-i18n="nav.sobre">Sobre</a>
     </nav>
-    <div class="top-act"><a class="btn btn-ghost" href="becas.html">Buscar becas</a></div>
+    <div class="top-act"><a class="btn btn-ghost" href="becas.html" data-i18n="nav.buscar">Buscar becas</a></div>
+    <!-- El conmutador va aquí, hermano de .top-act, por lo mismo que en la
+         portada: lo que viva dentro de .top-act se lo lleva por delante la
+         cabecera al pintar la sesión. -->
+    <div class="top-lang" data-lang-switch></div>
   </div>
 </header>
 
 <main class="doc">
-  <div class="doc-meta">Datos del catálogo oficial de EACEA y de las páginas de Erasmus+, leídos el ${fecha}</div>
+  <div class="doc-meta"><span data-i18n="em.meta">Datos del catálogo oficial de EACEA y de las páginas de Erasmus+, leídos el</span> <time datetime="${fechaIso}">${fecha}</time></div>
 
-  <h1>Becas Erasmus Mundus: ${euros(importe.valor)} € al mes y ${esc((titulacion?.valor ?? 'título universitario').toLowerCase())}</h1>
-  <p class="doc-lede">
+  <h1><span data-i18n="em.h1">Becas Erasmus Mundus:</span> ${euros(importe.valor)} € <span data-i18n="em.h1.mes">al mes</span> <span data-i18n="em.h1.dos">y título universitario</span></h1>
+  <p class="doc-lede" data-i18n="em.lede">
     Los Joint Masters de Erasmus Mundus son las becas europeas con la regla más
     limpia que hay: la misma cuantía y los mismos requisitos para todos los
     programas. Eso permite decir el número con su cita, que es justo lo que
@@ -266,80 +340,77 @@ ${JSON.stringify(jsonld, null, 2)}
   </p>
 
   <div class="callout">
-    <p><strong>Lo que hay que tener, en corto:</strong> ${euros(importe.valor)} € al mes
-    durante ${duracion?.valor ?? 24} meses como máximo${titulacion ? `, ${esc(titulacion.valor.toLowerCase())}` : ''}${ects ? ` y entre ${esc(ects.valor)} créditos ECTS` : ''}${plazo ? `. La solicitud se presenta ${esc(plazo.valor.toLowerCase())}` : ''}.
-    No hay que ser español ni presentar un proyecto: se rellena la solicitud
-    del programa y ya.</p>
+    <p><strong data-i18n="em.corto.h">Lo que hay que tener, en corto:</strong>
+    ${titulacion ? `<span data-i18n="em.req.titulacion.valor">${esc(titulacion.valor)}</span>, ` : ''}${euros(importe.valor)} € <span data-i18n="em.alMes">al mes, hasta</span> ${duracion?.valor ?? 24} <span data-i18n="em.meses">meses</span>${ects ? ` <span data-i18n="em.corto.y">y entre</span> <span data-i18n="em.req.ects.valor">${esc(ects.valor)}</span> <span data-i18n="em.corto.ects">créditos ECTS</span>` : ''}.
+    <span data-i18n="em.corto.p">No hay que ser español ni presentar un proyecto: la solicitud se rellena en la web del programa y ya.</span></p>
   </div>
 
-  <h2 id="cuanto">Cuánto da la beca</h2>
+  <h2 id="cuanto" data-i18n="em.cuanto.h2">Cuánto da la beca</h2>
   <p>
-    ${euros(importe.valor)} euros al mes, hasta ${duracion?.valor ?? 24} meses. La
-    cuantía no la decide el programa: es la misma para todos los Joint Masters
+    ${euros(importe.valor)} € <span data-i18n="em.alMes">al mes, hasta</span> ${duracion?.valor ?? 24} <span data-i18n="em.meses">meses</span>.
+    <span data-i18n="em.cuanto.p1">La cuantía no la decide el programa: es la misma para todos los Joint Masters
     de Erasmus Mundus, y por eso se puede comprobar una vez y aplicarla a
     todos. La beca cubre la participación, el viaje, el visado y una asignación
-    para vivir, pero el detalle de cada partida lo publica el programa.
+    para vivir, pero el detalle de cada partida lo publica el programa.</span>
   </p>
   <p>
     <cite>«${esc(importe.cita)}»</cite>
-    <br><span style="font-size:13px;color:var(--ink-4)">Página oficial de Erasmus+ sobre los Joint Masters. La cita está en inglés porque es el texto literal de la fuente; la traducción es nuestra.</span>
+    <br><span style="font-size:13px;color:var(--ink-4)" data-i18n="em.cuanto.cita">Página oficial de Erasmus+ sobre los Joint Masters. La cita está en inglés porque es el texto literal de la fuente; la traducción es nuestra.</span>
   </p>
 
-  <h2 id="requisitos">Qué hay que tener</h2>
-  <p>Los mismos requisitos para los ${emjm.length} programas:</p>
+  <h2 id="requisitos" data-i18n="em.requisitos.h2">Qué hay que tener</h2>
+  <p><span data-i18n="em.requisitos.p">Los mismos requisitos para los</span> ${emjm.length} <span data-i18n="em.requisitos.programas">programas:</span></p>
   <ul>
-${[titulacion, plazo, ects].filter(Boolean).map((r) => `    <li><strong>${esc(r.etiqueta)}:</strong> ${esc(r.valor)}.<br>
-      <cite style="font-size:14px">«${esc(r.cita)}»</cite></li>`).join('\n')}
+${filasRequisitos}
   </ul>
-  <p>
+  <p data-i18n="em.requisitos.p2">
     De edad, nota media e idioma no hay nada en estas Bases: la Comisión no los
     pone como condición de la beca. Cada programa puede pedir además cosas
     propias —un portfolio, una entrevista, un idioma concreto—, y esas están
     en la web de cada máster, que es donde hay que mirar.
   </p>
 
-${notas.length ? `  <h2 id="que-es">Qué son exactamente</h2>
+${notas.length ? `  <h2 id="que-es" data-i18n="em.queEs.h2">Qué son exactamente</h2>
   <ul>
-${notas.map((n) => `    <li><strong>${esc(n.etiqueta)}:</strong> ${esc(n.valor)}.<br>
-      <cite style="font-size:14px">«${esc(n.cita)}»</cite></li>`).join('\n')}
+${filasNotas}
   </ul>
 ` : ''}
-  <h2 id="programas">Los ${emjm.length} programas</h2>
-  <p>
+  <h2 id="programas"><span data-i18n="em.programas.h2">Los</span> ${emjm.length} <span data-i18n="em.programas.h2b">programas</span></h2>
+  <p data-i18n="em.programas.p">
     Esta es la lista completa del catálogo oficial, con un enlace a la ficha
     del proyecto en el portal de Erasmus+ y a la web donde se solicita. No
     están ordenados por nada: el orden es el del catálogo.
   </p>
   <table>
     <thead>
-      <tr><th>Programa</th><th>ECTS</th><th>Ficha oficial</th><th>Solicitud</th></tr>
+      <tr><th data-i18n="em.tabla.programa">Programa</th><th>ECTS</th><th data-i18n="em.tabla.ficha">Ficha oficial</th><th data-i18n="em.tabla.solicitud">Solicitud</th></tr>
     </thead>
     <tbody>
 ${filas}
     </tbody>
   </table>
 
-  <h2 id="no-sabemos">Lo que no sabemos</h2>
-  <p>
+  <h2 id="no-sabemos" data-i18n="em.nosabemos.h2">Lo que no sabemos</h2>
+  <p data-i18n-html="em.nosabemos.p1">
     <strong>La fecha exacta.</strong> Erasmus+ dice que se presenta entre
     octubre y enero, pero cada programa tiene sus fechas y su forma de
-   selectar. No las tenemos y por eso no las escribimos: un plazo aproximado
+    seleccionar. No las tenemos y por eso no las escribimos: un plazo aproximado
     es peor que un hueco, porque es el dato por el que alguien se decide a
     sí mismo.
   </p>
-  <p>
+  <p data-i18n-html="em.nosabemos.p2">
     <strong>Los requisitos propios de cada programa.</strong> La ficha oficial
     del proyecto y la web de cada máster los traen, y por eso enlazamos a
     ellas. Lo que hay aquí es lo que la Comisión dice para todos, con su cita.
   </p>
 
-  <h2 id="fuentes">De dónde sale esto</h2>
+  <h2 id="fuentes" data-i18n="em.fuentes.h2">De dónde sale esto</h2>
   <ul>
-    <li><a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Catálogo de Erasmus Mundus Joint Masters</a> (EACEA): de aquí sale la lista de programas y sus enlaces.</li>
-    <li><a href="https://erasmus-plus.ec.europa.eu/opportunities/organisations/cooperation-among-organisations-and-institutions/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (portal oficial de Erasmus+, organizaciones): de aquí sale la cuantía de la beca y su duración máxima.</li>
-    <li><a href="https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (portal oficial de Erasmus+, estudiantes): de aquí salen el título previo, el plazo de solicitud, los ECTS y el tipo de programa.</li>
+    <li data-i18n-html="em.fuentes.li1"><a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Catálogo de Erasmus Mundus Joint Masters</a> (EACEA): de aquí sale la lista de programas y sus enlaces.</li>
+    <li data-i18n-html="em.fuentes.li2"><a href="https://erasmus-plus.ec.europa.eu/opportunities/organisations/cooperation-among-organisations-and-institutions/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (portal oficial de Erasmus+, organizaciones): de aquí sale la cuantía de la beca y su duración máxima.</li>
+    <li data-i18n-html="em.fuentes.li3"><a href="https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters" target="_blank" rel="noopener">Erasmus Mundus Joint Masters</a> (portal oficial de Erasmus+, estudiantes): de aquí salen el título previo, el plazo de solicitud, los ECTS y el tipo de programa.</li>
   </ul>
-  <p>
+  <p data-i18n="em.fuentes.p">
     Cada programa enlaza a su propia web, que es donde se solicita. Lo
     único que hay entre medias es esta lista.
   </p>
@@ -347,18 +418,22 @@ ${filas}
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small>BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
+    <small data-i18n="pie.independiente">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
     <div class="foot-links">
-      <a href="becas.html">Buscar becas</a>
-      <a href="erasmus-mundus.html">Erasmus Mundus</a>
-      <a href="sobre.html">Sobre</a>
-      <a href="privacidad.html">Privacidad</a>
-      <a href="cookies.html">Cookies</a>
+      <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
+      <a href="erasmus-mundus.html" data-i18n="pie.erasmus">Erasmus Mundus</a>
+      <a href="sobre.html" data-i18n="pie.sobre">Sobre</a>
+      <a href="privacidad.html" data-i18n="pie.privacidad">Privacidad</a>
+      <a href="cookies.html" data-i18n="pie.cookies">Cookies</a>
       <a href="https://www.boe.es/" target="_blank" rel="noopener">BOE</a>
     </div>
   </div>
 </footer>
 
+<!-- El módulo del idioma es el mismo de todas las páginas. No hay guion
+     propio: aquí no se pinta nada desde JavaScript salvo el propio
+     conmutador, y con este basta. -->
+<script type="module" src="js/i18n.js"></script>
 </body>
 </html>
 `;
