@@ -74,8 +74,12 @@ const DICC = {
   'nav.erasmus': { en: 'Erasmus Mundus' },
   'nav.sobre': { en: 'About' },
   'nav.fuentes': { en: 'Sources' },
-  'nav.buscar': { en: 'Find scholarships' },
-  'nav.buscarCorto': { en: 'Search' },
+  /* `nav.buscar` lleva el `es` escrito y no confiado al HTML de cada página:
+     en la portada la clave no existe en el DOM (la cabecera usa la corta
+     `nav.buscarCorto`), así que el mapa `original` de esa página no la
+     conoce y `t()` devolvía el literal «nav.buscar» en el héroe. */
+  'nav.buscar': { es: 'Buscar becas', en: 'Find scholarships' },
+  'nav.buscarCorto': { es: 'Buscar', en: 'Search' },
   'nav.crear': { en: 'Create account' },
   'nav.portada': { en: 'Home' },
   'pie.buscar': { en: 'Find scholarships' },
