@@ -1,11 +1,34 @@
 {
- "generado": "2026-10-23T00:52:30.217Z",
+ "generado": "2026-10-23T15:20:28.107Z",
  "version_reglas": 3,
  "rango": {
   "desde": "2026-10-02",
   "hasta": "2026-10-23"
  },
  "becas": [
+  {
+   "id": "BOE-A-2026-22211",
+   "boeIdAnuncio": "BOE-A-2026-22211",
+   "titulo": "Orden APA/1111/2026, de 7 de octubre, por la que se modifica la Orden AAA/839/2015, de 29 de abril, por la que se establecen las bases reguladoras de la concesión de Premios de Excelencia a la Innovación para Mujeres Rurales.",
+   "organizador": "Ministerio de Agricultura, Pesca y Alimentación",
+   "ambito": "estatal",
+   "seccion": "3",
+   "pagina": 142284,
+   "publicada": "20261023",
+   "cierra": null,
+   "cerrada": false,
+   "importe": null,
+   "nota_minima": null,
+   "edad_max": null,
+   "nivel": null,
+   "paises": [
+    "ES"
+   ],
+   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-22211",
+   "eli": "https://www.boe.es/eli/es/o/2026/10/07/apa1111",
+   "requisitos": [],
+   "texto_len": 10351
+  },
   {
    "id": "BDNS-936148",
    "boeIdAnuncio": "BOE-B-2026-34368",
