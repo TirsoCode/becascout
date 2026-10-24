@@ -3,7 +3,7 @@
 > Becas de Europa leídas de la convocatoria oficial, con los requisitos como
 > lista comprobable y la cita literal de cada uno.
 
-Actualizado el 23 de octubre de 2026. El mapa del sitio, con las páginas y las fuentes, está
+Actualizado el 24 de octubre de 2026. El mapa del sitio, con las páginas y las fuentes, está
 en https://becascout.vercel.app/llms.txt
 
 ## Becas Erasmus Mundus

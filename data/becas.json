@@ -1,9 +1,9 @@
 {
- "generado": "2026-10-23T15:20:28.107Z",
+ "generado": "2026-10-24T01:00:09.287Z",
  "version_reglas": 3,
  "rango": {
-  "desde": "2026-10-02",
-  "hasta": "2026-10-23"
+  "desde": "2026-10-03",
+  "hasta": "2026-10-24"
  },
  "becas": [
   {
@@ -542,92 +542,3852 @@
    "texto_len": 8301
   },
   {
-   "id": "BDNS-918648",
-   "boeIdAnuncio": "BOE-B-2026-31902",
-   "titulo": "Resolución de 30 de septiembre de 2026 de la Presidencia de la Agencia Estatal de Investigación, por la que se aprueba",
-   "organizador": "Ministerio de Ciencia, Innovación y Universidades",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51889,
-   "publicada": "20261002",
-   "cierra": "2026-12-17",
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
+   "id": "DAAD-10000092",
+   "titulo": "Prussian Cultural Heritage Foundation: Grant Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
    "paises": [
-    "ES"
+    "DE"
    ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31902",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 3453,
-   "presupuesto": 10000000,
-   "boeIdBases": "BOE-A-2026-14489",
-   "texto_bases_len": 295182
-  },
-  {
-   "id": "BDNS-918664",
-   "boeIdAnuncio": "BOE-B-2026-31900",
-   "titulo": "Resolución de 30 de septiembre de 2026 de la Presidencia de la Agencia Estatal de Investigación que aprueba la convocat",
-   "organizador": "Ministerio de Ciencia, Innovación y Universidades",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51885,
-   "publicada": "20261002",
-   "cierra": "2026-11-24",
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31900",
-   "eli": "",
-   "requisitos": [],
-   "texto_len": 4265,
-   "presupuesto": 724000000,
-   "boeIdBases": "BOE-A-2026-14489",
-   "texto_bases_len": 295182
-  },
-  {
-   "id": "BDNS-918680",
-   "boeIdAnuncio": "BOE-B-2026-31901",
-   "titulo": "Resolución de 30 de septiembre de 2026 de la Presidencia de la Agencia Estatal de Investigación por la que se aprueba l",
-   "organizador": "Ministerio de Ciencia, Innovación y Universidades",
-   "ambito": "estatal",
-   "seccion": "5",
-   "pagina": 51887,
-   "publicada": "20261002",
-   "cierra": "2026-11-17",
-   "cerrada": false,
-   "importe": null,
-   "nota_minima": null,
-   "edad_max": null,
-   "nivel": null,
-   "paises": [
-    "ES"
-   ],
-   "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-31901",
-   "eli": "",
+   "nivel": "Doctorado",
+   "presupuesto": null,
    "requisitos": [
     {
-     "tipo": "fecha_limite",
-     "etiqueta": "Plazo de solicitud",
-     "valor": "2026-11-17",
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
      "obligatorio": true,
-     "cita": "Investigación. El plazo de presentación de solicitudes se iniciará el día 27 de octubre y finalizará el 17 de noviembre de 2026 a las 14:00 horas (hora peninsular española). Sexto. Criterios de evaluación de las solic…",
-     "extractor": "reglas",
-     "verificado": true
+     "extractor": "oficial"
     }
    ],
-   "texto_len": 4040,
-   "presupuesto": 6000000,
-   "boeIdBases": "BOE-A-2026-14489",
-   "texto_bases_len": 295182
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000092",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000092",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000101",
+   "titulo": "State of Bavaria: Max Weber Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000101",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000101",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000102",
+   "titulo": "European Union: Erasmus+ Mobility Programme for Higher Education Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000102",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000102",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000103",
+   "titulo": "Institutions of Higher Education in Hesse: Doctoral Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000103",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000103",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000107",
+   "titulo": "Ministry for Science, Culture, Federal and European Affairs of Mecklenburg-West Pomerania: PhD Scholarships and Caspar-David-Friedrich Scholarships (CDF)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000107",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000107",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000108",
+   "titulo": "Konrad-Adenauer-Stiftung (KAS): Scholarship Programme for International Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000108",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000108",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000110",
+   "titulo": "Alexander von Humboldt Foundation: Humboldt Research Fellowships for Postdoctoral Researchers",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000110",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000110",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000113",
+   "titulo": "Heinrich Böll Foundation: PhD scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000113",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000113",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000114",
+   "titulo": "Catholic Academic Exchange Service (KAAD): Eastern Europe Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000114",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000114",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000117",
+   "titulo": "Evangelisches Studienwerk: Scholarship for Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000117",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000117",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000119",
+   "titulo": "Foundation of German Business (sdw): Academic study sponsorship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000119",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000119",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000121",
+   "titulo": "European Union: Erasmus+ Mobility Project for Higher Education Teachers and Staff",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000121",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000121",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000123",
+   "titulo": "Herder Institute for Historical Research on East-Central Europe: Herder Fellowship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000123",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000123",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000124",
+   "titulo": "Heinrich Böll Foundation: Student Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000124",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000124",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000126",
+   "titulo": "Friedrich Ebert Foundation: Scholarship for International Doctoral Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000126",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000126",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000127",
+   "titulo": "German Federal Environmental Foundation (DBU): PhD Scholarship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000127",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000127",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000128",
+   "titulo": "Bavarian Academic Center for Central, Eastern and Southeastern Europe: One-year scholarship programme sponsored by the Free State of Bavaria for graduates of Central, Eastern and Southeastern European",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000128",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000128",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000130",
+   "titulo": "Gerda Henkel Foundation: Research Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000130",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000130",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000131",
+   "titulo": "Foundation of the Berlin House of Representatives: Grant Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000131",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000131",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000132",
+   "titulo": "Hanns Seidel Foundation: PhD scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000132",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000132",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000133",
+   "titulo": "Alexander von Humboldt Foundation: Hezekiah Wardwell Fellowship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000133",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000133",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000134",
+   "titulo": "Hans Böckler Foundation: PhD Fellowship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000134",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000134",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000136",
+   "titulo": "Copernicus Hamburg: Copernicus Fellowship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000136",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000136",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000137",
+   "titulo": "German Research Foundation (DFG): Heisenberg Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000137",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000137",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000139",
+   "titulo": "Evonik Foundation: Evonik Foundation Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000139",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000139",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000141",
+   "titulo": "German Cancer Research Center (DKFZ): International PhD Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000141",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000141",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000144",
+   "titulo": "Herzog August Bibliothek: Doctoral Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000144",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000144",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000148",
+   "titulo": "Boehringer Ingelheim Fonds: Travel Grants",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000148",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000148",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000150",
+   "titulo": "Foundation of German Business (sdw): Support for doctoral candidates",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000150",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000150",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000153",
+   "titulo": "Friedrich Ebert Foundation: Scholarship for International Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000153",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000153",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000154",
+   "titulo": "Standing Conference of the Ministers of Education and Cultural Affairs: Foreign Language Assistants from Abroad Teaching at German Schools",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000154",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000154",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000158",
+   "titulo": "Fulbright Commission: Fulbright Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000158",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000158",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000159",
+   "titulo": "Cusanuswerk: Undergraduate and Postgraduate Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000159",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000159",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000161",
+   "titulo": "German Research Foundation (DFG): Research Grant",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000161",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000161",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000162",
+   "titulo": "Federal Ministry of Education and Research: Federal Training Assistance Act (Bundesausbildungsförderungsgesetz, or BAföG)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000162",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000162",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000164",
+   "titulo": "Boehringer Ingelheim Fonds: PhD Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000164",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000164",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000165",
+   "titulo": "Gerda Henkel Foundation: PhD Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000165",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000165",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000168",
+   "titulo": "Catholic Academic Exchange Service (KAAD): Scholarship Programme 1",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000168",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000168",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000169",
+   "titulo": "Alexander von Humboldt Foundation: Humboldt Research Fellowship for Experienced Researchers",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000169",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000169",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000171",
+   "titulo": "Hermann Niermann Foundation/European Institute for German Language: Hermann Niermann Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000171",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000171",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000172",
+   "titulo": "Ministry of Science, Research and the Arts Baden-Württemberg: Mathilde Planck Contract Lectureships (MPL)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000172",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000172",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000178",
+   "titulo": "Baden-Württemberg Stiftung: The Baden-Württemberg-STIPENDIUM for Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000178",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000178",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000183",
+   "titulo": "Herzog August Bibliothek: Short-term Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000183",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000183",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000185",
+   "titulo": "The American Friends of the Herzog August Bibliothek (HAB): Travel Grant",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000185",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000185",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000187",
+   "titulo": "Universität Hamburg: Merit Scholarships for International Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000187",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000187",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000198",
+   "titulo": "German National Academic Foundation: Leo Baeck Fellowship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000198",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000198",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000203",
+   "titulo": "German Federal Environmental Foundation (DBU): Fellowship Programme with CEE Countries",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000203",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000203",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000206",
+   "titulo": "Bayer Foundation: Fellowship for Medical Sciences",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000206",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000206",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000207",
+   "titulo": "Federal Ministry of Education and Research: Deutschlandstipendium",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000207",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000207",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000208",
+   "titulo": "Bayer Foundation: Fellowship in Drug Discovery Sciences",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000208",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000208",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000210",
+   "titulo": "Evangelisches Studienwerk: Scholarship for Doctoral Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000210",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000210",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000212",
+   "titulo": "German Bundestag: International Parliamentary Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000212",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000212",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000220",
+   "titulo": "Rosa Luxemburg Foundation: Scholarship Programme for International Doctoral Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000220",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000220",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000221",
+   "titulo": "Bayer Foundation: Fellowship for STEM Student Teachers &amp; Teachers",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000221",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000221",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000231",
+   "titulo": "Munich Aerospace: PhD Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000231",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000231",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000233",
+   "titulo": "Heinrich Böll Foundation: Sur-Place Scholarship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000233",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000233",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000300",
+   "titulo": "Country-related cooperation programme with Argentina (ALEARG)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000300",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000300",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000312",
+   "titulo": "DAAD/NSTC- Sandwich- Scholarship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000312",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000312",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000321",
+   "titulo": "German Studies Research Grant",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000321",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000321",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000335",
+   "titulo": "Government Scholarships Programme Oman",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000335",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000335",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000344",
+   "titulo": "Government Scholarships Programme Tunisia",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000344",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000344",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000366",
+   "titulo": "BAYHOST: Scholarships for students and young academics from Central, Eastern and Southeastern Europe for summer language courses",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000366",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000366",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000372",
+   "titulo": "German-Czech Fund for the Future: Grants for Study Stays of German and Czech Students in the Neighbour Countries",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000372",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000372",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000381",
+   "titulo": "Important Information",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000381",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000381",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000382",
+   "titulo": "Canon Foundation Research Fellowship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000382",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000382",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000384",
+   "titulo": "Evangelisches Studienwerk: Scholarship for Students With Refugee Status",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000384",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000384",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000398",
+   "titulo": "German Bundestag: International Parliamentary Scholarships: Programme Arab Countries",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000398",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000398",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000406",
+   "titulo": "German Academic Scholarship Foundation: Doctoral Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000406",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000406",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000412",
+   "titulo": "German Academic Scholarship Foundation: Scholarships for Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000412",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000412",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000418",
+   "titulo": "Ernst Ludwig Ehrlich Studienwerk: Doctoral Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000418",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000418",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000422",
+   "titulo": "RWTH International Academy: Women in Engineering Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000422",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000422",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000429",
+   "titulo": "Hertie School: Human Rights Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000429",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000429",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000437",
+   "titulo": "Federal Ministry of Education and Research: Digital GreenTalents Award",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000437",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000437",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000486",
+   "titulo": "In-Country/In-Region Programme Sub-Saharan Africa",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000486",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000486",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000494",
+   "titulo": "SBW Berlin Scholarship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000494",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000494",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000509",
+   "titulo": "Jean Monnet Scholarship Programme (JMSP)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000509",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000509",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000543",
+   "titulo": "Klassik Stiftung Weimar Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000543",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000543",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000550",
+   "titulo": "Alexander von Humboldt Foundation: International Climate Protection Fellowship",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000550",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000550",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000551",
+   "titulo": "Bayer Foundation: Fellowship for Agricultural Science",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000551",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000551",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000556",
+   "titulo": "Leibniz Institute of European History Mainz: Fellowships for Doctoral Students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000556",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000556",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000560",
+   "titulo": "Indo-German Science and Technology Centre (IGSTC): Women Involvement in Science and Engineering Research (WISER)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000560",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000560",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000562",
+   "titulo": "Indo-German Science and Technology Centre (IGSTC): Paired Early Career Fellowship in Applied Research (PECFAR)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000562",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000562",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000575",
+   "titulo": "HessenFonds for Refugees and Researchers at Risk",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000575",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000575",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000611",
+   "titulo": "DAAD Zuse School of Embedded Composite Artificial Intelligence (SECAI): Scholarships for Master's students in AI",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000611",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000611",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000612",
+   "titulo": "DAAD Konrad Zuse School of Excellence in Reliable Artificial Intelligence (relAI): Scholarship for Master's Students and PhD Candidates",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000612",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000612",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000622",
+   "titulo": "Residential Fellowships at the Center for Advanced Internet Studies (CAIS)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000622",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000622",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000633",
+   "titulo": "International Scholarship Programme of the Avicenna Studienwerk",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000633",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000633",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000639",
+   "titulo": "Alfred Toepfer Stiftung &amp; Studienstiftung des deutschen Volkes: You and Europe Scholarship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000639",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000639",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000652",
+   "titulo": "Alfried Krupp Wissenschaftskolleg Greifswald: Alfried Krupp Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000652",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000652",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000666",
+   "titulo": "Hanse-Wissenschaftskolleg (HWK): Funded Regular and Junior Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000666",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000666",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000681",
+   "titulo": "University of Konstanz: ZUKOnnect Fellowships for Scholars from Africa, Asia and Latin America",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000681",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000681",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000689",
+   "titulo": "Göttingen Academy of Sciences and Humanities: Hannah Arendt Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000689",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000689",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000699",
+   "titulo": "BAYHOST/BTHA: Bavaria’s Annual Scholarship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000699",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000699",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-10000700",
+   "titulo": "BAYHOST: Scholarships for language and short courses (summer/winter schools) for students and researchers from the Czech Republic",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000700",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=10000700",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015171",
+   "titulo": "ERP Study Scholarships for Graduates of Economics and Business Administration",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015171",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015171",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015217",
+   "titulo": "Programme d'Etudes en Allemagne (PEA)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015217",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015217",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015276",
+   "titulo": "ALECOSTA: Alemania-Costa Rica",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015276",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015276",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015282",
+   "titulo": "In-Region Scholarships for Postgraduate Studies for Yemenis in Jordan",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015282",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015282",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015315",
+   "titulo": "Sino-German (CSC-DAAD) Postdoc Scholarship Program",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015315",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015315",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015361",
+   "titulo": "Taiwan Summer Institute Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015361",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015361",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015446",
+   "titulo": "DAAD-K.C.Wong Postdoc Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015446",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015446",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015450",
+   "titulo": "Overseas Scholarship Scheme for MSc leading to PhD",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015450",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015450",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015492",
+   "titulo": "Re-invitation Programme for Former Scholarship Holders",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015492",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015492",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015508",
+   "titulo": "Bilateral Exchange of Academics (to Germany)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015508",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015508",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50015638",
+   "titulo": "RISE Professional - Research Internships in Science and Engineering",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015638",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50015638",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50016578",
+   "titulo": "DAAD-TEV-Master's degree scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50016578",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50016578",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50017039",
+   "titulo": "DAAD-Short-term scholarships for master's degree students",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50017039",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50017039",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50019749",
+   "titulo": "DLR-DAAD Research Fellowship Programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50019749",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50019749",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50020910",
+   "titulo": "RISE Germany - Research Internships in Science and Engineering",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50020910",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50020910",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50026200",
+   "titulo": "Study Scholarships - Master Studies for All Academic Disciplines",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50026200",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50026200",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50026397",
+   "titulo": "Helmut-Schmidt-Programme (Master’s Scholarships for Public Policy and Good Governance - PPGG)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50026397",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50026397",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50035295",
+   "titulo": "University Summer Courses offered in Germany for Foreign Students and Graduates",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50035295",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50035295",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50046485",
+   "titulo": "University Winter Courses in Germany for Foreign Students and Graduates",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50046485",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50046485",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50076777",
+   "titulo": "Development-Related Postgraduate Courses (EPOS)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50076777",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50076777",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50078419",
+   "titulo": "DAAD/BECAS Chile",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50078419",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50078419",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50094047",
+   "titulo": "CAS-DAAD-Programme / Joint Fellowship Programme for Doctoral Students of CAS",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50094047",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50094047",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50109971",
+   "titulo": "Study Scholarships - Postgraduate Studies in the Field of the Performing Arts",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50109971",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50109971",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-50110016",
+   "titulo": "Study Visits for Academics - Artists and Architects",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50110016",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=50110016",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57135739",
+   "titulo": "Doctoral Programmes in Germany",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135739",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135739",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57135742",
+   "titulo": "Study Scholarships - Postgraduate Studies in the Fields of Fine Art, Design, Visual Communication and Film",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135742",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135742",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57135743",
+   "titulo": "Study Scholarships - Postgraduate Studies in the Field of Music",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135743",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135743",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57135744",
+   "titulo": "Study Scholarships - Postgraduate Studies in the Field of Architecture",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135744",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57135744",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57352834",
+   "titulo": "Practical Traineeships for Foreign Students of Natural and Technical Sciences, Agriculture and Forestry (IAESTE)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57352834",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57352834",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57378178",
+   "titulo": "Co-funded Research Grants – Short-Term Grants - DAAD",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57378178",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57378178",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57379863",
+   "titulo": "Joint Rustaveli-DAAD-fellowship programme",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57379863",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57379863",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57471580",
+   "titulo": "Combined study and practical stays for engineers from developing countries (KOSPIE) with Colombian universities",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57471580",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57471580",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57471581",
+   "titulo": "Combined study and practical stays for engineers from developing countries (KOSPIE) with Mexican universities",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57471581",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57471581",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57504697",
+   "titulo": "Combined Study and Practice Stays for Engineers from Developing Countries (KOSPIE) with Indian IITs",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57504697",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57504697",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57507783",
+   "titulo": "Bi-nationally Supervised Doctoral Degrees / Cotutelle",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57507783",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57507783",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57549329",
+   "titulo": "Government Scholarships Programme Paraguay BECAL-DAAD Promotion",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57549329",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57549329",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57593463",
+   "titulo": "Government Scholarships Programme Paraguay BECAL-DAAD Master",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57593463",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57593463",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57593632",
+   "titulo": "KOSPIE Combined study and practice stays for engineers from developing countries Tunisia",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates, Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57593632",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57593632",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57649740",
+   "titulo": "Gilman-DAAD Germany Scholarships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57649740",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57649740",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57650857",
+   "titulo": "Future Ukraine: Research Grants for Ukrainian Master´s students and researchers",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "UA"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57650857",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57650857",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57652675",
+   "titulo": "In-Country Scholarships for Postgraduate Studies for Palestinians in the Palestinian Territories (West Bank)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57652675",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57652675",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57655437",
+   "titulo": "TheMuseumsLab",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Undergraduates, Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57655437",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57655437",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57742121",
+   "titulo": "Research Grants in Germany",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57742121",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57742121",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57742130",
+   "titulo": "Study scholarships for STEM disciplines",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57742130",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57742130",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57808993",
+   "titulo": "Government Scholarships Programme Mexico COMECYT-DAAD Master",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57808993",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57808993",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57809001",
+   "titulo": "Government Scholarships Programme Mexico COMECYT-DAAD Promotion",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57809001",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57809001",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57814471",
+   "titulo": "Country-related cooperation programme with Colombia (COLFUTURO - Fundación para el Futuro de Colombia) Master",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57814471",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57814471",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57814472",
+   "titulo": "Country-related cooperation programme with Colombia (COLFUTURO - Fundación para el Futuro de Colombia) Promotion",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57814472",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57814472",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57862424",
+   "titulo": "Cooperation programme with Mexico (SECIHTI – Secretaría de Ciencia, Humanidades, Tecnología e Innovación) Master",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Graduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57862424",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57862424",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57862427",
+   "titulo": "GROW – Global Research Opportunities for the South",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Graduates, Doctoral candidates/PhD students, Postdoctoral researchers, Faculty",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57862427",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57862427",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57871506",
+   "titulo": "Future Network Weimar Triangle: Science for Europe - Doctoral candidates (to Germany)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57871506",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57871506",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57871508",
+   "titulo": "Future Network Weimar Triangle: Science for Europe - Postdoctoral researchers (to Germany)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57871508",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57871508",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57874180",
+   "titulo": "EU-Projekt Scholarships for Technical and post-Secondary Education Pathways (STEP)",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Máster",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Máster",
+     "cita": "Status: Undergraduates",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57874180",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57874180",
+   "cierra": null,
+   "pagina": null
+  },
+  {
+   "id": "DAAD-57883183",
+   "titulo": "Heilbronn AI Fellowships",
+   "organizador": "DAAD (Agencia Alemana de Intercambio Académico)",
+   "ambito": "europeo",
+   "fuente": "daad",
+   "paises": [
+    "DE"
+   ],
+   "nivel": "Doctorado",
+   "presupuesto": null,
+   "requisitos": [
+    {
+     "tipo": "titulacion",
+     "etiqueta": "Nivel al que se puede pedir",
+     "valor": "Doctorado",
+     "cita": "Status: Doctoral candidates/PhD students, Postdoctoral researchers",
+     "obligatorio": true,
+     "extractor": "oficial"
+    }
+   ],
+   "url": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57883183",
+   "url_oficial": "https://www2.daad.de/deutschland/stipendium/datenbank/en/21148-scholarship-database/?lang=en&sd=1&detail=57883183",
+   "cierra": null,
+   "pagina": null
   },
   {
    "id": "EMJM-1-erasmus-mundus-joint-mas",
