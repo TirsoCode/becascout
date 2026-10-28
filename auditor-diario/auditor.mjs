@@ -17,9 +17,10 @@
  *    mismo— la borra al terminar con `DELETE /api/cuenta`, sin dejar rastro
  *    en la base de producción.
  *
- * 3. INFORME: manda todo a la nube con dos proveedores en cadena (OpenRouter
- *    → Google AI Studio, cada uno con reintento) y escribe UN informe `.md`
- *    en `reports/`, junto a un `raw-*.json` con los datos en crudo.
+ * 3. INFORME: manda todo a la nube con tres proveedores en cadena (NVIDIA
+ *    con MiniMax → OpenRouter → Google AI Studio, cada uno con candidatos
+ *    propios) y escribe UN informe `.md` en `reports/`, junto a un
+ *    `raw-*.json` con los datos en crudo.
  *
  * ── Por qué no hay bucle infinito ─────────────────────────────────────────
  *
@@ -66,7 +67,7 @@ const CANDIDATOS_POR_PROVEEDOR = 3; // modelos distintos que se prueban antes de
 
 /* ── Los modelos, elegidos cada pasada ──────────────────────────────────────
  *
- * Los identificadores de modelos rotan: el que hoy es el mejor free de allí
+ * Los identificadores de modelos rotan: el que hoy es el mejor de allí
  * el mes que viene puede estar retirado, y un id escrito a mano es una
  * escritura que muere sin que nada avise. Por eso cada pasada pregunta al
  * PROPIO proveedor qué modelos viven HOY y elige el mejor de los que hay,
@@ -75,6 +76,23 @@ const CANDIDATOS_POR_PROVEEDOR = 3; // modelos distintos que se prueban antes de
  * determinista. Nada depende de un id concreto: la lista es una preferencia,
  * no un requisito.
  */
+const NVIDIA = {
+  key: process.env.NVIDIA_API_KEY || '',
+  fijado: process.env.NVIDIA_MODEL || '',      // casilla para clavar UN modelo si algún día hace falta
+  url: 'https://integrate.api.nvidia.com/v1',
+  // El pedido fue explícito: NVIDIA con MiniMax. Hoy vive `minimax-m3.1-flash`
+  // y contesta con `content` limpio (el razonamiento va en otro campo). Si
+  // mañana el id rota, el catálogo dirá cuál hay y la lista de preferencia
+  // sigue mandando: todo `minimaxai/` delante del resto.
+  preferidas: ['minimaxai/minimax'],
+  // Familias de chat conocidas del catálogo de NVIDIA, por si MiniMax desaparece.
+  // Ids completos y verificados hoy (el listado los trae); si mañana alguno
+  // rota, la pasada siguiente lo verá en el log y el relevo manda igual.
+  deRelevo: ['minimaxai/minimax-m3.1-flash', 'deepseek-ai/deepseek-v4.1-flash'],
+  // El catálogo de NVIDIA mezcla chat con embeddings, rerankers, visión y
+  // OCR: ninguno de esos sabe escribir un informe.
+  gachosNvidia: /embed|rerank|guard|retriev|ocr|specter|fuyu|vit|paddle|deplot|neva|kosmos|clip|sdxl|stable|diffusion|whisper|tts|riva|nmt|translate|dolly|arc/i,
+};
 const OPENROUTER = {
   key: process.env.OPENROUTER_API_KEY || '',
   fijado: process.env.OPENROUTER_MODEL || '',  // casilla para clavar UN modelo si algún día hace falta
@@ -344,6 +362,11 @@ async function patrullar(contexto, ruta, movil, capturasHTML) {
 
     // ── El contrato del buscador, sin sesión ──────────────────────────────
     if (ruta === '/becas.html') {
+      // Espera activa también aquí: la lista llega con un `fetch` y en la
+      // máquina lenta el respiro fijo contó cero fichas de una web bien.
+      // Sin fichas no hay nada que medir: velo, barra y píldoras salen todas
+      // del mismo pintado.
+      await esperarFichas(pagina);
       const fichas = await pagina.evaluate(() => ({
         fichas: document.querySelectorAll('[data-beca]').length,
         velo: document.querySelectorAll('.lock-body').length,
@@ -538,8 +561,8 @@ async function flujoCuenta(contexto) {
       const escritorio = await p3.evaluate(() => ({
         fichas: document.querySelectorAll('[data-beca]').length,
         velo: document.querySelectorAll('.lock-body').length,
-        columnas: document.querySelector('[data-beca]')
-          ? getComputedStyle(document.querySelector('[data-beca]')).gridTemplateColumns
+        columnas: document.querySelector('.beca')
+          ? getComputedStyle(document.querySelector('.beca')).gridTemplateColumns
           : '',
         desborde: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
       }));
@@ -787,6 +810,21 @@ Sé seco y concreto. NO la marees: nada de genérico sin evidencia.`.replace('{F
  * proveedor, hasta `CANDIDATOS_POR_PROVEEDOR` modelos distintos, uno a uno.
  */
 
+/** El catálogo de NVIDIA: ids vivos hoy, sin embeddings ni visión. */
+async function modelosNvidia() {
+  const resp = await fetch(`${NVIDIA.url}/models`, {
+    headers: { authorization: `Bearer ${NVIDIA.key}` },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!resp.ok) throw new Error(`catálogo NVIDIA ${resp.status}`);
+  const { data } = await resp.json();
+  if (!Array.isArray(data)) throw new Error('catálogo NVIDIA con forma rara');
+
+  return data
+    .map((m) => ({ id: m.id, ctx: 0 }))   // el listado no trae contexto: la calidad decide por familia
+    .filter((m) => !NVIDIA.gachosNvidia.test(m.id));
+}
+
 /** El catálogo de OpenRouter, a lista de {id, contexto} vivos y gratis. */
 async function modelosOpenRouter() {
   const resp = await fetch(`${OPENROUTER.url}/models`, { signal: AbortSignal.timeout(20000) });
@@ -853,6 +891,22 @@ function ordenarVivas(preferidas, vivas) {
   ).map((m) => m.id);
 }
 
+/** La cola entera de candidatos de NVIDIA, lista de vivos hoy. */
+async function colaNvidia() {
+  const cola = [];
+  if (NVIDIA.fijado) cola.push(NVIDIA.fijado);
+  try {
+    const vivas = await modelosNvidia();
+    if (!vivas.length) throw new Error('el catálogo no trae ningún modelo de chat');
+    for (const id of ordenarVivas(NVIDIA.preferidas, vivas)) if (!cola.includes(id)) cola.push(id);
+    log(`  NVIDIA: ${vivas.length} modelos de chat vivos hoy; primero «${cola[0]}»`);
+  } catch (e) {
+    log(`  NVIDIA: catálogo no contestó (${String(e.message || e).slice(0, 120)}): relevo fijo`);
+    for (const id of NVIDIA.deRelevo) if (!cola.includes(id)) cola.push(id);
+  }
+  return cola.slice(0, CANDIDATOS_POR_PROVEEDOR);
+}
+
 /** La cola entera de candidatos de OpenRouter, lista de vivos hoy. */
 async function colaOpenRouter() {
   const cola = [];
@@ -901,6 +955,15 @@ async function pedirIA(paquete) {
     }
   };
 
+  if (NVIDIA.key) {
+    for (const modelo of await colaNvidia()) {
+      const r = await probarModelo(modelo, llamarNvidia, 'NVIDIA');
+      if (r) return r;
+    }
+  } else {
+    log('  sin NVIDIA_API_KEY, se salta');
+  }
+
   if (OPENROUTER.key) {
     for (const modelo of await colaOpenRouter()) {
       const r = await probarModelo(modelo, llamarOpenRouter, 'OpenRouter');
@@ -920,6 +983,33 @@ async function pedirIA(paquete) {
   }
 
   return null;
+}
+
+async function llamarNvidia(prompt, modelo) {
+  const resp = await fetch(`${NVIDIA.url}/chat/completions`, {
+    method: 'POST',
+    signal: AbortSignal.timeout(240000),
+    headers: {
+      authorization: `Bearer ${NVIDIA.key}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: modelo,
+      temperature: 0.2,
+      max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!resp.ok) throw new Error(`${resp.status}: ${(await resp.text()).slice(0, 200)}`);
+  const data = await resp.json();
+  const mensaje = data.choices?.[0]?.message ?? {};
+  // MiniMax deja el razonamiento en `reasoning_content` y la respuesta en
+  // `content`. Si un día el modelo pone todo en el razonamiento y `content`
+  // vacío, el informe seguiría saliendo — mejor un informe con el hilo
+  // pensado de por medio que ninguno.
+  const texto = mensaje.content || mensaje.reasoning_content || '';
+  if (!texto) throw new Error('respuesta vacía');
+  return texto;
 }
 
 async function llamarOpenRouter(prompt, modelo) {

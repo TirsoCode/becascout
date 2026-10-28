@@ -25,17 +25,21 @@ free de OpenRouter cambiaron todos—. Un id escrito a mano es una escritura que
 muere sin avisar. Por eso **cada pasada pregunta al propio proveedor qué modelos
 viven HOY** y elige el mejor de los que hay:
 
-- **OpenRouter**: baja el catálogo, filtra los gratis (precio 0/0 o `:free`) con
-  contexto ≥ 32k, **excluye Gemini-Flash a propósito** (su free se agota a diario y
-  en Google AI Studio va mejor de fuente), y ordena por lista de preferencia +
-  heurística de calidad (familias grandes delante, modelos pequeños/clasificadores
-  atrás, contexto de desempate). Prueba hasta 3 candidatos distintos.
-- **Google AI Studio**: pregunta con `ListModels` qué modelos aceptan
-  `generateContent` hoy, ordena por preferencia (`gemini-flash-latest`,
-  `gemini-2.5-flash`, `gemini-2.0-flash`…) y prueba hasta 3. Si el preferido ya no
-  está, pasa al siguiente sin drama.
-- **Cadena**: OpenRouter → Gemini → informe determinista (con los datos en crudo)
-  si la nube entera falla. El job sale en rojo, pero el informe SIEMPRE se escribe.
+- **NVIDIA (primero)**: el pedido fue explícito — MiniMax vía
+  [build.nvidia.com](https://build.nvidia.com). El catálogo (`/v1/models`) se baja
+  en cada pasada, se descartan embeddings/rerankers/visión, y manda todo lo que
+  sea `minimaxai/` (hoy `minimax-m3.1-flash`). Si el catálogo no contesta, relevo
+  con ids completos verificados.
+- **OpenRouter (segundo)**: filtra los gratis (precio 0/0 o `:free`) con contexto
+  ≥ 64k, **excluye Gemini-Flash a propósito** (su free se agota a diario y en
+  Google AI Studio va mejor de fuente), y ordena por lista de preferencia +
+  heurística de calidad. Prueba hasta 3 candidatos distintos.
+- **Google AI Studio (tercero)**: pregunta con `ListModels` qué modelos aceptan
+  `generateContent` hoy y ordena por preferencia (`gemini-flash-latest`,
+  `gemini-2.5-flash`…). Si el preferido ya no está, pasa al siguiente.
+- **Cadena**: NVIDIA → OpenRouter → Gemini → informe determinista (con los datos
+  en crudo) si la nube entera falla. El job sale en rojo, pero el informe SIEMPRE
+  se escribe.
 
 ## Qué revisa
 
@@ -68,12 +72,14 @@ En `Settings > Secrets and variables > Actions`:
 | Secreto | Requerido | Notas |
 | --- | --- | --- |
 | `SITE_URL` | Sí | La web a auditar: `https://becascout.vercel.app` |
-| `OPENROUTER_API_KEY` | Recomendado | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| `GEMINI_API_KEY` | Recomendado | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
+| `NVIDIA_API_KEY` | Recomendado | [build.nvidia.com](https://build.nvidia.com) — MiniMax va por aquí |
+| `OPENROUTER_API_KEY` | No | [openrouter.ai/keys](https://openrouter.ai/keys) — segundo de la cadena |
+| `GEMINI_API_KEY` | No | [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — tercero |
+| `NVIDIA_MODEL` | No | Clava UN modelo de NVIDIA; si muere, cae al dinámico |
 | `TEST_EMAIL` | No | Cuenta permanente para ENTRAR (no se crea ni borra nada) |
 | `TEST_PASSWORD` | No | Su contraseña (≥ 10 caracteres) |
-| `OPENROUTER_MODEL` | No | Clava UN modelo; si muere, cae al dinámico |
-| `GEMINI_MODEL` | No | Ídem |
+| `OPENROUTER_MODEL` | No | Ídem para OpenRouter |
+| `GEMINI_MODEL` | No | Ídem para Google AI Studio |
 | `NTFY_TOPIC` | No | Topic de [ntfy.sh](https://ntfy.sh/) para el aviso al móvil |
 
 Sin `TEST_EMAIL`/`TEST_PASSWORD` el auditor crea su propia cuenta efímera en cada
@@ -89,7 +95,7 @@ En local (contra el servidor de desarrollo):
 cd auditor-diario
 npm install
 SITE_URL=http://localhost:5173 \
-OPENROUTER_API_KEY=xxx GEMINI_API_KEY=xxx \
+NVIDIA_API_KEY=xxx OPENROUTER_API_KEY=xxx GEMINI_API_KEY=xxx \
 node auditor.mjs
 ```
 
