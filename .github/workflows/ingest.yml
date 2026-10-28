@@ -1,13 +1,19 @@
 name: Ingesta
 
-# Cuándo corre sin que nadie pulse nada. **Dos pasadas al día**, y se bajaron
-# de cuatro el 17 de octubre de 2026.
+# Cuándo corre sin que nadie pulse nada. **Una pasada a la semana** desde el
+# 28 de octubre de 2026 — antes eran dos diarias, y cuatro hasta el 17 de
+# octubre de 2026. Decisión del dueño.
 #
-# El BOE publica dos ediciones diarias —una por la mañana y otra por la tarde—
-# y una pasada bien colocada ve las dos. Se puso una después de cada una: 10:30
-# UTC recoge la de la mañana, y 22:30 UTC la de la tarde. Cuatro pasadas no
-# daban nada que las dos no dieran, solo gastaban cuatro veces el ancho de banda
-# contra un servicio público.
+# El precio se asume y conviene tenerlo escrito: una convocatoria publicada
+# un martes puede tardar hasta el lunes siguiente en entrar en la base. La
+# ventana de `--dias 21` cubre de sobra (tres semanas mirando atrás, con
+# margen para los retrasos del cron de GitHub), y los avisos de plazo siguen
+# leyendo la base A DIARIO por su parte —el cron de Vercel sobre la API—,
+# así que lo ya publicado no se pierde: solo tarda en entrar.
+#
+# El BOE publica dos ediciones diarias; una pasada semanal se las lleva las
+# dos de sobra. Lunes a las 10:31 UTC, la franja de la mañana que ya
+# funcionaba.
 #
 # OJO, y esto no es un detalle: GitHub retrasa los cron de los planes
 # gratuitos. Hay avisos de 8 a 14 horas de retraso, e incluso días que no se
@@ -17,8 +23,7 @@ name: Ingesta
 # becas.json bueno que haya, en vez de quedarse con datos viejos o vacíos.
 on:
   schedule:
-    - cron: '31 10 * * *'
-    - cron: '37 22 * * *'
+    - cron: '31 10 * * 1'
   # El botón manual es lo que de verdad se usa cuando se está depurando, y
   # la única forma de recuperar una pasada que el cron se comió.
   workflow_dispatch:

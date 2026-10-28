@@ -76,9 +76,9 @@ feed.xml              las convocatorias en RSS. Lo genera paginas.mjs
 .well-known/ai.txt    dónde buscan los agentes: apunta a los de abajo
 ai/summary.json       quién es BecasScout, en JSON, para asistentes de IA
 ai/faq.json           las preguntas frecuentes, en JSON, para asistentes de IA
-og.png, logo.png      tarjeta social y logo cuadrado del JSON-LD. Salen de tools/
+logo.png              logo cuadrado del JSON-LD. Sale de tools/
 vercel.json           redirección de /index.html, cabeceras de seguridad y CSP
-tools/                HTML que Chrome headless convierte en los dos PNG. No se despliega
+tools/                HTML que Chrome headless convierte en el logo. No se despliega
 serve.mjs             servidor estático para desarrollo
 js/
   landing.js          portada
@@ -867,9 +867,13 @@ regla general ya los cubra: aparecer citado en una respuesta de ChatGPT o
 Perplexity es el objetivo, no el riesgo. Los de entrenamiento también pasan hoy;
 para cerrarlos hay un bloque comentado al final de `robots.txt`.
 
-La tarjeta `og.png` y el logo `logo.png` se generan con Chrome headless desde el
-HTML de `tools/` (que no se despliega). No es una dependencia en tiempo de
-ejecución: es una tarea manual, y si se rediseña la cabecera hay que relanzarla.
+El logo `logo.png` se genera con Chrome headless desde el HTML de `tools/` (que no
+se despliega). No es una dependencia en tiempo de ejecución: es una tarea manual,
+y si se rediseña la cabecera hay que relanzarlo. La tarjeta social `og.png` se
+retiró el 28 de octubre de 2026 a petición del dueño: su generador
+(`tools/og.html`) sigue en el repo por si vuelve, y las referencias `og:image` y
+`twitter:image` se quitaron de todas las páginas — una meta que apunta a un 404
+no anuncia nada.
 
 **La CSP obliga a que no haya JavaScript inline.** `vercel.json` manda una
 `Content-Security-Policy` con `script-src 'self'`; por eso el guion de

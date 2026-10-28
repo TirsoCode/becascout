@@ -90,7 +90,7 @@ const DICC = {
   'pie.independiente': { en: 'BecasScout · An independent project. We are not a ministry or a university.' },
   'pie.solo': { en: 'BecasScout · An independent project.' },
   'pie.revisado': {
-    en: 'BecasScout · An independent project. We are not a ministry or a university. Last reviewed: <time datetime="2026-10-22">22 October 2026</time>.',
+    en: 'BecasScout · An independent project. We are not a ministry or a university. Last reviewed: <time datetime="2026-10-28">28 October 2026</time>.',
   },
 
   /* El botón dice el idioma al que lleva, no el que hay puesto: así se lee
