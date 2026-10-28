@@ -1,0 +1,118 @@
+name: Auditor Diario IA
+
+on:
+  schedule:
+    # Una pasada cada 3 días, a las 03:00 UTC. GitHub retrasa los cron de los
+    # planes gratuitos —horas, a veces un día—; es lo mismo que ya se sabe de
+    # la ingesta, y por eso el informe se COMMITE aquí y no se manda a ningún
+    # sitio: si una pasada se retrasa, el último informe bueno sigue en el repo.
+    - cron: '0 3 */3 * *'
+  workflow_dispatch: # Permite lanzarlo manualmente desde GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  auditar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: auditor-diario/package-lock.json
+
+      - name: Instalar dependencias del auditor
+        working-directory: auditor-diario
+        run: |
+          npm ci || npm install
+
+      - name: Instalar Playwright Chromium
+        working-directory: auditor-diario
+        run: npx playwright install --with-deps chromium
+
+      - name: Ejecutar auditoría IA
+        working-directory: auditor-diario
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node auditor.mjs
+
+      # El commit corre AUNQUE la auditoría salga en rojo — y ahí está la
+      # gracia: los críticos ponen el código de salida a 1 para que el job se
+      # vea rojo, pero el informe ya está escrito y tiene que llegar al repo.
+      # Un `if: always()` aquí es la diferencia entre «hay bugs y hay informe»
+      # y «hay bugs y se perdió».
+      - name: Commit informe
+        if: always()
+        run: |
+          git config user.name 'BecasScout-Auditor'
+          git config user.email '284927969+TirsoCode@users.noreply.github.com'
+          
+          # Solo los informes y el raw. Si algún día esto escribiera otra cosa
+          # en la raíz, `git add reports/` lo deja fuera por construcción.
+          git add reports/
+          
+          if git diff --staged --quiet; then
+            echo "Sin nuevo informe"
+            exit 0
+          fi
+          
+          # La carpeta no crece sin fondo: se queda con los últimos 15
+          # informes y 6 raw. Lo que se borra del working tree sigue en el
+          # historial de git, así que no se pierde nada que ya se leyó.
+          ls -t reports/bug-report-*.md 2>/dev/null | tail -n +16 | xargs -r rm -f
+          ls -t reports/raw-*.json 2>/dev/null | tail -n +7 | xargs -r rm -f
+          git add reports/
+          
+          FECHA=$(date -u '+%Y-%m-%d %H:%M')
+          git commit -m "audit: informe IA ⋅ ${FECHA} UTC" || exit 0
+          
+          git fetch origin main
+          git rebase origin/main || {
+            git checkout --theirs -- reports/ 2>/dev/null || true
+            git add reports/
+            GIT_EDITOR=true git rebase --continue || true
+          }
+          
+          for intento in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Reintentando push ($intento/3)"
+            git fetch origin main
+            git rebase origin/main || {
+              git checkout --theirs -- reports/ 2>/dev/null || true
+              git add reports/
+              GIT_EDITOR=true git rebase --continue || true
+            }
+          done
+          
+          echo "No se pudo subir el informe"
+          exit 1
+
+      - name: Resumen
+        if: always()
+        run: |
+          echo "## Auditoría Diaria IA" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if ls reports/bug-report-*.md 2>/dev/null | tail -1; then
+            ULTIMO=$(ls -t reports/bug-report-*.md | head -1)
+            echo "Último informe: \`$ULTIMO\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Con fallback: OpenRouter -> Google AI Studio" >> $GITHUB_STEP_SUMMARY

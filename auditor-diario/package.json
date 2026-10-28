@@ -1,0 +1,13 @@
+{
+  "name": "becascout-auditor-diario",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Auditor diario IA para BecasScout",
+  "scripts": {
+    "audit": "node auditor.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.64.1"
+  }
+}

@@ -122,6 +122,10 @@ test/
   idioma.mjs          el cambio castellano/inglés, de punta a punta
   e2e/                el sitio entero, con Playwright y el Chrome del sistema
 data/becas.json       salida de la ingesta
+auditor-diario/       el auditor con IA: Playwright + informe .md en reports/.
+                      No se despliega (.vercelignore). Corre en GitHub Actions
+                      cada 3 días, o a mano con `node auditor.mjs`
+reports/              los informes que genera el auditor. Se commitean a propósito
 ```
 
 ### Dos cosas de `api/` que no son obvias

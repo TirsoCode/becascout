@@ -41,6 +41,16 @@ data/avisos.tmp.json
 # Las pruebas corren en local; no hay motivo para servirlas.
 test/
 
+# El auditor con IA: su código no es parte de la web y sus informes tampoco.
+# Si subieran, cada informe quedaría legible en /reports/… con su URL.
+auditor-diario/
+reports/
+
+# El auditor con IA: su código no es parte de la web y sus informes tampoco.
+# Si subieran, cada informe quedaría legible en /reports/… con su URL.
+auditor-diario/
+reports/
+
 # Y lo que dejan al correr: trazas, capturas e informes. `test/` ya no está,
 # pero estas carpetas caen en la raíz.
 test-results/
