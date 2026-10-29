@@ -273,7 +273,7 @@ export function aRegistro(html, id) {
     // La fecha de fin del periodo la publica la propia BDNS y se enseña tal
     // cual. Antes esta línea era `cierra: indefinido ? null : null` —los dos
     // brazos iguales— y el dato de `fin` se tiraba: las 652 fichas salían sin
-    // plazo, y sin plazo no hay aviso ni estados ámbar/óxido.
+    // plazo, y sin plazo no hay estados ámbar/óxido.
     cierra,
     requisitos: [],
     texto_len: texto.length,

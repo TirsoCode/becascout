@@ -59,8 +59,8 @@ export default defineConfig({
     //
     // `BS_SIN_ENV` es la pieza que mantiene el alta fuera de la base real:
     // sin él, serve.mjs carga .env.local y las cuentas de estas pruebas
-    // (@ejemplo.es) nacen en Supabase, con la fila de sesiones y el aviso de
-    // avisos incluidos. El modo fichero es el que describe la cabecera de
+    // (@ejemplo.es) nacen en Supabase, con sus filas de sesión. El modo
+    // fichero es el que describe la cabecera de
     // cuenta.spec.js, así que aquí se garantiza.
     command: `BS_SIN_ENV=1 node ../../serve.mjs ${PUERTO}`,
     url: `http://localhost:${PUERTO}`,

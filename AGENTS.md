@@ -96,7 +96,7 @@ auth/
   callback.html       receptor del token de Google
   callback.js         su lógica. Aparte porque la CSP no deja guiones inline
 lib/
-  store.js            cuentas, sesiones y avisos. Postgres, con fichero de respaldo
+  store.js            cuentas y sesiones. Postgres, con fichero de respaldo
 ingest/
   boe.mjs             Boletín Oficial del Estado (sin clave, sin coste)
   xml.mjs             parser de XML mínimo, sin dependencias
@@ -117,9 +117,9 @@ test/
   filtro.mjs          qué es una beca y qué no
   ensamblar.mjs       lo que llega a data/becas.json
   pais.mjs            el filtro de destino y de nivel
-  avisos.mjs          los avisos de plazo, de punta a punta
   web.mjs             lo que se ve en el navegador
   idioma.mjs          el cambio castellano/inglés, de punta a punta
+  sin-avisos.mjs      que la retirada de los avisos se queda retirada
   e2e/                el sitio entero, con Playwright y el Chrome del sistema
 data/becas.json       salida de la ingesta
 auditor-diario/       el auditor con IA: Playwright + informe .md en reports/.
@@ -175,8 +175,8 @@ Reglas que no se rompen:
 ## La puerta de las becas
 
 Las becas **no** son visibles sin cuenta. Es una decisión de producto, no un
-adorno: la cuenta es lo único que permite avisar de plazos, que es la razón
-por la que alguien daría su correo a un desconocido.
+adorno: la cuenta es lo que abre el buscador entero —cada convocatoria con
+sus requisitos y sus citas—, y eso es lo que se pide a cambio del correo.
 
 El bloqueo es visual, no una comprobación de permiso. El contenido se pinta
 entero y se cubre con `filter: blur()` más una retícula de píxeles. El texto
@@ -290,96 +290,32 @@ columna. `NULL` es un estado legítimo —hay cuentas anteriores a la pregunta y
 gente que pasa sin contestar—, y «no lo sabemos» no se rellena con un valor
 por defecto.
 
-## Los avisos de plazo
+## Los avisos de plazo (retirados)
 
-Es la razón por la que alguien da su correo, y desde el 20 de octubre de 2026
-existe: un cron diario manda un correo cuando una convocatoria de la base
-cierra en los próximos 7 días. Tres decisiones que conviene no deshacer.
+El sistema de avisos por correo existió del 20 al 28 de octubre de 2026: un
+cron diario mandaba un correo cuando una convocatoria de la base cerraba en
+los próximos 7 días. Se retiró entero —el cron (`/api/cron-avisos`), el
+interruptor de la cuenta, la tabla `avisos`, la columna `cuentas.avisos`
+(migración `0004_sin_avisos.sql`), `test/avisos.mjs` y las claves de
+Resend—. El motivo: sin un dominio verificado en el proveedor de correo, la
+promesa «te avisamos» no se podía sustentar, y una promesa que no se cumple
+es peor que ninguna. La cuenta vuelve a prometer lo único que cumple: abrir
+el buscador entero, con los requisitos y sus citas.
 
-**El aviso es opt-out, no opt-in.** `cuentas.avisos` nace `not null default
-true` (migración `0003_avisos.sql`): la cuenta se crea justo para esto —es la
-promesa del FAQ de la portada—, así que pedir permiso para avisar sería pedir
-el producto que ya se está pidiendo. Desactivarlo es un interruptor en el
-modal de cuenta, y con eso el aviso se apaga. Por eso `privacidad.html`
-responde con el **art. 6.1.b** (ejecución del contrato) y no con el 6.1.a: un
-opt-out no es un consentimiento. La encuesta de llegada sí sigue en 6.1.a,
-porque esa pregunta es opcional y se puede pasar.
+Tres cosas de aquella época que conviene recordar si algún día vuelve:
 
-**Lo que se marca es lo que se envió, y se marca DESPUÉS.** La tabla `avisos`
-no es una cola: es el registro de lo ya salido, con clave `(correo, beca)`.
-Si el envío falla, la fila no se escribe y la pasada del día siguiente
-reintenta. Marcar antes de enviar agendaría avisos para siempre perdidos: el
-primer correo que se pierde por un corte de Resend se convertiría en un plazo
-que nunca se anuncia. Por eso, sin `RESEND_API_KEY` o `CORREO_DE`, la pasada
-contesta `{ ok: true, motivo: 'sin configuración de envío', pendientes: N }` y
-**no toca nada**: la cola espera a que se configure.
-
-**La base la lee el cron por HTTP, del mismo anfitrión.** En Vercel el disco
-de una función es su bundle de despliegue, no el repositorio: leer
-`data/becas.json` con una ruta relativa ahí no existe. La pasada lo pide a
-`${host}/data/becas.json` —en local, `serve.mjs` sirve `/data/`; en
-producción, `.vercelignore` deja subir el fichero, que es el que el buscador
-pide desde el navegador—. Por eso `baseURL()` elige el esquema según el
-anfitrión: en local es http y pedir https a un puerto de http muere con un
-error de TLS que no dice nada del servidor.
-
-Lo que el cron **no** usa, y por qué:
-
-- **El campo `cerrada` del fichero.** Es del día en que se generó la base y
-  puede mentir: hay ficha marcada cerrada que sigue abierta. La fecha manda, y
-  la fecha es `cierra`.
-- **Un plazo en días hábiles.** No se convierte a fecha: es una regla relativa
-  y el día exacto depende de la publicación, del cómputo de hábiles y de los
-  festivos. Una fecha calculada tendría el aspecto de un dato comprobable y
-  estaría mal.
-- **Cualquier porcentaje de encaje.** El correo lleva título, fecha de cierre
-  y enlace a la convocatoria oficial. Nada más.
-
-Dos techos, por lo mismo: 10 convocatorias por correo y 50 correos por pasada.
-Lo que se pasa del tope **no se marca**, así que sale al día siguiente: la cola
-avanza y nadie pierde su aviso.
-
-**El cron responde 200 en todo lo que sea un fallo de la pasada** —la base no
-se pudo leer, el almacén no respondió, Resend falló— y **401 solo cuando la
-llamada no trae el `CRON_SECRET`**, que no es un fallo de la pasada sino una
-llamada que no iba autorizada. Por eso la ruta va envuelta en su propio
-`catch`: si `seleccionar()` o el cálculo de la fecha reventan, la respuesta
-sigue siendo 200 con `{ ok: false, motivo }` y no el 503 del `catch` general
-del handler, que dice «el registro de cuentas no está disponible» y no
-describe el fallo. La comparación del secreto es en **tiempo constante**
-(`timingSafeEqual`): con `!==` se mide.
-
-Y dos cosas que se pasarían por alto:
-
+- **La base legal del aviso era el art. 6.1.b, no el 6.1.a.** Era opt-out
+  (`cuentas.avisos` nacía `true`): pedir permiso para lo que ya es el
+  producto no es un consentimiento. `privacidad.html` volvió a su estado
+  anterior cuando el sistema se fue; si vuelve el aviso, vuelve esa regla.
+- **Se marcaba DESPUÉS de enviar, no antes.** La tabla `avisos` era el
+  registro de lo ya salido: si el envío fallaba, la fila no se escribía y la
+  pasada del día siguiente reintentaba. Marcar antes de enviar agendaría
+  avisos perdidos para siempre.
 - **PostgREST trunca a 1000 filas sin decir nada.** `max-rows` es 1000 por
-  defecto, así que una consulta que devuelve más sale recortada y sin error:
-  las cuentas que quedaban fuera **no recibían aviso**, y el registro de lo
-  enviado se quedaba corto, con lo que **el mismo aviso volvía cada día**.
-  Por eso `leerTabla()` pagina con la cabecera `Range` y lee hasta el
-  `Content-Range`.
-- **`hoyMadrid()` no puede depender del patrón regional.** `Intl…format` con
-  `en-CA` devuelve `AAAA-MM-DD` *si la configuración regional es esa*, y con
-  otra devuelve `10/20/2026`: el `split('-')` da `NaN` y la fecha reventaba.
-  Va con `formatToParts`, que devuelve las partes sueltas y no depende de cómo
-  las formatee la máquina.
-
-Las variables que necesita, en Vercel:
-
-```
-RESEND_API_KEY=   la clave de Resend (resend.com → API keys)
-CORREO_DE=        el remitente: "BecasScout <avisos@tu-dominio>"
-CRON_SECRET=      la contraseña que el cron exige en `authorization: Bearer …`
-```
-
-**El dominio del remitente tiene que estar verificado en Resend.** Sin eso,
-la API contesta 403 y solo se puede enviar al propio correo de la cuenta de
-Resend. Y `CRON_SECRET` se pone siempre: sin ella la ruta responde sin
-comprobar a nadie.
-
-`test/avisos.mjs` lo cubre entero contra un Supabase y un Resend de mentira:
-la ventana, el dedupe, que sin configuración no se marca nada, y que un fallo
-de Resend no consume el aviso. Y lo que **no** se comprueba aquí es que el
-correo llegue a una bandeja real: eso no se puede simular.
+  defecto: una consulta que devuelve más sale recortada y sin error. Toda
+  lectura de tabla entera tiene que paginar con la cabecera `Range` y leer
+  hasta el `Content-Range`.
 
 ## El momento de la búsqueda
 
@@ -652,9 +588,9 @@ node test/extract.mjs                                          # reglas de extra
 node test/filtro.mjs                                           # qué es una beca y qué no
 node test/ensamblar.mjs                                        # lo que llega al fichero
 node test/pais.mjs                                             # el filtro de destino
-node test/avisos.mjs                                           # los avisos de plazo
 node test/web.mjs                                              # lo que se ve en el navegador
 node test/idioma.mjs                                           # el cambio castellano/inglés
+node test/sin-avisos.mjs                                       # la retirada de los avisos se queda retirada
 npm run test:e2e                                               # todo el sitio, con Playwright
 ```
 
@@ -738,10 +674,17 @@ General» tampoco. Salen del BOE de verdad, no de la red.
 2026: **ni una ficha menos**. La caché no ahorra solo descargas, decide qué
 fichas existen, y un fallo ahí se ve como un número más en el log.
 
-`test/avisos.mjs` comprueba los avisos de plazo de punta a punta contra un
-Supabase y un Resend de mentira: la ventana de 7 días, el dedupe por
-(correo, beca), que sin configuración de envío no se marca nada, y que un
-fallo de Resend no consume el aviso.
+`test/sin-avisos.mjs` guarda la retirada de los avisos. Una retirada no acaba
+de morir borrando ficheros: lo que sobrevive en una esquina vuelve a colarse,
+y en silencio — una ruta viva responde 200, una clave muerta del diccionario
+no da error, un `cron` en `vercel.json` despliega un endpoint que ya no
+existe. La prueba levanta su propio servidor y vigila todas las puertas: las
+rutas retiradas contestan 404, `/api/yo` no trae la clave que ya nadie lee, el
+almacén no exporta sus funciones, el diccionario no conserva sus claves y la
+infraestructura no deja puerta abierta. Y la otra cara de la misma jornada: la
+etiqueta de Vercel Analytics tiene que seguir en las ocho páginas públicas y
+en la plantilla de `ingest/paginas.mjs` — llegó el mismo día que la retirada,
+y una regeneración de `erasmus-mundus.html` no puede perderla.
 
 Lo que **no** hay todavía es un test del **filtro** (`motivoDescarte` en
 `ingest/boe.mjs`). Hoy se comprueba a mano, mirando el log de la pasada y
@@ -888,6 +831,16 @@ de usarlo o deja de funcionar en silencio.
 de la portada no las calcula nadie: no hay build. Al tocar la portada o
 `sobre.html` hay que subir las dos, o el sitio se declara más viejo de lo que es.
 
+**Vercel Analytics lleva una etiqueta propia.** Desde el 29 de octubre de 2026
+las páginas públicas llevan `<script defer src="/_vercel/insights/script.js">` —
+mismo origen, así que la CSP no se toca. La plantilla de `ingest/paginas.mjs`
+también la lleva: si `erasmus-mundus.html` se regenera, sale sola. El interruptor
+para contar está en el panel de Vercel (Analytics → Enable), la CLI no lo tiene.
+Y las políticas se reescribieron el mismo día para seguir diciendo la verdad:
+la analítica es agregada y sin cookies, y «no hay analítica» ya no se dice en
+ningún sitio — la estadística de `cuenta.html` pasó a «0 cookies de rastreo»,
+que es lo que sigue siendo cero.
+
 ## Como configurar Supabase en Vercel
 
 El sitio puede funcionar sin Supabase (la portada y el buscador con cuentas
@@ -919,9 +872,10 @@ El pooler en modo sesión permite DDL y el historial de migraciones sin
 problemas. Y para comprobar una migración a mano, `psql` **no está
 instalado**: la CLI de Supabase lo hace con `supabase db query`.
 
-Las tres migraciones aplicadas hasta el 20 de octubre de 2026: `0001`
-(cuentas y sesiones), `0002` (la columna `origen` de la encuesta de llegada) y
-`0003` (la columna `avisos` y la tabla `avisos`).
+Las cuatro migraciones aplicadas hasta el 28 de octubre de 2026: `0001`
+(cuentas y sesiones), `0002` (la columna `origen` de la encuesta de llegada),
+`0003` (la columna `avisos` y la tabla `avisos`) y `0004` (las suelta: el
+sistema de avisos se retiró ese día).
 
 ## Lo que no se hace
 
@@ -942,9 +896,10 @@ Las tres migraciones aplicadas hasta el 20 de octubre de 2026: `0001`
 
 ## Tareas para la próxima sesión
 
-Estado a cierre del 20 de octubre de 2026: la web funciona, hay cuentas
-registradas, la base tiene 390 convocatorias reales y **los avisos de plazo
-ya están montados**. Lo que queda, en orden.
+Estado a cierre del 28 de octubre de 2026: la web funciona, hay cuentas
+registradas, la base tiene 390 convocatorias reales y **el sistema de avisos
+por correo se retiró** (ver «Los avisos de plazo (retirados)»). Lo que queda,
+en orden.
 
 ### 1. Las claves de Google — lo único que no se puede hacer desde el repo
 
@@ -981,22 +936,7 @@ Los pasos, que están en el panel y no en el repositorio:
 Sin el paso 3, el flujo muere en Google con un error que no dice que falta
 una URL. Ese es el fallo que más tiempo cuesta cuando aparece.
 
-### 2. Las claves de los avisos
-
-Lo que hace falta para que el correo salga de verdad, y que ya está escrito:
-
-```
-vercel env add RESEND_API_KEY   production   # la clave de resend.com
-vercel env add CORREO_DE        production   # BecasScout <avisos@tudominio>
-vercel env add CRON_SECRET      production   # una contraseña larga
-```
-
-Y una cosa que no es un clic: **el dominio del remitente tiene que estar
-verificado en Resend** (resend.com/domains, con sus registros de DNS). Sin
-eso la API contesta 403 y solo se puede enviar al correo de la propia cuenta
-de Resend —que sirve para probar, no para avisar a nadie—.
-
-### 3. Desplegar
+### 2. Desplegar
 
 Hay mucho pushed y nada en producción todavía. El orden es **commit → push →
 deploy**, y el commit tiene que estar en GitHub antes del despliegue: Vercel
@@ -1004,7 +944,7 @@ comprueba el autor contra el repositorio conectado y, si el commit solo
 existe en local, bloquea el despliegue con «the commit author doesn't have
 permission to create deployments for this project».
 
-### 4. La cobertura de la extracción
+### 3. La cobertura de la extracción
 
 Con reglas salen pocos requisitos de las Bases del BOE: el texto son
 20.000–50.000 caracteres de prosa jurídica y las expresiones regulares no
@@ -1014,7 +954,7 @@ a meter un modelo. Y cuando cambie una regla, **hay que subir
 texto, así que con el número viejo el fichero sale con una mezcla de dos
 versiones y no hay ningún error que lo delate.
 
-### 5. Lo que sigue abierto de la ingesta
+### 4. Lo que sigue abierto de la ingesta
 
 **Cobertura territorial.** De las fichas del BOE salen ministerios y ninguna
 de comunidades autónomas, provincias o ayuntamientos. **No es un fallo del

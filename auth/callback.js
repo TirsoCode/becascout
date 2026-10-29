@@ -12,7 +12,7 @@
  * vuelve son distintas, y la segunda no tiene el estado del formulario.
  *
  * Saltando aquí, se espera a que Supabase canjee el token, se registra la
- * cuenta en nuestro servidor para poder avisar de plazos, y se vuelve a donde
+ * cuenta en nuestro servidor, y se vuelve a donde
  * el usuario estaba. Si algo falla, el mensaje lo dice en vez de dejar una
  * pantalla en blanco.
  *

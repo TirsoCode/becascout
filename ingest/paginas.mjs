@@ -304,6 +304,7 @@ async function main() {
 <script type="application/ld+json">
 ${JSON.stringify(jsonld, null, 2)}
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 

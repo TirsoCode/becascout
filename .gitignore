@@ -22,11 +22,6 @@ data/usuarios.json
 data/usuarios.tmp.json
 data/sesiones.json
 data/sesiones.tmp.json
-# El registro de avisos enviados: correos de cuentas reales. No va al
-# repositorio, y tampoco al despliegue —para eso está .vercelignore, que
-# lleva la misma lista. La regla del 18 de octubre de 2026.
-data/avisos.json
-data/avisos.tmp.json
 *.log
 _t.html
 _m.html

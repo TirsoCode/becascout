@@ -66,6 +66,16 @@ createServer(async (req, res) => {
       return api(req, res);
     }
 
+    // La etiqueta de Vercel Analytics pide este fichero en todas las páginas.
+    // En producción lo sirve Vercel cuando Analytics está activado en el
+    // panel; aquí no existe y saldría un 404 en la consola de cada página,
+    // que las pruebas leen como un fallo y los desarrolladores como un
+    // misterio. El stub no cuenta nada: contar es cosa de producción.
+    if (url.pathname === '/_vercel/insights/script.js') {
+      res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
+      return res.end('/* stub local de Vercel Analytics; en producción sirve el real el panel */');
+    }
+
     let path = normalize(decodeURIComponent(url.pathname));
     if (path.includes('..')) throw new Error('traversal');
     if (path === '/' || path.endsWith('/')) path += 'index.html';

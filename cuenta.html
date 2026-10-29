@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crear cuenta — BecasScout</title>
-<meta name="description" content="Crea tu cuenta de BecasScout: un aviso cuando se acerque el plazo de una beca.">
+<meta name="description" content="Crea tu cuenta de BecasScout: el buscador entero de becas, con los requisitos y la cita literal de la que sale cada uno.">
 <meta name="theme-color" content="#12463A">
 <!-- Página utilitaria, como la de privacidad: el alta se abre en otra
      pestaña desde las puertas de la portada y del buscador, y lo que aquí
@@ -16,6 +16,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="lang.css">
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body class="body-cuenta">
 
@@ -47,7 +48,7 @@
 
     <dl class="auth-stats">
       <div><dt>0</dt><dd data-i18n="cuenta.stat1">requisitos sin cita</dd></div>
-      <div><dt>0</dt><dd data-i18n="cuenta.stat2">analítica y publicidad</dd></div>
+      <div><dt>0</dt><dd data-i18n="cuenta.stat2">cookies de rastreo</dd></div>
     </dl>
   </aside>
 
@@ -57,7 +58,7 @@
            idioma del momento (cambian entre crear y entrar), así que no llevan
            data-i18n ni texto final: lo que se ve aquí es el arranque. -->
       <h1 id="modal-t">Crea tu cuenta</h1>
-      <p id="modal-sub">Te avisamos cuando se acerque el plazo de una beca.</p>
+      <p id="modal-sub">El buscador entero de becas, con los requisitos y la cita literal de la que sale cada uno.</p>
       <div class="modal-msg"></div>
 
       <!-- El botón de Google lo añade js/cuenta.js solo si /api/config trae

@@ -35,7 +35,7 @@
  * Todo va en serie (una página a la vez), con `timeout` en todo, esperas
  * cortas entre páginas, cabecera identificativa y una sola cuenta efímera
  * por pasada con un correo del dominio `.test`, que se borra al final. Nada
- * más escribe en el sitio: ni el interruptor de avisos ni el botón de salir
+ * más escribe en el sitio: ni el botón de salir
  * se pulan, solo se leen.
  */
 
@@ -84,7 +84,9 @@ const NVIDIA = {
   // y contesta con `content` limpio (el razonamiento va en otro campo). Si
   // mañana el id rota, el catálogo dirá cuál hay y la lista de preferencia
   // sigue mandando: todo `minimaxai/` delante del resto.
-  preferidas: ['minimaxai/minimax'],
+  // Deepseek de segundo: id verificado vivo y disponible para esta cuenta —
+  // los nemotron que el listado trae contestan 404 «Not found for account».
+  preferidas: ['minimaxai/minimax', 'deepseek-ai/deepseek-v'],
   // Familias de chat conocidas del catálogo de NVIDIA, por si MiniMax desaparece.
   // Ids completos y verificados hoy (el listado los trae); si mañana alguno
   // rota, la pasada siguiente lo verá en el log y el relevo manda igual.
@@ -484,20 +486,25 @@ async function flujoCuenta(contexto) {
         await alta.close().catch(() => {});
         dentro = await altaEphemeral(contexto);
         if (!dentro) return resumen;
-        resumen.correo = await dentro.evaluate(() => window.__auditorCorreo || '').catch(() => '');
+        resumen.correo = await dentro.evaluate(() => sessionStorage.getItem('bs.auditor.correo') || '').catch(() => '');
         resumen.creado = true;
       }
     } else {
       dentro = await altaEphemeral(contexto);
       if (!dentro) return resumen;
-      resumen.correo = await dentro.evaluate(() => window.__auditorCorreo || '').catch(() => '');
+      resumen.correo = await dentro.evaluate(() => sessionStorage.getItem('bs.auditor.correo') || '').catch(() => '');
       resumen.creado = true;
     }
 
     const rutaLlegada = new URL(dentro.url()).pathname;
-    const sesion = await dentro.evaluate(() => !!document.querySelector('.session')).catch(() => false);
+    // Espera activa, no mirada instantánea: en producción la función de Vercel
+    // arranca en frío y la primera /api/yo puede tardar varios segundos. La
+    // pasada de estreno miró una vez, no vio la sesión y gritó CRÍTICO de una
+    // web que estaba bien — el mismo fallo que la espera fija de las fichas.
+    const sesion = await dentro.waitForFunction(() => !!document.querySelector('.session'), null, { timeout: 20000 })
+      .then(() => true).catch(() => false);
     anotarSi(!sesion, rutaLlegada === '/' ? '/' : rutaLlegada, 'cuenta', 'CRITICO',
-      'la cabecera no pinta la sesión tras crear/entrar en la cuenta');
+      'la cabecera no pinta la sesión en 20s tras crear/entrar en la cuenta');
     if (!sesion) return resumen;
     resumen.sesion = true;
 
@@ -517,14 +524,13 @@ async function flujoCuenta(contexto) {
       await dentro.waitForFunction(() => !!document.querySelector('#ajs-t'), null, { timeout: 10000 });
       const ajustes = await dentro.evaluate(() => ({
         titulo: document.querySelector('#ajs-t')?.textContent?.trim() ?? '',
-        avisos: document.querySelector('#ajs-avisos')?.getAttribute('aria-checked') ?? null,
         salir: !!document.querySelector('#ajs-salir'),
       }));
       metrica('ajustes', ajustes);
       if (!ajustes.titulo) anotar('/', 'cuenta', 'MENOR', 'los ajustes no enseñan título (#ajs-t vacío)');
       if (!ajustes.salir) anotar('/', 'cuenta', 'MENOR', 'los ajustes no traen el botón de salir (#ajs-salir)');
-      // Ni el interruptor de avisos ni el salir se pulan: el auditor no cambia
-      // nada del que ve. Recargar los cierra sin tocar nada.
+      // Ni el salir se pula: el auditor no cambia nada del que ve. Recargar
+      // los cierra sin tocar nada.
       await dentro.reload({ waitUntil: 'domcontentloaded' });
       await dormir(1200);
     } catch (e) {
@@ -607,7 +613,12 @@ async function altaEphemeral(contexto) {
   try {
     await alta.goto(`${BASE}/cuenta.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await dormir(800);
-    await alta.evaluate((c) => { window.__auditorCorreo = c; }, correo);
+    // El correo viaja en sessionStorage: el alta navega a la página de llegada
+    // con `location.replace` y un documento nuevo se lleva por delante toda
+    // propiedad de `window`. En la primera pasada real el correo llegaba vacío
+    // a la limpieza, `borrarCuenta` se marchaba en silencio y la cuenta efímera
+    // quedaba huérfana en la base — sin ningún error que lo dijera.
+    await alta.evaluate((c) => sessionStorage.setItem('bs.auditor.correo', c), correo);
 
     await alta.locator('#f-correo').fill(correo);
     await alta.locator('#f-pass').fill(clave);
@@ -707,6 +718,11 @@ async function borrarCuenta(contexto, correo) {
   if (!correo || !correo.includes('@bs-auditor.test')) return;
   const p = await contexto.newPage();
   try {
+    // La página nueva nace en about:blank y un `fetch('/api/…')` relativo
+    // desde ahí no tiene URL base que resolver: falló en la verificación con
+    // «Failed to parse URL» y la cuenta se quedaba en la base. Primero se
+    // entra en el sitio y el fetch ya es same-origin.
+    await p.goto(`${BASE}/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
     const estado = await p.evaluate(async (c) => {
       const r = await fetch('/api/cuenta', {
         method: 'DELETE',
@@ -988,7 +1004,12 @@ async function pedirIA(paquete) {
 async function llamarNvidia(prompt, modelo) {
   const resp = await fetch(`${NVIDIA.url}/chat/completions`, {
     method: 'POST',
-    signal: AbortSignal.timeout(240000),
+    // 420s y no menos: con el paquete entero (~35k tokens de entrada y hasta
+    // 8.000 de salida con razonamiento) MiniMax tarda minutos. La pasada de
+    // estreno llevaba 240s y la llamada murió a los 4 minutos con el modelo
+    // todavía pensando — 37s midió con 23k tokens y salida corta, pero el
+    // informe completo pide mucho más aire.
+    signal: AbortSignal.timeout(420000),
     headers: {
       authorization: `Bearer ${NVIDIA.key}`,
       'content-type': 'application/json',
@@ -1064,7 +1085,7 @@ function informeSinIA(datos) {
   const linea = (h) => `- **${h.gravedad}** \`${h.pagina}\` — ${h.tipo}: ${h.descripcion}${h.evidencia ? `\n  Evidencia: ${h.evidencia}` : ''}`;
 
   return `# Auditoría BecasScout — ${fecha}
-> Informe determinista: la IA no respondió (ninguno de los dos proveedores),
+> Informe determinista: la IA no respondió (ningún proveedor de la cadena),
 > pero los datos están en \`reports/raw-*.json\` para pasarlos a mano.
 
 ## Estado general

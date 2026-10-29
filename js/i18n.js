@@ -187,7 +187,7 @@ const DICC = {
   },
   'inicio.faq.q3': { en: 'How much does BecasScout cost?' },
   'inicio.faq.a3': {
-    en: 'Nothing. We take no commission and we don’t handle the application. Creating an account is free and does one thing: it lets us warn you when a deadline is close.',
+    en: 'Nothing. We take no commission and we don’t handle the application. Creating an account is free and opens the full search: every call with its requirements and the literal quote each one comes from.',
   },
   'inicio.faq.q4': { en: 'Do you need my average grade?' },
   'inicio.faq.a4': {
@@ -264,13 +264,13 @@ const DICC = {
   /* ── Privacidad ──────────────────────────────────────────────────────
      Traducción fiel. No se suaviza ni una obligación: los artículos, los
      plazos y las bases legales van tal cual, solo en inglés. */
-  'priv.meta': { en: 'Last updated: 20 October 2026 · Version 1.2' },
+  'priv.meta': { en: 'Last updated: 29 October 2026 · Version 1.3' },
   'priv.h1': { en: 'Privacy policy' },
   'priv.lede': {
     en: 'This policy explains what data BecasScout stores, why, for how long, and how to get it deleted. It is written to be read, not to cover us.',
   },
   'priv.corto': {
-    en: '<strong>In short:</strong> we keep your email and a session so the site works, and — only if you choose to answer it — the reply to one question we ask once: how you found us. Your average grade, age and destination <strong>stay in your browser and never leave your device</strong>. There is no analytics, no advertising, no profiling, and we sell nothing to anyone.',
+    en: '<strong>In short:</strong> we keep your email and a session so the site works, and — only if you choose to answer it — the reply to one question we ask once: how you found us. Your average grade, age and destination <strong>stay in your browser and never leave your device</strong>. There is no advertising, no profiling, no cross-site tracking, and we sell nothing to anyone. Page views are counted in aggregate, without cookies (Vercel Analytics): it does not know who you are.',
   },
   'priv.quien.h2': { en: '1. Who is responsible' },
   'priv.quien.p1': {
@@ -314,11 +314,6 @@ const DICC = {
   'priv.base.f1c': {
     en: 'Art. 6(1)(b) GDPR — performance of the contract you enter into when you create the account',
   },
-  'priv.base.f2a': { en: 'Warning you that an application deadline is close' },
-  'priv.base.f2b': { en: 'Email' },
-  'priv.base.f2c': {
-    en: 'Art. 6(1)(b) GDPR — performance of the contract you enter into when you create the account (deadline alerts are the reason the account exists). You can switch them off in your account, and deleting the account ends them for good.',
-  },
   'priv.base.f3a': { en: 'Service security and error diagnosis' },
   'priv.base.f3b': { en: 'Connection log' },
   'priv.base.f3c': {
@@ -335,9 +330,6 @@ const DICC = {
   'priv.base.f5b': { en: 'Grade, age, level, destination' },
   'priv.base.f5c': {
     en: 'No legal basis because <strong>we do not process it</strong>: it runs in your browser',
-  },
-  'priv.base.p': {
-    en: 'Deadline alerts cover the calls <strong>in our database</strong>, nothing outside it: the ones published on BecasScout, with their closing date and the link to the official call, which is where the application is filed. The email is used only for that. There is no advertising, no tracking and no mailing list belonging to anyone else. You can switch alerts off in your account, and deleting the account also deletes the record of what you were told about.',
   },
   'priv.google.h2': { en: '4. Google as a third party' },
   'priv.google.p1': {
@@ -356,9 +348,9 @@ const DICC = {
     en: 'When you open that window, Google may set its own cookies, which are theirs and not ours: they are described in their <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">cookie policy</a>.',
   },
   'priv.terceros.h2': { en: '5. Other third parties' },
-  'priv.terceros.p': { en: 'There are no others. Specifically:' },
+  'priv.terceros.p': { en: 'Beyond Google (section 4) and Vercel, which hosts the site and counts page views in aggregate, there are no other third parties. Specifically:' },
   'priv.terceros.li1': {
-    en: '<strong>No analytics.</strong> No Google Analytics, no Plausible, nothing that measures where you go.',
+    en: '<strong>Analytics is minimal.</strong> Vercel Analytics counts page views: no cookies, no personal data, no cross-site tracking. No Google Analytics, no Plausible, nothing that profiles you.',
   },
   'priv.terceros.li2': { en: '<strong>No advertising</strong> and no ad networks.' },
   'priv.terceros.li3': {
@@ -431,10 +423,10 @@ const DICC = {
   },
 
   /* ── Cookies ─────────────────────────────────────────────────────────── */
-  'cook.meta': { en: 'Last updated: 18 October 2026 · Version 1.1' },
+  'cook.meta': { en: 'Last updated: 29 October 2026 · Version 1.2' },
   'cook.h1': { en: 'Cookie policy' },
   'cook.lede': {
-    en: 'We use <strong>one</strong> cookie. The minimum needed to know who you are. No analytics, no advertising, no tracking.',
+    en: 'We use <strong>one</strong> cookie. The minimum needed to know who you are. No tracking cookies, no advertising, no cross-site tracking.',
   },
   'cook.resumen': {
     en: '<strong>Summary:</strong> if you do not sign in, no cookie is stored in your browser. The only one is created when you register, and it disappears after 30 days or when you sign out.',
@@ -506,7 +498,7 @@ const DICC = {
   /* ── Configuración de Supabase ───────────────────────────────────────── */
   'cfg.h1': { en: 'Supabase is not configured' },
   'cfg.corto': {
-    en: 'The site works without Supabase: the landing page and the search load. What is not saved is the email-and-password account. That is why you are seeing this note. For registration, sessions and alerts to work, three keys have to be set in Vercel (see <a href="https://vercel.com/docs/environment-variables" style="color:inherit;text-decoration:underline">Environment Variables</a>):',
+    en: 'The site works without Supabase: the landing page and the search load. What is not saved is the email-and-password account. That is why you are seeing this note. For registration and sessions to work, three keys have to be set in Vercel (see <a href="https://vercel.com/docs/environment-variables" style="color:inherit;text-decoration:underline">Environment Variables</a>):',
   },
   'cfg.donde': {
     en: 'They go in <code>vercel.com</code> → <em>Your project</em> → <em>Environment variables</em> → <em>Add</em>.',
@@ -534,12 +526,12 @@ const DICC = {
     en: 'Nothing is shown without the fragment behind it. What the call doesn’t say, we don’t know.',
   },
   'cuenta.stat1': { es: 'requisitos sin cita', en: 'requirements without a quote' },
-  'cuenta.stat2': { es: 'analítica y publicidad', en: 'analytics and ads' },
+  'cuenta.stat2': { es: 'cookies de rastreo', en: 'tracking cookies' },
   'cuenta.titulo.registro': { es: 'Crea tu cuenta', en: 'Create your account' },
   'cuenta.titulo.login': { es: 'Inicia sesión', en: 'Sign in' },
   'cuenta.sub.registro': {
-    es: 'Te avisamos cuando se acerque el plazo de una beca.',
-    en: 'We tell you when a scholarship deadline is close.',
+    es: 'El buscador entero de becas, con los requisitos y la cita literal de la que sale cada uno.',
+    en: 'The full scholarship search, with requirements and the literal quote behind each one.',
   },
   'cuenta.sub.login': {
     es: 'Entra con tu correo y tu contraseña.',
@@ -601,25 +593,12 @@ const DICC = {
   },
   'cuenta.origen.amigo': { es: 'Un amigo', en: 'A friend' },
   'cuenta.ajustes.t': { es: 'Tu cuenta', en: 'Your account' },
-  'cuenta.avisos.t': { es: 'Avisos de plazo', en: 'Deadline alerts' },
-  'cuenta.avisos.p': {
-    es: 'Un correo cuando una convocatoria de la lista cierra en los próximos 7 días. Se apaga aquí.',
-    en: 'One email when a listed call closes in the next 7 days. Switch it off here.',
-  },
   'cuenta.ajustes.salir': { es: 'Cerrar sesión', en: 'Sign out' },
   'cuenta.ajustes.borrar': { es: 'Eliminar la cuenta', en: 'Delete account' },
-  'cuenta.ajustes.caducada': {
-    es: 'Tu sesión ha caducado. Entra otra vez para cambiar los avisos.',
-    en: 'Your session expired. Sign in again to change alerts.',
-  },
-  'cuenta.avisos.error': {
-    es: 'Los avisos no se han podido cambiar ahora mismo.',
-    en: 'Alerts couldn’t be changed right now.',
-  },
   'cuenta.borrar.h': { es: 'Eliminar la cuenta', en: 'Delete account' },
   'cuenta.borrar.p': {
-    es: 'Se borra la cuenta, la sesión y los avisos. No hay vuelta atrás. Para confirmar, escribe tu correo.',
-    en: 'This deletes the account, the session and alerts. There is no undo. To confirm, type your email.',
+    es: 'Se borra la cuenta y la sesión. No hay vuelta atrás. Para confirmar, escribe tu correo.',
+    en: 'This deletes the account and the session. There is no undo. To confirm, type your email.',
   },
   'cuenta.borrar.lab': { es: 'Tu correo', en: 'Your email' },
   'cuenta.borrar.ph': {

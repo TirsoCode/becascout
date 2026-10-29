@@ -117,4 +117,4 @@ jobs:
             echo "Último informe: \`$ULTIMO\`" >> $GITHUB_STEP_SUMMARY
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Con fallback: OpenRouter -> Google AI Studio" >> $GITHUB_STEP_SUMMARY
+          echo "Cadena de IA: NVIDIA (MiniMax) → OpenRouter → Google AI Studio → informe determinista" >> $GITHUB_STEP_SUMMARY

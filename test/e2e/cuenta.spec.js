@@ -138,27 +138,15 @@ test('un ?desde que no existe cae al buscador', async ({ page }) => {
   expect(new URL(page.url()).pathname).toBe('/becas.html');
 });
 
-test('los ajustes abren, avisan y cierran la sesión', async ({ page }) => {
+test('los ajustes abren y cierran la sesión', async ({ page }) => {
   await irA(page, '/');
   const pestaña = await abrirAlta(page);
   await alta(pestaña, `ajustes${Date.now()}@ejemplo.es`);
 
-  // Los ajustes: el interruptor de avisos y el botón de salir.
+  // Los ajustes: el título y el botón de salir.
   await pestaña.locator('.session-perfil').click();
   await expect(pestaña.locator('#ajs-t')).toBeVisible();
-  await expect(pestaña.locator('#ajs-avisos')).toBeVisible();
   await expect(pestaña.locator('#ajs-salir')).toBeVisible();
-
-  // El interruptor de avisos es un `role="switch"` con el estado en
-  // `aria-checked`, no una casilla: mirar `e.checked` era mirar un
-  // atributo que el interruptor no tiene.
-  const antes = await pestaña.locator('#ajs-avisos').getAttribute('aria-checked');
-  await pestaña.locator('#ajs-avisos').click();
-  // La pintada es inmediata y la corrección —la del servidor— la remata;
-  // las dos dicen lo mismo si la petición fue bien.
-  const esperado = antes === 'true' ? 'false' : 'true';
-  await expect(pestaña.locator('#ajs-avisos'))
-    .toHaveAttribute('aria-checked', esperado, { timeout: 15_000 });
 
   // Salir deja la cabecera como estaba — y devuelve las puertas (en la
   // portada hay dos, la de arriba y la del héroe).
