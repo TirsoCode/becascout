@@ -944,6 +944,14 @@ comprueba el autor contra el repositorio conectado y, si el commit solo
 existe en local, bloquea el despliegue con «the commit author doesn't have
 permission to create deployments for this project».
 
+**Y `privacidad.html` sigue sin los datos completos del responsable.** La nota
+editorial que lo recordaba —«antes de publicar esto hay que sustituir el
+nombre y el correo…»— se quedó visible en producción hasta el 29 de octubre
+de 2026, que es cuando se quitó de la página pública. El hueco que apuntaba
+sigue ahí: el art. 13 del RGPD exige identificación fiscal y domicilio, y la
+política solo lleva «BecasScout» y `privacidad@becascout.com`. Es un trámite
+del dueño, no del código.
+
 ### 3. La cobertura de la extracción
 
 Con reglas salen pocos requisitos de las Bases del BOE: el texto son

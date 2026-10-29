@@ -279,9 +279,6 @@ const DICC = {
   'priv.quien.p2': {
     en: 'Data controller: <strong>BecasScout</strong><br>Contact for exercising your rights: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>',
   },
-  'priv.quien.nota': {
-    en: 'Note for the site owner: before publishing this, replace the name and email with the real details, and add the tax ID and address required by Article 13 GDPR. A legal notice that identifies nobody does not meet the article.',
-  },
   'priv.datos.h2': { en: '2. What data we process' },
   'priv.datos.h3a': { en: '2.1 Account data' },
   'priv.datos.li1': {
