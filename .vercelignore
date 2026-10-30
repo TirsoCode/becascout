@@ -35,6 +35,25 @@ data/usuarios.tmp.json
 data/sesiones.json
 data/sesiones.tmp.json
 
+# La base completa, con los requisitos y la cita literal de cada uno, deja de
+# servirse por URL el 30 de octubre de 2026. Hasta ese día cualquiera la
+# descargaba con un `curl` sin cuenta, y con ella el producto que la puerta
+# dice reservar. Lo que se sirve es `data/becas-catalogo.json`, que tiene
+# títulos, plazos, importes y destinos —lo que se ve a través del velo— y
+# ningún requisito.
+#
+# `data/becas.json` es un **enlace** al fichero de verdad, que vive en
+# `api/_becas.json`. Allí no se sirve como estático —la build lo mete en el
+# paquete de la función, que es lo que `/api/becas` necesita— y aquí queda
+# fuera del sitio. La ruta de siempre (`data/becas.json`) se mantiene para la
+# ingesta y las pruebas, pero escribir en ella escribe en el fichero real.
+#
+# La alternativa —dos copias del mismo JSON— se desincroniza el día que una
+# pasada falla a medias. Y `includeFiles` no vale: `.vercelignore` quita el
+# fichero antes de que el empaquetador lo vea, y la función se despliega sin
+# datos.
+data/becas.json
+
 # Las pruebas corren en local; no hay motivo para servirlas.
 test/
 

@@ -78,6 +78,15 @@ createServer(async (req, res) => {
 
     let path = normalize(decodeURIComponent(url.pathname));
     if (path.includes('..')) throw new Error('traversal');
+
+    // En producción la base completa no se sirve: vive dentro de la función
+    // y solo la da `/api/becas` con sesión. En desarrollo el fichero está en
+    // el disco, así que sin esta puerta `node serve.mjs` mentiría: la web
+    // parecería segura y un `curl` local seguiría llevándose los requisitos.
+    // Se cierra aquí para que el entorno de las pruebas y el de producción
+    // digan lo mismo. Lo que se sirve es el catálogo.
+    if (path === '/data/becas.json') throw new Error('privado');
+
     if (path === '/' || path.endsWith('/')) path += 'index.html';
 
     const file = join(ROOT, path);

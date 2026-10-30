@@ -1,17 +1,72 @@
 /**
- * supabase-client.js — Carga el cliente de Supabase desde CDN, sin build.
+ * supabase-client.js — Carga el cliente de Supabase desde el propio sitio.
  *
- * El proyecto no tiene paso de compilación a propósito: son ficheros estáticos
- * que se suben tal cual a cualquier hosting. Eso obliga a cargar la librería
- * de Supabase en tiempo de ejecución en vez de importarla, pero tiene una
- * ventaja: si el CDN falla o el usuario bloquea third-parties, el sitio sigue
- * funcionando entero salvo el botón de Google. Un fallo de red de un tercero no
- * puede dejar la web en blanco.
+ * ── Por qué ya no viene de un CDN ────────────────────────────────────────
+ *
+ * Hasta el 30 de octubre de 2026 esto hacía
+ * `import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')`.
+ * Tres problemas en una línea:
+ *
+ *   1. `@2` es una etiqueta flotante: el código que se ejecuta hoy no es
+ *      necesariamente el de ayer. Un tercero puede cambiar lo que corre en
+ *      tu página sin que tú despliegues nada. La auditoría lo señaló.
+ *   2. La CSP tenía que abrir `script-src` y `connect-src` a
+ *      `cdn.jsdelivr.net` y a `*.supabase.co`, y cada origen abierto es una
+ *      puerta más.
+ *   3. Si el CDN falla o el usuario bloquea terceros, el botón de Google
+ *      deja de funcionar sin explicación.
+ *
+ * La librería va vendorizada en `js/vendor/supabase.js` (build UMD oficial de
+ * `@supabase/supabase-js@2.118.0`, 218 KB). Se carga con un `<script>` del
+ * mismo origen, así que la CSP puede quedarse en `script-src 'self'`. Sigue
+ * sin haber build: es un fichero estático más.
+ *
+ * ── Cómo se actualiza ────────────────────────────────────────────────────
+ *
+ *   curl -sL https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js \
+ *     -o js/vendor/supabase.js
+ *
+ * y se cambia la versión de arriba **a mano**. No se usa `@2` ni `latest`: la
+ * versión que corre en producción tiene que ser una que alguien eligió.
+ *
+ * El resto del módulo no cambia: sigue devolviendo una promesa que puede ser
+ * `null`, y el proxy de abajo mantiene la misma interfaz para que
+ * `supabase.js` no se entere de dónde viene la librería.
  */
 
-const CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const RUTA = new URL('./vendor/supabase.js', import.meta.url).href;
 
-let promesa = null;
+let carga = null;
+
+/**
+ * Mete el `<script>` una sola vez y resuelve con `window.supabase`.
+ *
+ * No usa `import()` porque el build UMD no es un módulo ES. Si ya está en la
+ * página —dos llamadas seguidas— se reutiliza la misma promesa.
+ */
+function cargarLibreria() {
+  if (globalThis.supabase?.createClient) return Promise.resolve(globalThis.supabase);
+
+  if (!carga) {
+    carga = new Promise((ok, mal) => {
+      const s = document.createElement('script');
+      s.src = RUTA;
+      s.async = true;
+      s.onload = () => {
+        if (globalThis.supabase?.createClient) ok(globalThis.supabase);
+        else mal(new Error('la librería no expuso createClient'));
+      };
+      s.onerror = () => mal(new Error('no se pudo cargar la librería'));
+      document.head.append(s);
+    }).catch((err) => {
+      // Si falló, que la siguiente llamada lo vuelva a intentar: puede haber
+      // sido un corte de red puntual, no una librería que no existe.
+      carga = null;
+      throw err;
+    });
+  }
+  return carga;
+}
 
 /**
  * Devuelve la promesa del cliente de Supabase, o null si no se pudo cargar.
@@ -20,26 +75,23 @@ let promesa = null;
 export function crear(url, anon) {
   if (!url || !anon) return null;
 
-  if (!promesa) {
-    promesa = import(/* @vite-ignore */ CDN)
-      .then((m) => m.createClient(url, anon, {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          // El token va en localStorage. La sesión de nuestro servidor, que
-          // es la que protege el contenido, va aparte en una cookie httpOnly.
-          storage: localStorage,
-        },
-      }))
-      .catch(() => null);
-  }
-  return promesa;
+  return cargarLibreria()
+    .then((lib) => lib.createClient(url, anon, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        // El token va en localStorage. La sesión de nuestro servidor, que
+        // es la que protege el contenido, va aparte en una cookie httpOnly.
+        storage: localStorage,
+      },
+    }))
+    .catch(() => null);
 }
 
 /**
  * Envoltorio perezoso: cada propiedad y cada llamada se encadena sobre la
  * misma promesa, así que quien llama puede escribir `cliente.auth.getUser()`
- * sin esperar a que el módulo del CDN esté descargado.
+ * sin esperar a que la librería esté descargada.
  *
  * ── Por qué esto es un `Proxy` y no algo más simple ──────────────────────
  *
@@ -50,10 +102,10 @@ export function crear(url, anon) {
  * función, y reventaba dentro del `.then`. El resultado era un `TypeError` en
  * cada llamada de Supabase, y `cliente.auth` valía `undefined`.
  *
- * Como la librería vive detrás de un `import()` dinámico, no se puede importar
- * arriba del todo; de ahí el proxy. Lo que hace falta es que `get` devuelva
- * **la propiedad**, seguida por otro proxy que espera lo mismo, y que la
- * invocación final se reenvíe a la función cuando exista.
+ * Como la librería se carga después, no se puede importar arriba del todo; de
+ * ahí el proxy. Lo que hace falta es que `get` devuelva **la propiedad**,
+ * seguida por otro proxy que espera lo mismo, y que la invocación final se
+ * reenvíe a la función cuando exista.
  *
  * Con `prop === null` se está en la raíz: el valor es el cliente entero.
  */
@@ -95,6 +147,7 @@ function envolver(obtener, prop) {
 
 /** Atajo con nombre corto, que es como lo llama supabase.js. */
 export function createClient(url, anon) {
+  let promesa = null;
   return envolver(() => {
     if (!promesa) {
       const p = crear(url, anon);

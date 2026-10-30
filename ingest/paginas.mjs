@@ -29,6 +29,7 @@
  */
 
 import { readFile, writeFile } from 'node:fs/promises';
+import { pathToFileURL } from 'node:url';
 import { refrescarBase } from './erasmus.mjs';
 
 const RAIZ = new URL('..', import.meta.url);
@@ -71,24 +72,6 @@ function fechaCorta(iso) {
  */
 function euros(n) {
   return Number(n).toLocaleString('es-ES');
-}
-
-/**
- * El valor de un requisito tal y como va al feed. El presupuesto es un número
- * de las reglas y salía tal cual —«Presupuesto de la convocatoria: 49552000»—,
- * una cifra ilegible. La página ya lo pinta con `euros()`; el feed hace lo
- * mismo y le añade el símbolo. Los demás valores se quedan como están: el
- * «Duración máxima de la beca: 24» son meses y NO lleva euros.
- *
- * El `typeof` no es paranoia: `euros()` sobre un valor que no es número imprime
- * «NaN» y ahí no se aparece el error — silencio, en vez de cifra. Si el
- * extractor algún día manda el presupuesto como texto, mejor que llegue tal
- * cual que un «NaN €» con apariencia de dato.
- */
-function valorRequisito(r) {
-  return r.tipo === 'presupuesto' && typeof r.valor === 'number'
-    ? `${euros(r.valor)} €`
-    : r.valor;
 }
 
 /**
@@ -555,16 +538,19 @@ async function feed(todas, emjm, importe, duracion, ects, plazo, generado) {
   const items = [];
 
   // Las del BOE, con la fecha de publicación del anuncio.
+  //
+  // El feed **no** lleva los requisitos ni sus citas. Hasta el 30 de octubre
+  // de 2026 los llevaba, y era la misma fuga que `data/becas.json`: un RSS
+  // público servía el producto que la puerta dice reservar. Un feed se lee
+  // sin cuenta por definición, así que aquí solo va lo que ya es público en
+  // el catálogo —quién convoca, cuándo cierra y el enlace al documento— y una
+  // frase que dice dónde están los requisitos.
   for (const b of todas.filter((x) => x.fuente !== 'erasmus-mundus')) {
-    const reqs = b.requisitos ?? [];
     const desc = [
       b.organizador ? `Convoca: ${b.organizador}.` : '',
-      reqs.length
-        ? `Requisitos: ${reqs.map((r) => `${r.etiqueta}: ${valorRequisito(r)}`).join(' · ')}.`
-        : 'De esta convocatoria todavía no hemos podido extraer los requisitos.',
       b.cierra ? `Cierra el ${b.cierra}.` : '',
       b.url ? `Documento oficial: ${b.url}` : '',
-      reqs.length ? `Cita: «${reqs[0].cita}»` : '',
+      'Los requisitos, con su cita literal, se ven en la web con cuenta.',
     ].filter(Boolean).join(' ');
 
     items.push(`    <item>
@@ -606,7 +592,7 @@ async function feed(todas, emjm, importe, duracion, ects, plazo, generado) {
   <channel>
     <title>BecasScout — convocatorias</title>
     <link>${BASE}/</link>
-    <description>Becas leídas de la convocatoria oficial, con el requisito y su cita.</description>
+    <description>Becas leídas de la convocatoria oficial: quién convoca, cuándo cierra y el enlace al documento.</description>
     <language>es</language>
     <lastBuildDate>${rssFecha(generado)}</lastBuildDate>
     <atom:link href="${BASE}/feed.xml" rel="self" type="application/rss+xml"/>
@@ -616,4 +602,47 @@ ${items.join('\n')}
 `;
 }
 
-await main();
+/**
+ * Regenera **solo** el feed, sin tocar las páginas y sin red.
+ *
+ * La pasada completa comprueba los hechos de Erasmus Mundus contra las
+ * páginas oficiales antes de escribir nada, y para cambiar una frase del RSS
+ * no hace falta eso. Este modo lee `data/becas.json`, que ya tiene los hechos
+ * verificados de la última pasada, y escribe `feed.xml`.
+ *
+ *   node ingest/paginas.mjs --solo-feed
+ */
+export async function regenerarFeed() {
+  const datos = JSON.parse(await readFile(RUTA_DATOS, 'utf8'));
+  const todas = datos.becas ?? [];
+  const emjm = todas.filter((b) => b.fuente === 'erasmus-mundus');
+  const ref = emjm[0];
+  if (!ref) throw new Error('no hay programas de Erasmus Mundus en data/becas.json');
+
+  const importe = req(ref, 'importe');
+  if (!importe?.cita) throw new Error('el importe de Erasmus Mundus no viene con cita');
+
+  const xml = await feed(
+    todas,
+    emjm,
+    importe,
+    req(ref, 'duracion_max'),
+    req(ref, 'ects'),
+    req(ref, 'plazo'),
+    datos.generado ?? new Date().toISOString(),
+  );
+  await writeFile(new URL('feed.xml', RAIZ), xml, 'utf8');
+  return (xml.match(/<item>/g) ?? []).length;
+}
+
+// Solo se ejecuta al llamarlo como programa, no al importarlo desde una
+// prueba. Antes el `await main()` estaba suelto y cualquier `import` de este
+// módulo regeneraba la web entera y salía a la red.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes('--solo-feed')) {
+    const n = await regenerarFeed();
+    console.log(`  feed.xml · ${n} items (sin requisitos ni citas)`);
+  } else {
+    await main();
+  }
+}

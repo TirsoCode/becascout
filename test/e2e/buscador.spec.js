@@ -17,6 +17,22 @@ async function cargarBuscador(page) {
   await expect(page.locator('.beca').first()).toBeVisible({ timeout: 30_000 });
 }
 
+/**
+ * Crea una cuenta de prueba y deja la cookie en el contexto del navegador.
+ *
+ * Desde el 30 de octubre de 2026 los requisitos no viajan sin sesión: viven
+ * en `/api/becas`, y el catálogo público solo trae títulos, plazos e importes.
+ * Para mirar una ficha entera hay que entrar como entraría una persona.
+ */
+async function entrar(page) {
+  const correo = `e2e-${Date.now()}-${Math.round(Math.random() * 1e6)}@ejemplo.com`;
+  const r = await page.request.post('/api/registro', {
+    data: { correo, password: 'contrasena-de-prueba' },
+  });
+  expect(r.status(), await r.text()).toBe(201);
+  return correo;
+}
+
 test('el buscador pinta las fichas y el velo', async ({ page }) => {
   const errores = vigilarErrores(page);
   await cargarBuscador(page);
@@ -42,12 +58,23 @@ test('el buscador pinta las fichas y el velo', async ({ page }) => {
   });
   expect(velo, 'no hay velo sobre las fichas').toContain('blur');
 
-  // Y que el texto se puede leer en el DOM: el bloqueo no es un permiso.
+  // Lo que se puede leer en el DOM es el catálogo: título, organizador,
+  // plazo. Los requisitos y sus citas NO, desde el 30 de octubre de 2026: eso
+  // es lo que la cuenta abre y no puede viajar en un fichero público.
   const hayTexto = await page.evaluate(() => {
     const t = document.querySelector('.lock');
     return t ? t.textContent.trim().length : 0;
   });
-  expect(hayTexto, 'las fichas no están en el DOM: el bloqueo es de permiso, y no debe serlo').toBeGreaterThan(40);
+  expect(hayTexto, 'las fichas del catálogo no están en el DOM').toBeGreaterThan(40);
+  expect(await page.locator('.req-src').count(), 'una cita se ha colado sin sesión').toBe(0);
+
+  const catalogo = await page.request.get('/data/becas-catalogo.json');
+  expect(catalogo.ok(), 'el catálogo público no se sirve').toBe(true);
+  const publico = await catalogo.json();
+  expect(
+    publico.becas.some((b) => (b.requisitos ?? []).length),
+    'el catálogo público lleva requisitos',
+  ).toBe(false);
 
   // Y la barra que pide la cuenta, abajo y fuera de la lista.
   await expect(page.locator('#cartel-acceso')).toBeVisible();
@@ -152,7 +179,8 @@ test('el filtro de destino aparta las becas que no son de ese país', async ({ p
   }
 });
 
-test('la ficha enseña los requisitos con su cita', async ({ page }) => {
+test('con cuenta, la ficha enseña los requisitos con su cita', async ({ page }) => {
+  const correo = await entrar(page);
   await cargarBuscador(page);
 
   // La primera ficha con requisitos: cada requisito lleva su cita.
@@ -175,4 +203,7 @@ test('la ficha enseña los requisitos con su cita', async ({ page }) => {
   expect(detalle.total, 'la ficha no tiene requisitos').toBeGreaterThan(0);
   expect(detalle.conCita, 'ningún requisito lleva la cita literal del documento').toBe(detalle.total);
   expect(detalle.sinCita, 'un requisito sin la cita literal del documento').toEqual([]);
+
+  // La cuenta de prueba no se queda en el almacén local del servidor.
+  await page.request.delete('/api/cuenta', { data: { confirmar: correo } });
 });

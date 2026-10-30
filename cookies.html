@@ -54,7 +54,7 @@
 </header>
 
 <main class="doc">
-  <div class="doc-meta" data-i18n="cook.meta">Última actualización: 29 de octubre de 2026 · Versión 1.2</div>
+  <div class="doc-meta" data-i18n="cook.meta">Última actualización: 30 de octubre de 2026 · Versión 1.3</div>
 
   <h1 data-i18n="cook.h1">Política de cookies</h1>
   <p class="doc-lede" data-i18n-html="cook.lede">
@@ -65,7 +65,7 @@
   <div class="callout">
     <p data-i18n-html="cook.resumen"><strong>Resumen:</strong> si no inicias sesión, no se guarda ninguna
     cookie en tu navegador. La única se crea cuando te registras, y desaparece
-    a los 30 días o cuando cierras sesión.</p>
+    a los 7 días o cuando cierras sesión.</p>
   </div>
 
   <h2 id="cuales" data-i18n="cook.cuales.h2">1. Qué cookies usamos</h2>
@@ -80,10 +80,10 @@
     </thead>
     <tbody>
       <tr>
-        <td><code>bs_sesion</code></td>
-        <td data-i18n-html="cook.cuales.tipo">Cookie técnica, <code>HttpOnly</code>, <code>SameSite=Lax</code></td>
+        <td><code>__Host-bs_sesion</code></td>
+        <td data-i18n-html="cook.cuales.tipo">Cookie técnica, <code>HttpOnly</code>, <code>SameSite=Lax</code> y <code>Secure</code>. En local se llama <code>bs_sesion</code> porque no hay HTTPS.</td>
         <td data-i18n="cook.cuales.para">Mantener la sesión abierta. Sin ella, cada recarga te pediría la contraseña otra vez.</td>
-        <td data-i18n="cook.cuales.dura">30 días, se renueva al entrar</td>
+        <td data-i18n="cook.cuales.dura">7 días, se renueva al entrar</td>
       </tr>
     </tbody>
   </table>
@@ -92,10 +92,12 @@
 
   <h2 id="google" data-i18n="cook.google.h2">2. Cookies de terceros</h2>
   <p data-i18n-html="cook.google.p1">
-    Al pulsar <strong>«Continuar con Google»</strong>, Google abre su propia
-    ventana de autorización y puede instalar sus cookies. Eso depende de la
+    <strong>Hoy el alta es solo con correo y contraseña: el botón de Google no
+    está activo.</strong> Si se activa, al pulsar «Continuar con Google» Google
+    abrirá su propia ventana de autorización y podrá instalar sus cookies. Eso
+    dependerá de la
     <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">política de cookies de Google</a>,
-    no de la nuestra, y solo ocurre si tú lo pulsas.
+    no de la nuestra, y solo ocurrirá si tú lo pulsas.
   </p>
   <p data-i18n-html="cook.google.p2">
     Si te registras con correo y contraseña, <strong>no hay cookies de
@@ -105,10 +107,10 @@
 
   <h3 data-i18n="cook.google.h3">Los portales de origen</h3>
   <p data-i18n="cook.google.p3">
-    Al cargar los datos de una convocatoria no se envían cookies a ningún
-    servidor nuestro: la petición sale desde tu navegador al portal oficial
-    correspondiente y lo que hacemos es leer la respuesta. Ese portal es quien
-    puede poner sus propias cookies, bajo su propia política.
+    Los datos de las convocatorias se sirven desde este sitio; no se manda
+    ninguna cookie a los portales oficiales al mirar una ficha. Solo si pulsas
+    un enlace a un portal oficial saldrás a ese portal, y entonces será él
+    quien pueda poner sus propias cookies, bajo su propia política.
   </p>
 
   <h2 id="local" data-i18n="cook.local.h2">3. Lo que guardamos sin cookies</h2>
@@ -130,7 +132,7 @@
   <h2 id="rechazar" data-i18n="cook.rechazar.h2">4. Cómo rechazarlas</h2>
   <p data-i18n-html="cook.rechazar.p1">
     Puedes borrar o bloquear las cookies desde los ajustes de tu navegador.
-    Ten en cuenta que si bloqueas <code>bs_sesion</code> la web sigue
+    Ten en cuenta que si bloqueas la cookie de sesión la web sigue
     funcionando: simplemente no recuerda que has entrado y te lo vuelven a
     pedir cada vez. No hay ninguna parte que deje de estar disponible por
     rechazarlas.
@@ -146,7 +148,7 @@
 
   <h2 id="base" data-i18n="cook.base.h2">5. Base legal</h2>
   <p data-i18n-html="cook.base.p">
-    La <code>bs_sesion</code> es una cookie estrictamente necesaria para
+    La cookie de sesión (<code>__Host-bs_sesion</code>) es estrictamente necesaria para
     prestarte un servicio que has pedido tú —iniciar sesión—, así que se apoya
     en el <strong>artículo 22.2.c del RGPD</strong>: no requiere consentimiento
     previo. No guardamos cookies con fines de analítica, por eso no hay banner

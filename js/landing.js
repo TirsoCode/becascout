@@ -12,17 +12,26 @@ import { t } from './i18n.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
 async function pintarCabecera() {
+  const cont = document.querySelector('.top-act');
+  if (!cont) return;
+  // Evita el parpadeo de «Crear cuenta» mientras se resuelve la sesión
+  cont.innerHTML = '<span class="pill mono">…</span>';
   const s = await sesion();
   // Lo que esta pintada representa es también el estado que `alVolver`
   // compara. Empezar en `null` era una trampa: el primer repinte tras el alta
   // en la otra pestaña ve `null`, no repinta, y deja escrito el nuevo valor —
   // el «Crear cuenta» se quedaría ahí para siempre con la cuenta ya hecha.
   vista = s ? (s.local ? 'local' : 'si') : 'no';
-  const cont = document.querySelector('.top-act');
-  if (!cont) return;
 
   const crear = cont.querySelector('[data-open-auth]');
-  if (!s) return;
+  if (!s) {
+    // Sin sesión, restauramos los botones originales con la marca de creación
+    cont.innerHTML = `
+      <a class="btn btn-quiet" href="becas.html" data-i18n="nav.buscarCorto" data-ocultar-movil>Buscar</a>
+      <a class="btn btn-brand" href="cuenta.html?desde=%2F" target="_blank" rel="noopener" data-open-auth data-i18n="nav.crear">Crear cuenta</a>
+    `;
+    return;
+  }
 
   if (crear) crear.remove();
   if (cont.querySelector('.session')) return;
@@ -39,6 +48,9 @@ async function pintarCabecera() {
     hero.setAttribute('data-i18n', 'nav.buscar');
     hero.textContent = t('nav.buscar');
   }
+  // Cuando hay sesión, el botón "Ver cómo se ve" es redundante con "Buscar becas"
+  const verComo = document.querySelector('.hero-cta a.btn-ghost[data-i18n="inicio.hero.ver"]');
+  if (verComo) verComo.style.display = 'none';
 
   // El correo se pinta con `textContent` y no con `innerHTML`.
   //

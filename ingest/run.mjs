@@ -20,6 +20,7 @@ import { recolectar as recolectarDaad } from './daad.mjs';
 import { recolectar as recolectarUe } from './ue.mjs';
 import { parrafosConOrigen, extrae, buscaNivel } from './extract.mjs';
 import { idAnuncio, ensambla, faltan } from './ensamblar.mjs';
+import { escribirCatalogo } from './catalogo.mjs';
 
 const BDNS_BASE = 'https://www.infosubvenciones.es/bdnstrans/GE/es';
 
@@ -625,6 +626,15 @@ await writeFile(
   }, null, 1),
 );
 
+// La versión pública del mismo fichero. Se escribe **siempre**, justo después
+// del completo, y de la misma pasada: si se generara en otro sitio, el
+// catálogo y la base podrían contar cosas distintas y la web enseñaría una
+// lista que no es la que hay detrás de la puerta. Ver `ingest/catalogo.mjs`.
+await escribirCatalogo(
+  new URL('../data/becas.json', import.meta.url),
+  new URL('../data/becas-catalogo.json', import.meta.url),
+);
+
 const conReq = publicables.filter((r) => r.requisitos.length > 0).length;
 const totalReq = publicables.reduce((n, r) => n + r.requisitos.length, 0);
 const conCita = publicables.every((r) => r.requisitos.every((x) => Boolean(x.cita)));
@@ -635,4 +645,4 @@ console.log(`  ${publicables.filter((r) => conAlgoQueEnseñar(r)).length} con al
 console.log(`  ${publicables.filter((r) => r.boeIdBases).length} con Bases localizadas en el BOE`);
 console.log(`  ${reutilizadas} reutilizadas de la pasada anterior`);
 console.log(`  todos con cita: ${conCita ? 'sí' : 'NO — revisar'}`);
-console.log(`\n  → data/becas.json\n`);
+console.log(`\n  → data/becas.json\n  → data/becas-catalogo.json (sin requisitos ni citas)\n`);

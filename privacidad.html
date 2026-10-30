@@ -54,7 +54,7 @@
 </header>
 
 <main class="doc">
-  <div class="doc-meta" data-i18n="priv.meta">Última actualización: 29 de octubre de 2026 · Versión 1.3</div>
+  <div class="doc-meta" data-i18n="priv.meta">Última actualización: 30 de octubre de 2026 · Versión 1.4</div>
 
   <h1 data-i18n="priv.h1">Política de privacidad</h1>
   <p class="doc-lede" data-i18n="priv.lede">
@@ -87,7 +87,7 @@
 
   <h3 data-i18n="priv.datos.h3a">2.1 Datos de la cuenta</h3>
   <ul>
-    <li data-i18n-html="priv.datos.li1"><strong>Correo electrónico.</strong> Identifica la cuenta y permite avisarte de plazos.</li>
+    <li data-i18n-html="priv.datos.li1"><strong>Correo electrónico.</strong> Identifica la cuenta y te permite volver a entrar.</li>
     <li data-i18n-html="priv.datos.li2"><strong>Contraseña, pero no la tuya.</strong> Guardamos un hash calculado con
     <code>scrypt</code> y una sal aleatoria distinta por usuario. Es una dirección
     unidireccional: no se puede recuperar desde el hash, solo comparar. Si pierdes la
@@ -155,8 +155,14 @@
   </div>
 
   <h2 id="google" data-i18n="priv.google.h2">4. Google como tercero</h2>
+  <p data-i18n-html="priv.google.p0">
+    <strong>Hoy el alta es solo con correo y contraseña: el acceso con Google
+    no está activado.</strong> Esta sección describe lo que ocurrirá si se
+    activa; mientras no lo esté, no se manda ningún dato a Google al crear la
+    cuenta.
+  </p>
   <p data-i18n-html="priv.google.p1">
-    Puedes crear la cuenta con Google. Al hacerlo, Google abre su propia ventana de
+    Si se activa, podrás crear la cuenta con Google. Al hacerlo, Google abre su propia ventana de
     autorización y <strong>Google es responsable independiente</strong> del
     tratamiento que haga de esos datos conforme a sus propias políticas.
   </p>
@@ -172,7 +178,7 @@
   </ul>
 
   <h2 id="terceros" data-i18n="priv.terceros.h2">5. Otros terceros</h2>
-  <p data-i18n="priv.terceros.p">Más allá de Google —sección 4— y de Vercel, que hostea la web y cuenta las visitas de forma agregada, no hay más terceros. En concreto:</p>
+  <p data-i18n="priv.terceros.p">Más allá de Google —solo si se activa el acceso con Google, sección 4— y de Vercel, que hostea la web y cuenta las visitas de forma agregada, no hay más terceros. En concreto:</p>
   <ul>
     <li data-i18n-html="priv.terceros.li1"><strong>La analítica es mínima.</strong> Vercel Analytics cuenta páginas
     vistas: sin cookies, sin datos personales y sin rastreo entre sitios. Ni Google Analytics, ni Plausible, ni nada
@@ -189,7 +195,7 @@
     <thead><tr><th data-i18n="priv.conservacion.th1">Qué</th><th data-i18n="priv.conservacion.th2">Cuánto</th></tr></thead>
     <tbody>
       <tr><td data-i18n="priv.conservacion.f1a">Cuenta (correo, hash y la respuesta de llegada, si la diste)</td><td data-i18n="priv.conservacion.f1b">Hasta que pidas que la eliminemos</td></tr>
-      <tr><td data-i18n="priv.conservacion.f2a">Cookie de sesión</td><td data-i18n="priv.conservacion.f2b">30 días, y se renueva al entrar</td></tr>
+      <tr><td data-i18n="priv.conservacion.f2a">Cookie de sesión</td><td data-i18n="priv.conservacion.f2b">7 días, y se renueva al entrar</td></tr>
       <tr><td data-i18n="priv.conservacion.f3a">Perfil académico (nota, edad…)</td><td data-i18n="priv.conservacion.f3b">En tu navegador, hasta que lo borres</td></tr>
       <tr><td data-i18n="priv.conservacion.f4a">Registro de conexión</td><td data-i18n="priv.conservacion.f4b">Lo que fije el proveedor de alojamiento, habitualmente entre 30 y 90 días</td></tr>
     </tbody>
@@ -228,8 +234,10 @@
   <p data-i18n-html="priv.seguridad.p1">
     La contraseña nunca se guarda en claro. La sesión viaja en una cookie
     <code>HttpOnly</code>, de modo que el JavaScript de la página no puede leerla, y
-    <code>SameSite=Lax</code>, que impide que se envíe desde sitios ajenos. El sitio
-    se sirve por HTTPS en producción.
+    <code>SameSite=Lax</code>, que impide que se envíe desde sitios ajenos. En
+    producción lleva el prefijo <code>__Host-</code> y <code>Secure</code>, que
+    impiden que otro subdominio la sobrescriba. El sitio se sirve por HTTPS en
+    producción, y la sesión caduca a los 7 días.
   </p>
   <p data-i18n="priv.seguridad.p2">
     Ninguna medida es absoluta. Si se produce una brecha que afecte a tus datos,

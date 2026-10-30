@@ -70,6 +70,52 @@ function num(n) {
 
 let becas = [];
 
+/**
+ * ¿La base que hay en memoria trae los requisitos?
+ *
+ * El catálogo público no los trae: solo el número. La distinción no es un
+ * detalle de implementación, es la puerta. `datosCompletos` decide si hay que
+ * volver a pedir la base al recuperar la sesión; sin él, entrar en la otra
+ * pestaña desbloquearía una lista de fichas sin requisitos y el estudiante
+ * creería que ninguna convocatoria tiene.
+ */
+let datosCompletos = false;
+
+/** Cuántos requisitos tiene una ficha, sin mirar si los tenemos. */
+function nReq(b) {
+  return b.oculto ? Number(b.n_requisitos ?? 0) : (b.requisitos?.length ?? 0);
+}
+
+/**
+ * Trae la lista. Primero la API —la única que tiene requisitos y citas— y,
+ * si no hay sesión o la API no está, el catálogo público.
+ *
+ * El catálogo no es un respaldo de emergencia: es lo que pinta la lista
+ * borrosa de quien todavía no tiene cuenta. Tiene títulos, plazos, importes y
+ * destinos, que es lo que se ve a través del velo. Lo que no tiene son los
+ * requisitos, que es lo que la cuenta abre.
+ */
+async function cargarDatos() {
+  try {
+    const r = await fetch('api/becas', {
+      credentials: 'same-origin',
+      headers: { accept: 'application/json' },
+    });
+    if (r.ok) {
+      const d = await r.json();
+      if (Array.isArray(d?.becas)) {
+        datosCompletos = true;
+        return d.becas;
+      }
+    }
+  } catch { /* API caída o sin red: se sigue con el catálogo */ }
+
+  datosCompletos = false;
+  const r = await fetch('data/becas-catalogo.json');
+  if (!r.ok) throw new Error(`catálogo ${r.status}`);
+  return (await r.json()).becas ?? [];
+}
+
 /* El beat del momento de búsqueda: cuánto dura el marco «Buscando N becas…»
  * antes de que llegue la lista.
  *
@@ -90,8 +136,7 @@ let cuentaAbierta = 0;
 
 async function cargar() {
   try {
-    const r = await fetch('data/becas.json');
-    becas = (await r.json()).becas ?? [];
+    becas = await cargarDatos();
   } catch {
     document.getElementById('zona-lista').innerHTML = `
       <div class="empty">
@@ -535,7 +580,7 @@ async function pintar() {
   // por lo mismo: quien busca una beca de investigación o una ayuda a una
   // asociación sabe lo que busca, y quitarle la entrada no le ahorra nada, solo
   // le hace perder tiempo. Ordenar sí ayuda; ocultar no.
-  const util = (x) => (x.requisitos.length || x.presupuesto != null || x.boeIdBases ? 0 : 1);
+  const util = (x) => (nReq(x) || x.presupuesto != null || x.boeIdBases ? 0 : 1);
   const orden = [...becas].sort((a, b) => {
     const ua = util(a), ub = util(b);
     if (ua !== ub) return ua - ub;
@@ -586,7 +631,11 @@ async function pintar() {
     ? filtradas.filter((b) => !b.nivel).length
     : 0;
 
-  const conReq = filtradas.filter((b) => b.requisitos.length).length;
+  // El número de fichas con requisitos se cuenta con `nReq`, que sabe del
+  // catálogo: allí `requisitos` viene vacío a propósito y el dato verdadero
+  // es `n_requisitos`. Contando el array, la web diría «0 con requisitos» de
+  // una base entera que sí los tiene.
+  const conReq = filtradas.filter((b) => nReq(b)).length;
 
   // Cada cifra va en su `<span>`. Sueltas en el flujo, el punto separador
   // «·» es un nodo de texto más y en móvil el navegador lo deja colgando al
@@ -698,6 +747,11 @@ function cartelAcceso(abierta) {
 function tarjeta(b) {
   const p = perfil.leer();
   const conPerfil = p.nota !== '' || p.edad !== '';
+  // Ficha del catálogo público: tiene lo que se ve a través del velo, pero no
+  // los requisitos. No se pinta «sin requisitos» —sería mentira— sino cuántos
+  // hay detrás de la cuenta.
+  const oculto = Boolean(b.oculto);
+  const totalReq = nReq(b);
 
   // El importe, el presupuesto y el plazo son datos, no condiciones: no
   // cuentan en el anillo.
@@ -748,23 +802,27 @@ function tarjeta(b) {
       </div>
 
       <div class="reqs">
-        ${b.requisitos.length
-          ? b.requisitos.map(fila).join('')
-          : `<p class="req-none">${t(b.boeIdBases ? 'tarjeta.reqNoneBases' : 'tarjeta.reqNone')}</p>`}
+        ${oculto
+          ? `<p class="req-none">${esc(t('tarjeta.oculto', { n: num(totalReq) }))}</p>`
+          : b.requisitos.length
+            ? b.requisitos.map(fila).join('')
+            : `<p class="req-none">${t(b.boeIdBases ? 'tarjeta.reqNoneBases' : 'tarjeta.reqNone')}</p>`}
       </div>
     </div>
 
-    ${anillo(ok, total, conPerfil)}
+    ${oculto ? anilloOculto() : anillo(ok, total, conPerfil)}
 
     <div class="beca-foot">
-      <span class="pill ${total && conPerfil ? 'brand' : ''}">
-        ${!cond.length
-          ? t('tarjeta.sinReq')
-          : !total
-            ? t(cond.length === 1 ? 'tarjeta.nadaComprobable.una' : 'tarjeta.nadaComprobable', { n: cond.length })
-            : conPerfil
-              ? `<b>${ok}</b> ${t(total === 1 ? 'tarjeta.de.uno' : 'tarjeta.de', { n: total })}`
-              : t('tarjeta.anadeNota')}
+      <span class="pill ${!oculto && total && conPerfil ? 'brand' : ''}">
+        ${oculto
+          ? esc(t('tarjeta.ocultoPill', { n: num(totalReq) }))
+          : !cond.length
+            ? t('tarjeta.sinReq')
+            : !total
+              ? t(cond.length === 1 ? 'tarjeta.nadaComprobable.una' : 'tarjeta.nadaComprobable', { n: cond.length })
+              : conPerfil
+                ? `<b>${ok}</b> ${t(total === 1 ? 'tarjeta.de.uno' : 'tarjeta.de', { n: total })}`
+                : t('tarjeta.anadeNota')}
       </span>
       <a class="src" href="${b.url}" target="_blank" rel="noopener">
         ${t(b.id.startsWith('BDNS') ? 'tarjeta.verConv' : 'tarjeta.verBoe')}
@@ -818,6 +876,24 @@ function anillo(ok, total, conPerfil) {
       <div class="ring-n">${total ? `${ok}<small>/${total}</small>` : '—'}</div>
     </div>
     <div class="ring-cap">${cap}</div>
+  </div>`;
+}
+
+/**
+ * El anillo de una ficha que no trae requisitos porque están detrás de la
+ * cuenta. No se pinta un 0 %: no hay nada que comparar, y un cero se lee como
+ * «no cumples» —justo la conclusión falsa que el producto no puede dar—.
+ * Tampoco un «sin datos»: los datos existen, lo que falta es la cuenta.
+ */
+function anilloOculto() {
+  return `<div class="ringbox">
+    <div class="ring">
+      <svg viewBox="0 0 76 76" aria-hidden="true">
+        <circle class="ring-bg" cx="38" cy="38" r="${R}" fill="none" stroke-width="6"/>
+      </svg>
+      <div class="ring-n">—</div>
+    </div>
+    <div class="ring-cap">${esc(t('anillo.oculto'))}</div>
   </div>`;
 }
 
@@ -920,6 +996,12 @@ async function alVolver() {
   const s = await sesionFresca();
   const ahora = s ? (s.local ? 'local' : 'si') : 'no';
   if (vista !== null && ahora !== vista) {
+    // Si acaba de entrar, lo que hay en memoria es el catálogo público: sin
+    // requisitos. Repintar sin volver a pedir la base dejaría la lista
+    // desbloqueada pero vacía por dentro, que es peor que el velo.
+    if (ahora === 'si' && !datosCompletos) {
+      try { becas = await cargarDatos(); } catch { /* se queda el catálogo */ }
+    }
     pintarCabecera();
     if ($('#zona-lista .buscando')) cartelBusqueda();
     else if (becas.length) pintar();

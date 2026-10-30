@@ -264,7 +264,7 @@ const DICC = {
   /* ── Privacidad ──────────────────────────────────────────────────────
      Traducción fiel. No se suaviza ni una obligación: los artículos, los
      plazos y las bases legales van tal cual, solo en inglés. */
-  'priv.meta': { en: 'Last updated: 29 October 2026 · Version 1.3' },
+  'priv.meta': { en: 'Last updated: 30 October 2026 · Version 1.4' },
   'priv.h1': { en: 'Privacy policy' },
   'priv.lede': {
     en: 'This policy explains what data BecasScout stores, why, for how long, and how to get it deleted. It is written to be read, not to cover us.',
@@ -282,7 +282,7 @@ const DICC = {
   'priv.datos.h2': { en: '2. What data we process' },
   'priv.datos.h3a': { en: '2.1 Account data' },
   'priv.datos.li1': {
-    en: '<strong>Email address.</strong> It identifies the account and lets us warn you about deadlines.',
+    en: '<strong>Email address.</strong> It identifies the account and lets you sign back in.',
   },
   'priv.datos.li2': {
     en: '<strong>A password, but not yours.</strong> We store a hash computed with <code>scrypt</code> and a random salt, different for each user. It is one-way: it cannot be recovered from the hash, only compared. If you lose your password you have to create another account.',
@@ -329,8 +329,11 @@ const DICC = {
     en: 'No legal basis because <strong>we do not process it</strong>: it runs in your browser',
   },
   'priv.google.h2': { en: '4. Google as a third party' },
+  'priv.google.p0': {
+    en: '<strong>Today the only way to sign up is with an email address and password: Google sign-in is not enabled.</strong> This section describes what will happen if it is enabled; while it is not, no data is sent to Google when you create an account.',
+  },
   'priv.google.p1': {
-    en: 'You can create the account with Google. If you do, Google opens its own authorisation window and <strong>Google is an independent controller</strong> of the processing it carries out under its own policies.',
+    en: 'If it is enabled, you will be able to create the account with Google. If you do, Google opens its own authorisation window and <strong>Google is an independent controller</strong> of the processing it carries out under its own policies.',
   },
   'priv.google.p2': {
     en: 'We ask for <strong>one permission only: your email address</strong>. Specifically:',
@@ -345,7 +348,7 @@ const DICC = {
     en: 'When you open that window, Google may set its own cookies, which are theirs and not ours: they are described in their <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">cookie policy</a>.',
   },
   'priv.terceros.h2': { en: '5. Other third parties' },
-  'priv.terceros.p': { en: 'Beyond Google (section 4) and Vercel, which hosts the site and counts page views in aggregate, there are no other third parties. Specifically:' },
+  'priv.terceros.p': { en: 'Beyond Google (only if Google sign-in is enabled, section 4) and Vercel, which hosts the site and counts page views in aggregate, there are no other third parties. Specifically:' },
   'priv.terceros.li1': {
     en: '<strong>Analytics is minimal.</strong> Vercel Analytics counts page views: no cookies, no personal data, no cross-site tracking. No Google Analytics, no Plausible, nothing that profiles you.',
   },
@@ -364,7 +367,7 @@ const DICC = {
   },
   'priv.conservacion.f1b': { en: 'Until you ask us to delete it' },
   'priv.conservacion.f2a': { en: 'Session cookie' },
-  'priv.conservacion.f2b': { en: '30 days, renewed when you sign in' },
+  'priv.conservacion.f2b': { en: '7 days, renewed when you sign in' },
   'priv.conservacion.f3a': { en: 'Academic profile (grade, age…)' },
   'priv.conservacion.f3b': { en: 'In your browser, until you delete it' },
   'priv.conservacion.f4a': { en: 'Connection log' },
@@ -406,7 +409,7 @@ const DICC = {
   },
   'priv.seguridad.h2': { en: '9. Security' },
   'priv.seguridad.p1': {
-    en: 'The password is never stored in the clear. The session travels in an <code>HttpOnly</code> cookie, so page JavaScript cannot read it, and <code>SameSite=Lax</code>, which stops it being sent from other sites. The site is served over HTTPS in production.',
+    en: 'The password is never stored in the clear. The session travels in an <code>HttpOnly</code> cookie, so page JavaScript cannot read it, and <code>SameSite=Lax</code>, which stops it being sent from other sites. In production it carries the <code>__Host-</code> prefix and <code>Secure</code>, which stop another subdomain overwriting it. The site is served over HTTPS in production, and the session expires after 7 days.',
   },
   'priv.seguridad.p2': {
     en: 'No measure is absolute. If a breach affects your data, we will report it to the supervisory authority within 72 hours and warn you by email.',
@@ -420,13 +423,13 @@ const DICC = {
   },
 
   /* ── Cookies ─────────────────────────────────────────────────────────── */
-  'cook.meta': { en: 'Last updated: 29 October 2026 · Version 1.2' },
+  'cook.meta': { en: 'Last updated: 30 October 2026 · Version 1.3' },
   'cook.h1': { en: 'Cookie policy' },
   'cook.lede': {
     en: 'We use <strong>one</strong> cookie. The minimum needed to know who you are. No tracking cookies, no advertising, no cross-site tracking.',
   },
   'cook.resumen': {
-    en: '<strong>Summary:</strong> if you do not sign in, no cookie is stored in your browser. The only one is created when you register, and it disappears after 30 days or when you sign out.',
+    en: '<strong>Summary:</strong> if you do not sign in, no cookie is stored in your browser. The only one is created when you register, and it disappears after 7 days or when you sign out.',
   },
   'cook.cuales.h2': { en: '1. Which cookies we use' },
   'cook.cuales.th1': { en: 'Name' },
@@ -434,23 +437,23 @@ const DICC = {
   'cook.cuales.th3': { en: 'What for' },
   'cook.cuales.th4': { en: 'Duration' },
   'cook.cuales.tipo': {
-    en: 'Technical cookie, <code>HttpOnly</code>, <code>SameSite=Lax</code>',
+    en: 'Technical cookie, <code>HttpOnly</code>, <code>SameSite=Lax</code> and <code>Secure</code>. Locally it is called <code>bs_sesion</code> because there is no HTTPS.',
   },
   'cook.cuales.para': {
     en: 'Keeping the session open. Without it, every reload would ask for your password again.',
   },
-  'cook.cuales.dura': { en: '30 days, renewed when you sign in' },
+  'cook.cuales.dura': { en: '7 days, renewed when you sign in' },
   'cook.cuales.pie': { en: '<strong>That is all.</strong> No other first-party cookies.' },
   'cook.google.h2': { en: '2. Third-party cookies' },
   'cook.google.p1': {
-    en: 'When you press <strong>“Continue with Google”</strong>, Google opens its own authorisation window and may set its own cookies. That falls under <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">Google’s cookie policy</a>, not ours, and only happens if you press it.',
+    en: '<strong>Today the only way to sign up is with an email address and password: the Google button is not enabled.</strong> If it is enabled, pressing “Continue with Google” will make Google open its own authorisation window and possibly set its own cookies. That will fall under <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">Google’s cookie policy</a>, not ours, and will only happen if you press it.',
   },
   'cook.google.p2': {
     en: 'If you register with email and password, <strong>there are no third-party cookies</strong>: the form is ours and calls no external service.',
   },
   'cook.google.h3': { en: 'Source portals' },
   'cook.google.p3': {
-    en: 'Loading data for a call sends no cookies to any server of ours: the request goes from your browser to the official portal concerned and we read the response. That portal is the one that may set its own cookies, under its own policy.',
+    en: 'Call data is served from this site; looking at a listing sends no cookie to the official portals. Only if you press a link to an official portal will you leave for that portal, and then it is the one that may set its own cookies, under its own policy.',
   },
   'cook.local.h2': { en: '3. What we store without cookies' },
   'cook.local.p1': {
@@ -461,7 +464,7 @@ const DICC = {
   },
   'cook.rechazar.h2': { en: '4. How to refuse them' },
   'cook.rechazar.p1': {
-    en: 'You can delete or block cookies in your browser settings. Note that if you block <code>bs_sesion</code> the site still works: it simply will not remember that you signed in and will ask again each time. No part of the site becomes unavailable because you refuse them.',
+    en: 'You can delete or block cookies in your browser settings. Note that if you block the session cookie the site still works: it simply will not remember that you signed in and will ask again each time. No part of the site becomes unavailable because you refuse them.',
   },
   'cook.rechazar.p2': { en: 'In the main browsers:' },
   'cook.rechazar.li1': {
@@ -473,7 +476,7 @@ const DICC = {
   },
   'cook.base.h2': { en: '5. Legal basis' },
   'cook.base.p': {
-    en: '<code>bs_sesion</code> is a cookie strictly necessary to provide a service you have asked for — signing in — so it relies on <strong>Article 22(2)(c) GDPR</strong>: it does not require prior consent. We set no cookies for analytics, which is why there is no consent banner on this site.',
+    en: 'The session cookie (<code>__Host-bs_sesion</code>) is strictly necessary to provide a service you have asked for — signing in — so it relies on <strong>Article 22(2)(c) GDPR</strong>: it does not require prior consent. We set no cookies for analytics, which is why there is no consent banner on this site.',
   },
   'cook.verTambien': {
     en: 'See also the <a href="privacidad.html">privacy policy</a>.',
@@ -591,6 +594,14 @@ const DICC = {
   'cuenta.origen.amigo': { es: 'Un amigo', en: 'A friend' },
   'cuenta.ajustes.t': { es: 'Tu cuenta', en: 'Your account' },
   'cuenta.ajustes.salir': { es: 'Cerrar sesión', en: 'Sign out' },
+  'cuenta.ajustes.sesiones': {
+    es: 'Cerrar sesión en todos los dispositivos',
+    en: 'Sign out on all devices',
+  },
+  'cuenta.ajustes.sesionesError': {
+    es: 'No se pudieron cerrar las demás sesiones.',
+    en: 'The other sessions couldn’t be closed.',
+  },
   'cuenta.ajustes.borrar': { es: 'Eliminar la cuenta', en: 'Delete account' },
   'cuenta.borrar.h': { es: 'Eliminar la cuenta', en: 'Delete account' },
   'cuenta.borrar.p': {
@@ -748,6 +759,16 @@ const DICC = {
     en: 'We haven’t extracted the requirements yet. You can read the whole call at the source.',
   },
   'tarjeta.sinReq': { es: 'Sin requisitos extraídos', en: 'No requirements extracted' },
+  /* Ficha del catálogo público: los requisitos existen, pero no viajan al
+     navegador hasta que hay cuenta. Decir «sin requisitos» sería mentira. */
+  'tarjeta.oculto': {
+    es: 'Con la cuenta se ven los {n} requisitos y su cita literal.',
+    en: 'With an account you see the {n} requirements and their exact quote.',
+  },
+  'tarjeta.ocultoPill': {
+    es: '{n} requisitos con su cita, con cuenta',
+    en: '{n} requirements with quotes, with an account',
+  },
   /* El recuento manda en el número del sustantivo, así que el singular va en
      su propia clave: «1 requirements» se lee mal y delata que la frase se
      escribió pensando en el plural. En castellano pasaba lo mismo —«1
@@ -769,6 +790,7 @@ const DICC = {
 
   'anillo.sinDatos': { es: 'sin datos', en: 'no data' },
   'anillo.anadeNota': { es: 'añade tu nota', en: 'add your grade' },
+  'anillo.oculto': { es: 'con cuenta', en: 'with an account' },
 
   'velo.texto': {
     es: 'Inicia sesión para ver las becas',

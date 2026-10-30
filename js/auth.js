@@ -372,6 +372,7 @@ export async function abrirAjustes() {
 
       <div class="ajs-act">
         <button type="button" class="btn btn-quiet" id="ajs-salir">${t('cuenta.ajustes.salir')}</button>
+        <button type="button" class="btn btn-quiet" id="ajs-sesiones">${t('cuenta.ajustes.sesiones')}</button>
         <button type="button" class="btn btn-rust" id="ajs-borrar">${t('cuenta.ajustes.borrar')}</button>
       </div>
 
@@ -381,8 +382,33 @@ export async function abrirAjustes() {
     // por textContent, como en las cabeceras.
     caja.querySelector('.ajs-correo').textContent = s.email ?? '';
     caja.querySelector('#ajs-salir').onclick = salir;
+    caja.querySelector('#ajs-sesiones').onclick = cerrarTodas;
     caja.querySelector('#ajs-borrar').onclick = pasoBorrar;
     caja.focus();
+  }
+
+  /**
+   * Cierra todas las sesiones, también esta. El servidor borra las filas y
+   * la cookie se va con la respuesta; recargar deja la puerta puesta y la
+   * cabecera como estaba antes de entrar. No hay paso de confirmación: lo
+   * peor que puede pasar es tener que volver a entrar, y eso no es
+   * irreversible —a diferencia de borrar la cuenta—.
+   */
+  async function cerrarTodas() {
+    const b = caja.querySelector('#ajs-sesiones');
+    b.disabled = true;
+    try {
+      const res = await fetch(`${API}/sesiones`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      cache = null;
+      location.reload();
+    } catch {
+      b.disabled = false;
+      msgDelModal(caja, t('cuenta.ajustes.sesionesError'));
+    }
   }
 
   function pasoBorrar() {

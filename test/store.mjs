@@ -182,7 +182,7 @@ const PUERTO = await new Promise((r) => servidor.listen(0, () => r(servidor.addr
 process.env.SUPABASE_URL = `http://127.0.0.1:${PUERTO}`;
 process.env.SUPABASE_SERVICE_ROLE_KEY = 'clave-de-prueba';
 
-const { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, borrarCuenta } =
+const { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, quitarTokens, borrarCuenta } =
   await import('../lib/store.js');
 
 /* ── Comprobaciones ───────────────────────────────────────────────────────── */
@@ -250,10 +250,43 @@ await prueba('cerrar sesión mata solo esa', async () => {
   assert.ok(await porToken('tok-portatil'), 'la otra debe seguir viva');
 });
 
+await prueba('cerrar todas las sesiones mata las de esa cuenta y ninguna más', async () => {
+  await crear('t@ejemplo.com', 'hash', 'sal');
+  await crear('otra@ejemplo.com', 'hash', 'sal');
+  await guardarToken('t@ejemplo.com', 'tok-1');
+  await guardarToken('t@ejemplo.com', 'tok-2');
+  await guardarToken('otra@ejemplo.com', 'tok-3');
+
+  await quitarTokens('t@ejemplo.com');
+  assert.equal(await porToken('tok-1'), null);
+  assert.equal(await porToken('tok-2'), null);
+  assert.ok(await porToken('tok-3'), 'la sesión de otra cuenta no se toca');
+});
+
 await prueba('una sesión caducada no entra', async () => {
   await crear('c@ejemplo.com', 'hash', 'sal');
   await guardarToken('c@ejemplo.com', 'tok-corto', -1);   // -1 días: ya caducó
   assert.equal(await porToken('tok-corto'), null);
+});
+
+await prueba('una sesión dura 7 días, no 30', async () => {
+  await crear('d@ejemplo.com', 'hash', 'sal');
+  await guardarToken('d@ejemplo.com', 'tok-siete');
+  const s = tablas.sesiones.get('tok-siete');
+  const dias = (new Date(s.expira) - Date.now()) / 864e5;
+  assert.ok(dias > 6.9 && dias < 7.1, `la sesión dura ${dias.toFixed(2)} días`);
+});
+
+await prueba('una fila vieja con caducidad larga se retira por su fecha de creación', async () => {
+  await crear('v@ejemplo.com', 'hash', 'sal');
+  // El caso real: una sesión de cuando duraban 30 días, con `expira` lejano.
+  tablas.sesiones.set('tok-vieja', {
+    token: 'tok-vieja',
+    correo: 'v@ejemplo.com',
+    creado: new Date(Date.now() - 10 * 864e5).toISOString(),
+    expira: new Date(Date.now() + 20 * 864e5).toISOString(),
+  });
+  assert.equal(await porToken('tok-vieja'), null, 'la fecha de creación debe retirarla');
 });
 
 await prueba('porToken sin token no hace nada', async () => {

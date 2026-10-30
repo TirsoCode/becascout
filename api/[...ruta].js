@@ -62,15 +62,48 @@
  */
 
 import { randomBytes, scrypt, timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { promisify } from 'node:util';
-import { crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, borrarCuenta } from '../lib/store.js';
+import {
+  crear, buscar, guardarOrigen, guardarToken, porToken, quitarToken, quitarTokens, borrarCuenta,
+} from '../lib/store.js';
 
 const scryptAsync = promisify(scrypt);
 
 const LLAVE = 64;          // bytes de hash
 const OPS = { N: 16384, r: 8, p: 1 };  // coste; subir OPS = más lento y más seguro
-const COOKIE = 'bs_sesion';
-const DIAS = 30;
+
+/**
+ * El nombre de la cookie cambia en producción a propósito.
+ *
+ * El prefijo `__Host-` es una garantía del navegador: solo se acepta si la
+ * cookie lleva `Secure`, `Path=/` y **ningún** `Domain`. Eso impide que un
+ * subdominio —o un sitio que consiga escribir una cookie para el dominio
+ * padre— fije o sobrescriba la sesión. En local no se puede usar porque no
+ * hay HTTPS, y las pruebas y `node serve.mjs` seguirían con `bs_sesion`.
+ *
+ * El cambio de nombre invalida las sesiones viejas, que es lo correcto: la
+ * cookie anterior no tenía esa protección y el usuario vuelve a entrar una
+ * vez. La fila de `sesiones` caduca sola a los pocos días.
+ */
+const PROD = process.env.NODE_ENV === 'production';
+const COOKIE = PROD ? '__Host-bs_sesion' : 'bs_sesion';
+
+/**
+ * Siete días, no treinta. Una sesión de un mes en un producto que no maneja
+ * dinero ni trámites es una ventana demasiado larga para una cookie que
+ * desbloquea el contenido: si se pierde un portátil, el que lo encuentre
+ * tiene un mes. Siete días siguen siendo cómodos y se renuevan al entrar.
+ */
+const DIAS = 7;
+
+/**
+ * Un hash de contraseña es caro a propósito. Eso mismo lo convierte en un
+ * arma: si se acepta un cuerpo de 16 KB como contraseña, cada intento gasta
+ * scrypt sobre 16 KB. El tope no cambia lo que puede usar una persona y le
+ * quita al atacante la forma de multiplicar el coste por el tamaño.
+ */
+const MAX_PASS = 1024;
 
 async function hash(password, salt) {
   const buf = await scryptAsync(password.normalize('NFKC'), salt, LLAVE, OPS);
@@ -151,7 +184,7 @@ function correoValido(c) {
 }
 
 function politica(c) {
-  return typeof c === 'string' && c.length >= 10;
+  return typeof c === 'string' && c.length >= 10 && c.length <= MAX_PASS;
 }
 
 /**
@@ -182,8 +215,23 @@ async function cuerpo(req, tope = 16 * 1024) {
   }
 }
 
+/**
+ * Toda respuesta de la API es privada y no se guarda.
+ *
+ * Sin estas dos cabeceras, un proxy intermedio —o el propio navegador— puede
+ * cachear la respuesta de `/api/yo` o de `/api/becas` y servirla a la
+ * siguiente persona que pase por allí. `Vary: Cookie` es la otra mitad: la
+ * respuesta depende de la cookie de sesión, así que ninguna caché puede
+ * reutilizarla para otra. `private` impide además que la guarde una caché
+ * compartida.
+ */
 function json(res, codigo, datos, cabeceras = {}) {
-  res.writeHead(codigo, { 'content-type': 'application/json; charset=utf-8', ...cabeceras });
+  res.writeHead(codigo, {
+    'content-type': 'application/json; charset=utf-8',
+    'cache-control': 'private, no-store',
+    vary: 'Cookie',
+    ...cabeceras,
+  });
   res.end(JSON.stringify(datos));
 }
 
@@ -200,8 +248,10 @@ export default async function handler(req, res) {
     if (ruta === 'salir' && req.method === 'POST') return await salir(req, res);
     if (ruta === 'yo' && req.method === 'GET') return await yo(req, res);
     if (ruta === 'cuenta' && req.method === 'DELETE') return await borrarCuentaRuta(req, res);
+    if (ruta === 'sesiones' && req.method === 'DELETE') return await cerrarTodas(req, res);
     if (ruta === 'origen' && req.method === 'POST') return await anotarOrigen(req, res);
     if (ruta === 'config' && req.method === 'GET') return await config(req, res);
+    if (ruta === 'becas' && req.method === 'GET') return await becasRuta(req, res);
 
     json(res, 404, { error: 'ruta desconocida' });
   } catch (err) {
@@ -239,7 +289,9 @@ export default async function handler(req, res) {
  */
 async function registroGoogle(req, res) {
   const { token } = await cuerpo(req);
-  if (typeof token !== 'string' || !token.trim()) {
+  // Un JWT ronda el kilobyte; 4 KB es holgado. El tope evita mandar a Google
+  // o a Supabase una cadena de 16 KB en cada intento.
+  if (typeof token !== 'string' || !token.trim() || token.length > 4096) {
     return json(res, 400, { error: 'Falta el token de acceso.' });
   }
 
@@ -347,7 +399,11 @@ async function registro(req, res) {
 
   if (!correoValido(mail)) return json(res, 400, { error: 'El correo no es válido.' });
   if (!politica(password)) {
-    return json(res, 400, { error: 'La contraseña necesita al menos 10 caracteres.' });
+    return json(res, 400, {
+      error: typeof password === 'string' && password.length > MAX_PASS
+        ? 'La contraseña es demasiado larga.'
+        : 'La contraseña necesita al menos 10 caracteres.',
+    });
   }
 
   const salt = randomBytes(16).toString('base64');
@@ -368,7 +424,19 @@ async function registro(req, res) {
 
 async function login(req, res) {
   const { correo, password } = await cuerpo(req);
-  const usuario = await buscar(normaliza(correo));
+  const mail = normaliza(correo);
+
+  // Un correo que no puede existir no llega a la base, y una contraseña
+  // gigante no llega a scrypt. Antes, `buscar()` se lanzaba con cualquier
+  // cosa: un cuerpo con una contraseña de 16 KB gastaba scrypt sobre 16 KB
+  // por intento, y un correo basura hacía una consulta a Postgres para nada.
+  // El error es el genérico de siempre para no distinguir «mal escrito» de
+  // «no existe».
+  if (!correoValido(mail) || typeof password !== 'string' || password.length > MAX_PASS) {
+    return json(res, 401, { error: 'Correo o contraseña incorrectos.' });
+  }
+
+  const usuario = await buscar(mail);
 
   // Se hashea **siempre dos veces**, haya cuenta o no. La cuenta que existe usa
   // su propio salt y la que no, uno de mentira; las dos ramas hacen el mismo
@@ -433,6 +501,81 @@ async function yo(req, res) {
   const usuario = await porToken(token);
   if (!usuario) return json(res, 401, { error: 'sin sesión' });
   json(res, 200, { correo: usuario.correo });
+}
+
+/**
+ * La base completa, con requisitos y citas. Solo con cuenta.
+ *
+ * ── Por qué esto es una ruta y no un fichero estático ────────────────────
+ *
+ * `data/becas.json` tiene 236 fichas con el texto literal de cada requisito.
+ * Hasta el 30 de octubre de 2026 se servía en abierto: un `curl` sin cuenta
+ * lo descargaba entero, y con él el producto que la puerta dice reservar. La
+ * lista que se ve borrosa necesita títulos, plazos e importes —eso está en el
+ * catálogo público—, pero los requisitos y sus citas no.
+ *
+ * Así que el fichero completo no se sirve por URL (ver `.vercelignore`) y
+ * solo lo lee esta ruta, que exige la cookie de sesión. El catálogo público
+ * sigue siendo estático: la portada del buscador no puede depender de una
+ * función para pintar la lista.
+ *
+ * El fichero se lee una vez por instancia y se queda en memoria. En Vercel
+ * cada instancia es corta y los datos cambian al desplegar, así que no hay
+ * riesgo de servir una versión vieja de otro despliegue.
+ */
+let cacheBecas = null;
+
+// La ruta se escribe como `new URL(...)` y no con `process.cwd()` a propósito:
+// el empaquetador de Vercel (`@vercel/nft`) sigue esa forma, mete el fichero
+// en el paquete de la función y así `/api/becas` lo tiene aunque
+// `.vercelignore` lo aparte del sitio estático. Con una ruta construida en
+// tiempo de ejecución el rastro se pierde y la función se despliega sin los
+// datos: la web cargaría y `/api/becas` respondería 503.
+//
+// Se lee una vez por instancia. Un `readFileSync` de 827 KB en el arranque de
+// la función es más barato que repetirlo en cada petición, y el fichero no
+// cambia dentro de un despliegue.
+const RUTA_BECAS = new URL('./_becas.json', import.meta.url);
+
+async function leerBecas() {
+  if (cacheBecas) return cacheBecas;
+  try {
+    cacheBecas = JSON.parse(readFileSync(RUTA_BECAS, 'utf8'));
+    return cacheBecas;
+  } catch (err) {
+    console.error('becas: no se pudo leer data/becas.json:', err.message);
+    return null;
+  }
+}
+
+async function becasRuta(req, res) {
+  const usuario = await porToken(leerCookie(req.headers.cookie));
+  if (!usuario) {
+    return json(res, 401, { error: 'Necesitas una cuenta para ver los requisitos.' });
+  }
+
+  const datos = await leerBecas();
+  if (!datos) {
+    console.error('becas: no se pudo leer data/becas.json en la función');
+    return json(res, 503, { error: 'La base de becas no está disponible ahora mismo.' });
+  }
+  json(res, 200, datos);
+}
+
+/**
+ * Cierra todas las sesiones de la cuenta, también la que hace la petición.
+ *
+ * Existe porque salir solo borra la sesión del navegador desde el que se
+ * pulsa: si alguien dejó la cuenta abierta en un ordenador ajeno, «cerrar
+ * sesión» en el móvil no la cierra. La cookie se va con la respuesta porque
+ * el token que la sostenía acaba de desaparecer.
+ */
+async function cerrarTodas(req, res) {
+  const usuario = await porToken(leerCookie(req.headers.cookie));
+  if (!usuario) return json(res, 401, { error: 'sin sesión' });
+
+  await quitarTokens(usuario.correo);
+  json(res, 200, { ok: true }, { 'Set-Cookie': cookie('', 0) });
 }
 
 /**
