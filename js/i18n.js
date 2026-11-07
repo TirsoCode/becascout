@@ -87,11 +87,7 @@ const DICC = {
   'pie.sobre': { en: 'About' },
   'pie.privacidad': { en: 'Privacy' },
   'pie.cookies': { en: 'Cookies' },
-  'pie.independiente': { en: 'BecasScout · An independent project. We are not a ministry or a university.' },
   'pie.solo': { en: 'BecasScout · An independent project.' },
-  'pie.revisado': {
-    en: 'BecasScout · An independent project. We are not a ministry or a university. Last reviewed: <time datetime="2026-10-28">28 October 2026</time>.',
-  },
 
   /* El botón dice el idioma al que lleva, no el que hay puesto: así se lee
      como una acción y no como un estado. La etiqueta accesible lo dice con
@@ -105,9 +101,9 @@ const DICC = {
   'inicio.hero.lede': {
     en: 'They come out in the official gazette and on each university’s website. When you finally open the rules, they run to 60 pages and the deadline has already started.',
   },
-  'inicio.hero.cta': { en: 'Create a free account' },
+  'inicio.hero.cta': { en: 'Find scholarships' },
   'inicio.hero.ver': { en: 'See what it looks like' },
-  'inicio.hero.nota': { en: 'No card. Any email works, not just Gmail.' },
+  'inicio.hero.nota': { en: 'Free. You only need an account to see the full list.' },
 
   'inicio.panel.l1': { en: 'Resolution … calling for …… places' },
   'inicio.panel.l2': { en: 'Official rules — chapter III, requirements' },
@@ -585,12 +581,20 @@ const DICC = {
     es: 'Sirve para saber por dónde llega la gente. Si no quieres contestar, pasa sin más.',
     en: 'It tells us where people come from. If you would rather not answer, just skip it.',
   },
-  'cuenta.encuesta.skip': { es: 'Prefiero no contestar', en: 'I’d rather not answer' },
+  'cuenta.encuesta.skip': { es: 'Prefiero no contestar', en: "I'd rather not answer" },
   'cuenta.encuesta.ok': { es: 'Anotado', en: 'Noted' },
   'cuenta.encuesta.gracias': {
     es: 'Gracias. Ya sabemos por dónde llega la gente.',
     en: 'Thanks. Now we know where people come from.',
   },
+  // Segundo paso para ChatGPT y Claude: qué le preguntaste.
+  'cuenta.encuesta.pregunta.h': { es: '¿Qué le preguntaste?', en: 'What did you ask?' },
+  'cuenta.encuesta.pregunta.p': { es: 'Cuéntanos brevemente qué te preguntaste.', en: 'Tell us briefly what you asked.' },
+  'cuenta.encuesta.pregunta.ph': { es: 'ej. "me pidió lista de becas para maestría"', en: "e.g. 'It asked me for a master's fellowship list'" },
+  'cuenta.encuesta.pregunta.volver': { es: 'Volver', en: 'Back' },
+  'cuenta.encuesta.pregunta.enviar': { es: 'Enviar', en: 'Send' },
+  'cuenta.encuesta.pregunta.enviando': { es: 'Enviando...', en: 'Sending...' },
+
   'cuenta.origen.amigo': { es: 'Un amigo', en: 'A friend' },
   'cuenta.ajustes.t': { es: 'Tu cuenta', en: 'Your account' },
   'cuenta.ajustes.salir': { es: 'Cerrar sesión', en: 'Sign out' },
@@ -619,6 +623,54 @@ const DICC = {
   'cuenta.borrar.error': { es: 'No se pudo borrar la cuenta.', en: 'The account couldn’t be deleted.' },
   'cuenta.ajustes.tooltip': { es: 'Ajustes de la cuenta', en: 'Account settings' },
 
+  /* ── La página de perfil (perfil.html y js/perfil.js) ─────────────────
+     El cuerpo de la página lo pinta JavaScript, así que estas cadenas no
+     viven en el HTML y necesitan las dos versiones. Las del armazón (menú,
+     título, «Cargando…») también están aquí con su castellano para que no
+     dependan del texto que haya escrito en el HTML. */
+  'perfil.h1': { es: 'Tu perfil', en: 'Your profile' },
+  'perfil.cargando': { es: 'Cargando…', en: 'Loading…' },
+  'perfil.menu.k': { es: 'Tu espacio', en: 'Your space' },
+  'perfil.menu.perfil': { es: 'Perfil', en: 'Profile' },
+  'perfil.menu.becas': { es: 'Becas', en: 'Scholarships' },
+  'perfil.menu.erasmus': { es: 'Erasmus Mundus', en: 'Erasmus Mundus' },
+  'perfil.menu.sobre': { es: 'Sobre', en: 'About' },
+  'perfil.menu.buscar': { es: 'Volver al buscador', en: 'Back to search' },
+  'perfil.salir': { es: 'Cerrar sesión', en: 'Sign out' },
+
+  'perfil.sin.h': { es: 'No hay sesión', en: 'You are not signed in' },
+  'perfil.sin.p': {
+    es: 'Esta página es para gestionar tu cuenta. Entra para ver tu perfil académico y tus datos.',
+    en: 'This page is for managing your account. Sign in to see your academic profile and your data.',
+  },
+  'perfil.sin.btn': { es: 'Crear cuenta o entrar', en: 'Create an account or sign in' },
+
+  'perfil.datos.h': { es: 'Tu perfil académico', en: 'Your academic profile' },
+  'perfil.datos.p': {
+    es: 'Estos datos se quedan en tu navegador y sirven para comprobar qué requisitos cumples en el buscador.',
+    en: 'This data stays in your browser and is used to check which requirements you meet in the search.',
+  },
+  'perfil.datos.guardar': { es: 'Guardar', en: 'Save' },
+  'perfil.datos.guardado': { es: 'Guardado', en: 'Saved' },
+
+  'perfil.cuenta.h': { es: 'Tu cuenta', en: 'Your account' },
+  'perfil.cuenta.p': {
+    es: 'El correo con el que entraste y lo que puedes hacer con la cuenta.',
+    en: 'The email you signed in with and what you can do with your account.',
+  },
+  'perfil.sesiones.h': { es: 'Sesiones', en: 'Sessions' },
+  'perfil.sesiones.p': {
+    es: 'Cerrar todas las sesiones te saca también de este navegador.',
+    en: 'Closing all sessions also signs you out of this browser.',
+  },
+  'perfil.sesiones.btn': { es: 'Cerrar todas las sesiones', en: 'Close all sessions' },
+  'perfil.borrar.h': { es: 'Borrar la cuenta', en: 'Delete account' },
+  'perfil.borrar.p': {
+    es: 'La cuenta y sus sesiones desaparecen. No se puede deshacer.',
+    en: 'The account and its sessions are deleted. This cannot be undone.',
+  },
+  'perfil.borrar.btn': { es: 'Borrar mi cuenta', en: 'Delete my account' },
+
   /* ── Buscador (becas.html y js/becas.js) ──────────────────────────────
      Todo lo de aquí nace en JavaScript, así que lleva las dos versiones: en
      el HTML el castellano está escrito y el diccionario solo guarda el
@@ -628,30 +680,32 @@ const DICC = {
      tener dos listas que se desincronizan, que es justo lo que ese fichero
      evita. */
   'cab.crear': { es: 'Crear cuenta', en: 'Create account' },
-  'cab.salir': { es: 'Salir', en: 'Sign out' },
+  'cab.salir': { es: 'Cerrar sesión', en: 'Sign out' },
   'cab.local': { es: ' (local)', en: ' (local)' },
 
   'becas.h1': { en: 'Open calls' },
   'becas.lede': {
     en: 'Fill in your profile and see, requirement by requirement, which ones you meet.',
   },
-  'becas.nota': { en: 'Average grade' },
+  /* Estas cinco llevan también el castellano: `js/perfil.js` las usa para
+     pintar su formulario, y ahí no hay HTML del que tirar. */
+  'becas.nota': { es: 'Nota media', en: 'Average grade' },
   /* La coma decimal es de la nota castellana. En inglés el ejemplo va con
      punto, que es como se escribe allí; el campo acepta las dos. */
   'becas.nota.ph': { en: '7.5' },
-  'becas.edad': { en: 'Age' },
-  'becas.nivel': { en: 'Level' },
-  'becas.destino': { en: 'Destination' },
-  'becas.cualquiera': { en: 'Any' },
+  'becas.edad': { es: 'Edad', en: 'Age' },
+  'becas.nivel': { es: 'Nivel', en: 'Level' },
+  'becas.destino': { es: 'Destino', en: 'Destination' },
+  'becas.cualquiera': { es: 'Cualquiera', en: 'Any' },
   'becas.comprobar': { en: 'Check' },
   'becas.cargando': { en: 'Loading calls…' },
   'becas.pie': {
     en: 'BecasScout · An independent project. Every call links to its official source.',
   },
 
-  'nivel.grado': { en: 'Bachelor’s' },
-  'nivel.master': { en: 'Master’s' },
-  'nivel.doctorado': { en: 'Doctorate' },
+  'nivel.grado': { es: 'Grado', en: 'Bachelor’s' },
+  'nivel.master': { es: 'Máster', en: 'Master’s' },
+  'nivel.doctorado': { es: 'Doctorado', en: 'Doctorate' },
 
   /* El cartel del momento de búsqueda. El titular va en dos claves porque el
      número es un nodo aparte —el que sube de 0 al total— y no puede ir
@@ -787,6 +841,13 @@ const DICC = {
   'tarjeta.verConv': { es: 'Ver convocatoria', en: 'View call' },
   'tarjeta.verBoe': { es: 'Ver en el BOE', en: 'View in the BOE' },
   'fuente.ue': { es: 'UE', en: 'EU' },
+
+  /* El estado de un requisito, en palabras. Antes era un icono; el texto
+     sobrevive a la traducción y a un lector de pantalla, el icono no. Va
+     con las dos versiones porque se pinta desde JavaScript. */
+  'req.ok': { es: 'Cumples', en: 'You meet it' },
+  'req.no': { es: 'No cumples', en: 'You don’t meet it' },
+  'req.unk': { es: 'No lo sabemos', en: 'We don’t know' },
 
   'anillo.sinDatos': { es: 'sin datos', en: 'no data' },
   'anillo.anadeNota': { es: 'añade tu nota', en: 'add your grade' },

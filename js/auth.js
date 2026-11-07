@@ -183,22 +183,8 @@ function encuestaDeAlta() {
 // valor está también en `ORIGENES` de api/[...ruta].js: aquí se elige, allí se
 // comprueba. Añadir una opción son dos líneas, una en cada sitio.
 //
-// Los logotipos son de la plataforma que nombran y se usan solo para
-// nombrarla. Los trazos vienen de simple-icons (CC0), salvo el de OpenAI, que
-// sale de su propio favicon: simple-icons lo retiró a petición de ellos. Cada
-// uno lleva su color de marca; el de «un amigo» no es una marca y va con la
-// tinta del sitio. Van `aria-hidden`: la etiqueta de al lado ya dice lo que
-// es, y un lector de pantalla no necesita que se lo deletreen.
-const ICONOS = {
-  chatgpt: `<svg viewBox="29.487 29.964 121.035 119.954" aria-hidden="true"><path fill="#000" d="M75.91 73.628V62.232c0-.96.36-1.68 1.199-2.16l22.912-13.194c3.119-1.8 6.838-2.639 10.676-2.639 14.394 0 23.511 11.157 23.511 23.032 0 .839 0 1.799-.12 2.758l-23.752-13.914c-1.439-.84-2.879-.84-4.318 0L75.91 73.627Zm53.499 44.383v-27.23c0-1.68-.72-2.88-2.159-3.719L97.142 69.55l9.836-5.638c.839-.48 1.559-.48 2.399 0l22.912 13.195c6.598 3.839 11.035 11.995 11.035 19.912 0 9.116-5.397 17.513-13.915 20.992v.001Zm-60.577-23.99-9.836-5.758c-.84-.48-1.2-1.2-1.2-2.16v-26.39c0-12.834 9.837-22.55 23.152-22.55 5.039 0 9.716 1.679 13.676 4.678L70.993 55.516c-1.44.84-2.16 2.039-2.16 3.719v34.787-.002Zm21.173 12.234L75.91 98.339V81.546l14.095-7.917 14.094 7.917v16.793l-14.094 7.916Zm9.056 36.467c-5.038 0-9.716-1.68-13.675-4.678l23.631-13.676c1.439-.839 2.159-2.038 2.159-3.718V85.863l9.956 5.757c.84.48 1.2 1.2 1.2 2.16v26.389c0 12.835-9.957 22.552-23.27 22.552v.001Zm-28.43-26.75L47.72 102.778c-6.599-3.84-11.036-11.996-11.036-19.913 0-9.236 5.518-17.513 14.034-20.992v27.35c0 1.68.72 2.879 2.16 3.718l29.989 17.393-9.837 5.638c-.84.48-1.56.48-2.399 0Zm-1.318 19.673c-13.555 0-23.512-10.196-23.512-22.792 0-.959.12-1.919.24-2.879l23.63 13.675c1.44.84 2.88.84 4.32 0l30.108-17.392v11.395c0 .96-.361 1.68-1.2 2.16l-22.912 13.194c-3.119 1.8-6.837 2.639-10.675 2.639Zm29.748 14.274c14.515 0 26.63-10.316 29.39-23.991 13.434-3.479 22.071-16.074 22.071-28.91 0-8.396-3.598-16.553-10.076-22.43.6-2.52.96-5.039.96-7.557 0-17.153-13.915-29.99-29.989-29.99-3.239 0-6.358.48-9.477 1.56-5.398-5.278-12.835-8.637-20.992-8.637-14.515 0-26.63 10.316-29.39 23.991-13.434 3.48-22.07 16.074-22.07 28.91 0 8.396 3.598 16.553 10.075 22.431-.6 2.519-.96 5.038-.96 7.556 0 17.154 13.915 29.989 29.99 29.989 3.238 0 6.357-.479 9.476-1.559 5.397 5.278 12.835 8.637 20.992 8.637Z"/></svg>`,
-  claude: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#D97757" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z"/></svg>`,
-  instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0069" d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></svg>`,
-  tiktok: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#000" d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`,
-  youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`,
-  reddit: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF4500" d="M12 0C5.373 0 0 5.373 0 12c0 3.314 1.343 6.314 3.515 8.485l-2.286 2.286C.775 23.225 1.097 24 1.738 24H12c6.627 0 12-5.373 12-12S18.627 0 12 0Zm4.388 3.199c1.104 0 1.999.895 1.999 1.999 0 1.105-.895 2-1.999 2-.946 0-1.739-.657-1.947-1.539v.002c-1.147.162-2.032 1.15-2.032 2.341v.007c1.776.067 3.4.567 4.686 1.363.473-.363 1.064-.58 1.707-.58 1.547 0 2.802 1.254 2.802 2.802 0 1.117-.655 2.081-1.601 2.531-.088 3.256-3.637 5.876-7.997 5.876-4.361 0-7.905-2.617-7.998-5.87-.954-.447-1.614-1.415-1.614-2.538 0-1.548 1.255-2.802 2.803-2.802.645 0 1.239.218 1.712.585 1.275-.79 2.881-1.291 4.64-1.365v-.01c0-1.663 1.263-3.034 2.88-3.207.188-.911.993-1.595 1.959-1.595Zm-8.085 8.376c-.784 0-1.459.78-1.506 1.797-.047 1.016.64 1.429 1.426 1.429.786 0 1.371-.369 1.418-1.385.047-1.017-.553-1.841-1.338-1.841Zm7.406 0c-.786 0-1.385.824-1.338 1.841.047 1.017.634 1.385 1.418 1.385.785 0 1.473-.413 1.426-1.429-.046-1.017-.721-1.797-1.506-1.797Zm-3.703 4.013c-.974 0-1.907.048-2.77.135-.147.015-.241.168-.183.305.483 1.154 1.622 1.964 2.953 1.964 1.33 0 2.47-.81 2.953-1.964.057-.137-.037-.29-.184-.305-.863-.087-1.795-.135-2.769-.135Z"/></svg>`,
-  amigo: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#5E686D" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4Z"/></svg>`,
-};
-
+// Los logotipos se han retirado: la regla general del proyecto es que no hay
+// ni un SVG en la web.
 const ORIGENES = [
   ['chatgpt', 'ChatGPT'],
   ['claude', 'Claude'],
@@ -213,7 +199,7 @@ const ORIGENES = [
 /**
  * La pregunta, una sola vez, justo después de crear la cuenta.
  *
- * Se puede pasar de tres maneras —el aspa, el enlace del pie y `Escape`— y
+ * Se puede pasar de tres maneras —el aspa, el enlace del pie y `Escape`) y
  * ninguna pide explicación. La respuesta es lo que decide cosas del producto
  * —dónde merece la pena escribir— así que una respuesta forzada valdría menos
  * que ninguna: quien pasa, pasa.
@@ -229,29 +215,36 @@ function abrirEncuesta() {
   const scrim = document.createElement('div');
   scrim.className = 'scrim';
   scrim.id = 'scrim';
-  scrim.innerHTML = `
-    <div class="modal modal-wrap encuesta" role="dialog" aria-modal="true" aria-labelledby="enc-t" tabindex="-1">
-      <button class="modal-x" aria-label="${t('cuenta.pasar')}">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+  // El tamaño del modal va en línea a propósito: styles.css la sigue tocando.
+  // Cuando el otro agente deje de tocar ese fichero, moverlo a CSS.
+  const caja = document.createElement('div');
+  caja.className = 'modal modal-wrap encuesta';
+  caja.setAttribute('role', 'dialog');
+  caja.setAttribute('aria-modal', 'true');
+  caja.setAttribute('aria-labelledby', 'enc-t');
+  caja.tabIndex = -1;
+  caja.style.maxWidth = '560px';
+  caja.style.padding = '40px';
 
-      <h3 id="enc-t">${t('cuenta.encuesta.h')}</h3>
-      <p class="enc-sub">${t('cuenta.encuesta.p')}</p>
+  caja.innerHTML = `
+    <button class="modal-x" aria-label="${t('cuenta.pasar')}">×</button>
 
-      <div class="enc-opts">
-        ${ORIGENES.map(([v, nombre]) => `<button type="button" data-origen="${v}"><span class="enc-ico">${ICONOS[v]}</span>${nombre ?? t('cuenta.origen.amigo')}</button>`).join('')}
-      </div>
+    <h3 id="enc-t">${t('cuenta.encuesta.h')}</h3>
+    <p class="enc-sub">${t('cuenta.encuesta.p')}</p>
 
-      <p class="enc-skip"><button type="button">${t('cuenta.encuesta.skip')}</button></p>
-    </div>`;
+    <div class="enc-opts">
+      ${ORIGENES.map(([v, nombre]) => `<button type="button" data-origen="${v}">${nombre ?? t('cuenta.origen.amigo')}</button>`).join('')}
+    </div>
 
+    <p class="enc-skip"><button type="button">${t('cuenta.encuesta.skip')}</button></p>
+  `;
+
+  scrim.appendChild(caja);
   document.body.appendChild(scrim);
   document.body.style.overflow = 'hidden';
 
   let cerrado = false;
-  function cerrar(respuesta) {
+  function cerrar(respuesta, pregunta = null) {
     if (cerrado) return;
     cerrado = true;
     document.removeEventListener('keydown', alEscape);
@@ -265,6 +258,119 @@ function abrirEncuesta() {
     if (e.key === 'Escape') cerrar('pasar');
   }
 
+  function mostrarPasoPregunta(origen) {
+    caja.innerHTML = `
+      <button class="modal-x" aria-label="${t('cuenta.pasar')}">×</button>
+
+      <h3 id="enc-t">${t('cuenta.encuesta.pregunta.h')}</h3>
+      <p class="enc-sub">${t('cuenta.encuesta.pregunta.p')}</p>
+
+      <form id="paso-pregunta">
+        <input type="text" id="pregunta-input" class="enc-input"
+               placeholder="${t('cuenta.encuesta.pregunta.ph')}"
+               autocomplete="off" maxlength="500">
+        <div class="enc-acciones">
+          <button type="button" id="volver-btn">${t('cuenta.encuesta.pregunta.volver')}</button>
+          <button type="submit" id="enviar-pregunta" class="btn btn-rust">${t('cuenta.encuesta.pregunta.enviar')}</button>
+        </div>
+      </form>
+
+      <p class="enc-skip"><button type="button">${t('cuenta.encuesta.skip')}</button></p>
+    `;
+
+    // Referencias a elementos
+    const volverBtn = caja.querySelector('#volver-btn');
+    const skipBtn = caja.querySelector('.enc-skip button');
+    const formulario = caja.querySelector('#paso-pregunta');
+    const inputPregunta = caja.querySelector('#pregunta-input');
+    const enviarBtn = caja.querySelector('#enviar-pregunta');
+    const modalX = caja.querySelector('.modal-x');
+
+    // Volver al paso anterior
+    volverBtn.onclick = () => mostrarPasoInicial();
+
+    skipBtn.onclick = () => {
+      api('origen', { origen }).catch(() => {});
+      caja.innerHTML = `
+        <h3>${t('cuenta.encuesta.ok')}</h3>
+        <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+      setTimeout(() => cerrar('pasar'), 850);
+    };
+
+    // Enviar el formulario
+    formulario.onsubmit = async (e) => {
+      e.preventDefault();
+      const pregunta = inputPregunta.value.trim();
+      enviarBtn.disabled = true;
+      enviarBtn.textContent = t('cuenta.encuesta.pregunta.enviando');
+
+      try {
+        api('origen', { origen, pregunta }).catch(() => {});
+
+        // Un acuse breve antes de cerrar
+        caja.innerHTML = `
+          <h3>${t('cuenta.encuesta.ok')}</h3>
+          <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+        setTimeout(() => {
+          cerrar(origen, pregunta || null);
+        }, 850);
+      } catch {
+        enviarBtn.disabled = false;
+        enviarBtn.textContent = t('cuenta.encuesta.pregunta.enviar');
+      }
+    };
+
+    // Click en el aspa o fuera del modal
+    modalX.onclick = () => {
+      api('origen', { origen }).catch(() => {});
+      caja.innerHTML = `
+        <h3>${t('cuenta.encuesta.ok')}</h3>
+        <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+      setTimeout(() => cerrar(origen), 850);
+    };
+    caja.addEventListener('click', (e) => {
+      if (e.target === scrim) {
+        api('origen', { origen }).catch(() => {});
+        caja.innerHTML = `<h3>${t('cuenta.encuesta.ok')}</h3><p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+        setTimeout(() => cerrar(origen), 850);
+      }
+    });
+
+    inputPregunta.focus();
+  }
+
+  function mostrarPasoInicial() {
+    caja.innerHTML = `
+      <button class="modal-x" aria-label="${t('cuenta.pasar')}">×</button>
+
+      <h3 id="enc-t">${t('cuenta.encuesta.h')}</h3>
+      <p class="enc-sub">${t('cuenta.encuesta.p')}</p>
+
+      <div class="enc-opts">
+        ${ORIGENES.map(([v, nombre]) => `<button type="button" data-origen="${v}">${nombre ?? t('cuenta.origen.amigo')}</button>`).join('')}
+      </div>
+
+      <p class="enc-skip"><button type="button">${t('cuenta.encuesta.skip')}</button></p>
+    `;
+
+    // Reconfigurar listeners
+    caja.focus();
+
+    const conPasoSegundo = new Set(['chatgpt', 'claude']);
+    scrim.querySelectorAll('[data-origen]').forEach((b) => {
+      b.onclick = () => {
+        const v = b.dataset.origen;
+        if (conPasoSegundo.has(v)) {
+          mostrarPasoPregunta(v);
+        } else {
+          api('origen', { origen: v }).catch(() => {});
+          caja.innerHTML = `<h3>${t('cuenta.encuesta.ok')}</h3><p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+          setTimeout(() => cerrar(v), 850);
+        }
+      };
+    });
+  }
+
   scrim.querySelector('.modal-x').onclick = () => cerrar('pasar');
   scrim.querySelector('.enc-skip button').onclick = () => cerrar('pasar');
   scrim.addEventListener('click', (e) => { if (e.target === scrim) cerrar('pasar'); });
@@ -274,19 +380,29 @@ function abrirEncuesta() {
   // «ChatGPT» el anillo verde la señala como si estuviera elegida, y aquí no
   // hay nada elegido de antemano. Con el foco en el diálogo, `Tab` entra por
   // la primera opción igual.
-  scrim.querySelector('.encuesta').focus();
+  caja.focus();
+
+  // Opciones que tienen segundo paso: ChatGPT y Claude
+  const conPasoSegundo = new Set(['chatgpt', 'claude']);
 
   scrim.querySelectorAll('[data-origen]').forEach((b) => {
     b.onclick = () => {
       const v = b.dataset.origen;
-      api('origen', { origen: v }).catch(() => {});
 
-      // Un acuse breve antes de cerrar. Sin él, un clic que cierra en el acto
-      // no se distingue de un clic que no hizo nada.
-      scrim.querySelector('.encuesta').innerHTML = `
-        <h3>${t('cuenta.encuesta.ok')}</h3>
-        <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
-      setTimeout(() => cerrar(v), 850);
+      if (conPasoSegundo.has(v)) {
+        // Mostrar el segundo paso
+        mostrarPasoPregunta(v);
+      } else {
+        // Los demás orígenes: enviar directamente y cerrar
+        api('origen', { origen: v }).catch(() => {});
+
+        // Un acuse breve antes de cerrar. Sin él, un clic que cierra en el acto
+        // no se distingue de un clic que no hizo nada.
+        caja.innerHTML = `
+          <h3>${t('cuenta.encuesta.ok')}</h3>
+          <p class="enc-sub">${t('cuenta.encuesta.gracias')}</p>`;
+        setTimeout(() => cerrar(v), 850);
+      }
     };
   });
 }
@@ -360,11 +476,7 @@ export async function abrirAjustes() {
 
   function pasoInicio() {
     caja.innerHTML = `
-      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">×</button>
 
       <h3 id="ajs-t">${t('cuenta.ajustes.t')}</h3>
 
@@ -413,11 +525,7 @@ export async function abrirAjustes() {
 
   function pasoBorrar() {
     caja.innerHTML = `
-      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
+      <button class="modal-x" aria-label="${t('cuenta.cerrar')}">×</button>
 
       <h3>${t('cuenta.borrar.h')}</h3>
       <p class="enc-sub">${t('cuenta.borrar.p')}</p>
@@ -487,7 +595,7 @@ export async function abrirAjustes() {
  *
  * Lo que NO hace es desbloquear contenido. Antes ponía un `cache` con valor
  * truthy y el buscador lo leía como «hay sesión», así que `velar()` no se
- * llamaba y las fichas se veían enteras sin cuenta. Lo grave: ocurría justo
+ * llamaba y las fichas se veían enteras sin cuenta. Lo grave: ocurrió justo
  * cuando la API estaba rota —el 17 de octubre de 2026, FUNCTION_INVOCATION_FAILED
  * en todas las rutas—, que es cuando menos tiene sentido regalar la puerta.
  * El velo es el producto; un modo de emergencia que lo levanta miente en la

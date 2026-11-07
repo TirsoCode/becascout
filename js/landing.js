@@ -7,7 +7,7 @@
  * texto tapado— sin ningún dato real.
  */
 
-import { sesion, sesionFresca, abrirAjustes, revisarEncuesta } from './auth.js';
+import { sesion, sesionFresca, revisarEncuesta } from './auth.js';
 import { t } from './i18n.js';
 
 /* Si ya hay sesión, el botón de la cabecera pasa a ser el de buscar. */
@@ -15,7 +15,6 @@ async function pintarCabecera() {
   const cont = document.querySelector('.top-act');
   if (!cont) return;
   // Evita el parpadeo de «Crear cuenta» mientras se resuelve la sesión
-  cont.innerHTML = '<span class="pill mono">…</span>';
   const s = await sesion();
   // Lo que esta pintada representa es también el estado que `alVolver`
   // compara. Empezar en `null` era una trampa: el primer repinte tras el alta
@@ -68,26 +67,25 @@ async function pintarCabecera() {
   const div = document.createElement('div');
   div.className = 'session';
 
-  const av = document.createElement('span');
-  av.className = 'session-av';
-  av.textContent = (s.email?.[0] ?? '?').toUpperCase();
-
   const nombre = document.createElement('span');
   const b = document.createElement('b');
-  b.textContent = String(s.email ?? '').split('@')[0];
+  const parte = String(s.email ?? '').split('@')[0];
+  b.textContent = parte.charAt(0).toUpperCase() + parte.slice(1);
   nombre.appendChild(b);
 
-  // El perfil abre los ajustes —salir y borrar la cuenta—; en la sesión de
-  // juguete no hay nada que ajustar y el nombre queda como texto.
+  // El nombre ya no abre nada: el perfil —salir, cerrar sesiones, borrar la
+  // cuenta— vive en su propia página (`perfil.html`), a la que se llega por
+  // cualquiera de los dos caminos. En la sesión de juguete no hay cuenta que
+  // gestionar, así que el nombre queda como texto suelto.
   if (!s.local) {
-    const pf = document.createElement('button');
+    const pf = document.createElement('a');
     pf.className = 'session-perfil';
+    pf.href = '/perfil.html';
     pf.title = t('cuenta.ajustes.tooltip');
-    pf.append(av, nombre);
-    pf.onclick = abrirAjustes;
+    pf.append(nombre);
     div.append(pf);
   } else {
-    div.append(av, nombre);
+    div.append(nombre);
   }
 
   cont.appendChild(div);

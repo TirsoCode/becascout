@@ -317,6 +317,27 @@ await prueba('guardarOrigen anota la respuesta en la cuenta, sin tocar el resto'
   );
 });
 
+await prueba('guardarOrigen guarda la pregunta en origen_pregunta', async () => {
+  await crear('p@ejemplo.com', 'hash', 'sal');
+  const pregunta = '¿Qué becas para maestría en IA?';
+  assert.equal(await guardarOrigen('P@Ejemplo.com', 'chatgpt', pregunta), true);
+
+  const u = await buscar('p@ejemplo.com');
+  assert.equal(u.origen, 'chatgpt');
+  assert.equal(u.origen_pregunta, pregunta, 'la pregunta debe guardarse en origen_pregunta');
+  assert.ok(u.origen_en, 'debe quedar la fecha en que se contestó');
+  assert.equal(u.hash, 'hash', 'el PATCH no debe pisar las otras columnas');
+});
+
+await prueba('guardarOrigen con pregunta vacía guarda null en origen_pregunta', async () => {
+  await crear('q@ejemplo.com', 'hash', 'sal');
+  assert.equal(await guardarOrigen('Q@Ejemplo.com', 'claude', ''), true);
+
+  const u = await buscar('q@ejemplo.com');
+  assert.equal(u.origen, 'claude');
+  assert.equal(u.origen_pregunta, null, 'la pregunta vacía debe guardarse como null');
+});
+
 await prueba('guardarOrigen devuelve false si esa cuenta no existe', async () => {
   assert.equal(await guardarOrigen('nadie@ejemplo.com', 'claude'), false);
 });

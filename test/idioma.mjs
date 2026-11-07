@@ -467,9 +467,43 @@ const encuesta = await evaluar(`(() => {
 ok(encuesta.abierta, 'la encuesta de llegada no se abre con la bandera puesta');
 if (encuesta.abierta) {
   ok(encuesta.opciones.length === 7, `la encuesta no trae sus siete opciones (${encuesta.opciones.length})`);
-  ok(encuesta.opciones[6] === 'A friend', `la séptima opción no está en inglés («${encuesta.opciones[6]}»)`);
+  ok(encuesta.opciones[6] === 'A friend', `la séptima opción no está en inglés ("${encuesta.opciones[6]}")`);
   ok(!CASTELLANO.test(encuesta.titulo + ' ' + encuesta.sub + ' ' + encuesta.pasar),
-    `queda castellano en la encuesta («${encuesta.titulo}» · «${encuesta.pasar}»)`);
+    `queda castellano en la encuesta ("${encuesta.titulo}" · "${encuesta.pasar}")`);
+}
+
+// ── Segundo paso de la encuesta (ChatGPT y Claude) en inglés ─────────
+
+/* Al pulsar ChatGPT en inglés debe aparecer el campo de pregunta. */
+console.log('El segundo paso de la encuesta al pulsar ChatGPT en inglés');
+
+await evaluar("document.querySelector('.encuesta [data-origen=\"chatgpt\"]').click()");
+await new Promise((r) => setTimeout(r, 300));
+
+const segundoPaso = await evaluar(`(() => {
+  const m = document.querySelector('#scrim .encuesta');
+  if (!m) return { abierto: false };
+  const titulo = m.querySelector('#enc-t')?.textContent ?? '';
+  const input = m.querySelector('#pregunta-input');
+  const enviar = m.querySelector('#enviar-pregunta')?.textContent ?? '';
+  const volver = m.querySelector('#volver-btn')?.textContent ?? '';
+  return {
+    abierto: true,
+    titulo: titulo,
+    tieneInput: !!input,
+    placeholder: input?.placeholder ?? '',
+    botonEnviar: enviar,
+    botonVolver: volver,
+  };
+})()`);
+
+ok(segundoPaso.abierto, 'el segundo paso no se abre al pulsar ChatGPT');
+if (segundoPaso.abierto) {
+  ok(segundoPaso.titulo === 'What did you ask?',
+    `el título del segundo paso no está en inglés ("${segundoPaso.titulo}")`);
+  ok(segundoPaso.tieneInput, 'el segundo paso no tiene el campo de pregunta');
+  ok(!CASTELLANO.test(segundoPaso.titulo + ' ' + segundoPaso.botonEnviar + ' ' + segundoPaso.botonVolver),
+    `queda castellano en el segundo paso ("${segundoPaso.titulo}" · "${segundoPaso.botonEnviar}" · "${segundoPaso.botonVolver}")`);
 }
 
 console.log('');

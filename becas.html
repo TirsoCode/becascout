@@ -23,7 +23,6 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Buscar becas — BecasScout">
 <meta name="twitter:description" content="Busca becas en Europa y comprueba requisito a requisito cuáles cumples.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M6 3.4h8l4.6 4.6v12.6H6z' fill='%23F7F4EC'/%3E%3Cpath d='M14 3.4v4.6h4.6z' fill='%23D8D0BF'/%3E%3Cpath d='M8.4 10.4h4.4M8.4 13.2h3' stroke='%23C2B9A6' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M18.9 4.6 12 14.2' stroke='%231A2A24' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M12 14.2 9.9 17.2' stroke='%231A2A24' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16.6 7.7 14.6 10.3' stroke='%23A9BFB4' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -35,18 +34,47 @@
        enlace activo del pie y las demás, apagadas. Ya no: todos los enlaces
        del pie pesan lo mismo y se distinguen por el subrayado al pasar. -->
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
+
+<!-- El dock del buscador. Es la misma columna del perfil, para que el
+     espacio de trabajo sea uno solo: desde aquí se salta a Perfil, a las
+     becas de Erasmus o a la página del método sin volver a la portada.
+     Nace oculto y solo lo enseña `js/becas.js` cuando hay una cuenta de
+     verdad (`body.con-dock`). Sin sesión, la página sigue con su cabecera
+     de siempre: el dock lleva el correo y «Cerrar sesión», y eso no tiene
+     sentido para quien todavía no ha entrado. -->
+<aside class="perfil-lateral dock-becas" id="dock-becas" hidden>
+  <a class="brand perfil-marca" href="/">
+    <span class="brand-name">Becas<b>Scout</b></span>
+  </a>
+
+  <nav class="perfil-menu">
+    <p class="perfil-menu-k" data-i18n="perfil.menu.k">Tu espacio</p>
+
+    <a class="perfil-menu-a" href="/perfil.html" data-i18n="perfil.menu.perfil">Perfil</a>
+    <a class="perfil-menu-a activa" href="/becas.html" data-i18n="perfil.menu.becas">Becas</a>
+    <a class="perfil-menu-a" href="/erasmus-mundus.html" data-i18n="perfil.menu.erasmus">Erasmus Mundus</a>
+    <a class="perfil-menu-a" href="/sobre.html" data-i18n="perfil.menu.sobre">Sobre</a>
+  </nav>
+
+  <div class="perfil-lateral-pie">
+    <a class="perfil-salir" href="/becas.html" data-i18n="perfil.menu.buscar">Volver al buscador</a>
+    <div class="perfil-lateral-cuenta">
+      <div class="perfil-lateral-email" id="dock-email"></div>
+      <button class="btn btn-brand perfil-salir-sesion" id="dock-salir" data-i18n="perfil.salir">Cerrar sesión</button>
+    </div>
+  </div>
+</aside>
 
 <header class="top">
   <div class="shell top-in">
     <a class="brand" href="/">
-      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6.6 3.2h7.2l4.4 4.4v13.2H6.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M13.8 3.2v4.4h4.4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-        <path d="M19.2 5 12.3 14.4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M12.3 14.4 10.4 17.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
       <span class="brand-name">Becas<b>Scout</b></span>
     </a>
     <nav class="top-nav">
@@ -67,9 +95,15 @@
 <main>
   <section class="find-top">
     <div class="shell">
-      <h1 style="font-family:var(--display);font-size:clamp(30px,4vw,42px);font-weight:400;letter-spacing:-.022em;line-height:1.05;margin-bottom:8px" data-i18n="becas.h1">
-        Convocatorias abiertas
-      </h1>
+      <!-- Con el dock puesto no hay cabecera (la columna la sustituye), así
+           que el conmutador de idioma sube aquí. Sin dock, este va oculto y
+           el de la cabecera es el que se ve: nunca hay dos a la vez. -->
+      <div class="find-head">
+        <h1 style="font-family:var(--display);font-size:clamp(30px,4vw,42px);font-weight:400;letter-spacing:-.022em;line-height:1.05;margin-bottom:8px" data-i18n="becas.h1">
+          Convocatorias abiertas
+        </h1>
+        <div class="top-lang find-lang" data-lang-switch></div>
+      </div>
       <p style="font-size:15px;color:var(--ink-3);margin-bottom:22px" data-i18n="becas.lede">
         Rellena tu perfil y mira requisito a requisito cuáles cumples.
       </p>

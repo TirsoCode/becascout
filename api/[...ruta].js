@@ -624,13 +624,18 @@ async function anotarOrigen(req, res) {
   const usuario = await porToken(leerCookie(req.headers.cookie));
   if (!usuario) return json(res, 401, { error: 'sin sesión' });
 
-  const { origen: respuesta } = await cuerpo(req);
+  const { origen: respuesta, pregunta } = await cuerpo(req);
   const o = normaliza(respuesta);
   if (!ORIGENES.has(o)) {
     return json(res, 400, { error: 'Esa respuesta no está en la lista.' });
   }
 
-  await guardarOrigen(usuario.correo, o);
+  // La pregunta es texto libre: recorta a 500 para evitar abusos.
+  const preguntaRecortada = (typeof pregunta === 'string' && pregunta.length > 500)
+    ? pregunta.slice(0, 500)
+    : pregunta || null;
+
+  await guardarOrigen(usuario.correo, o, preguntaRecortada);
   json(res, 200, { ok: true });
 }
 

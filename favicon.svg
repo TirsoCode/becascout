@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="t">
+  <title id="t">BecasScout</title>
+  <!-- Trazo de tinta, no una loseta de color: el icono se lee como el de la
+       referencia (ProfScout), con la hoja de la convocatoria y la lupa.
+       La hoja lleva relleno de papel para que el dibujo siga viéndose en
+       una pestaña oscura; el resto va transparente. -->
+  <g transform="rotate(-2 256 256)" fill="none" stroke="#12463A" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M122 104c68-8 146-10 214-14l60 62c2 80 0 164-4 244-62 8-194 16-280 12-6-92-2-200 10-304Z" fill="#FBFAF7" stroke-width="26"/>
+    <path d="M336 90c4 22 4 42 18 56 10 10 26 12 42 6" fill="#F0E7D8" stroke-width="18"/>
+    <g stroke-width="17" opacity=".9">
+      <path d="M158 214c34-4 70-2 106-4"/>
+      <path d="M156 252c28-3 58-1 84-3"/>
+      <path d="M156 290c22-2 44-1 66-3"/>
+    </g>
+    <!-- La lente va encima de la hoja: el aro se cierra sobre el mango. -->
+    <path d="M350 264c46-2 88 38 86 86-2 46-40 84-86 82-46-2-84-38-82-84 2-46 38-82 82-84Z" fill="#FBFAF7" stroke-width="28"/>
+    <path d="M414 410c16 16 32 32 48 48" stroke-width="34"/>
+  </g>
+</svg>

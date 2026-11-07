@@ -39,3 +39,7 @@ _u.html
 # Chrome headless, pero el PNG es lo que se sirve y va en el repositorio.
 !og.png
 !logo.png
+!apple-touch-icon.png
+!favicon-16.png
+!favicon-32.png
+!favicon-192.png

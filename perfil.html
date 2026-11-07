@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu perfil — BecasScout</title>
+<meta name="description" content="Tu cuenta de BecasScout: tu perfil académico, tus sesiones y la cuenta que tienes con nosotros.">
+<meta name="theme-color" content="#12463A">
+<!-- Página utilitaria, como la de privacidad: lo que hay aquí es la cuenta
+     de una persona, no contenido que deba competir en el índice. -->
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lang.css">
+<script defer src="/_vercel/insights/script.js"></script>
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body class="body-perfil">
+
+<!-- La página de perfil tiene su propio armazón: una columna lateral fija
+     con las secciones y, al lado, el contenido. La cabecera del sitio no
+     aparece aquí —no se viene a navegar, se viene a gestionar la cuenta—,
+     pero el chip de idioma sí, hermano del resto y nunca dentro de una zona
+     que JavaScript vacía. -->
+<div class="perfil-shell">
+
+  <aside class="perfil-lateral">
+    <a class="brand perfil-marca" href="/">
+      <span class="brand-name">Becas<b>Scout</b></span>
+    </a>
+
+    <nav class="perfil-menu">
+      <p class="perfil-menu-k" data-i18n="perfil.menu.k">Tu espacio</p>
+
+      <a class="perfil-menu-a activa" href="/perfil.html" data-i18n="perfil.menu.perfil">Perfil</a>
+      <a class="perfil-menu-a" href="/becas.html" data-i18n="perfil.menu.becas">Becas</a>
+      <a class="perfil-menu-a" href="/erasmus-mundus.html" data-i18n="perfil.menu.erasmus">Erasmus Mundus</a>
+      <a class="perfil-menu-a" href="/sobre.html" data-i18n="perfil.menu.sobre">Sobre</a>
+    </nav>
+
+    <!-- El pie de la columna: quién eres y la salida. Va al final porque
+         es lo que se usa de vez en cuando, no lo que se busca. -->
+    <div class="perfil-lateral-pie">
+      <a class="perfil-salir" href="/becas.html" data-i18n="perfil.menu.buscar">Volver al buscador</a>
+      <div class="perfil-lateral-cuenta">
+        <div class="perfil-lateral-email" id="perfil-email"></div>
+        <button class="btn btn-brand perfil-salir-sesion" id="perfil-salir" data-i18n="perfil.salir">Cerrar sesión</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="perfil-main">
+
+    <header class="perfil-main-top">
+      <h1 data-i18n="perfil.h1">Tu perfil</h1>
+      <div class="top-lang" data-lang-switch></div>
+    </header>
+
+    <!-- El contenido lo escribe js/perfil.js: necesita saber si hay sesión
+         y cuál es el correo. Sin sesión, esta página no tiene sentido y lo
+         dice con un enlace al alta. -->
+    <div class="perfil-cuerpo" id="perfil-cuerpo">
+      <p class="loading" data-i18n="perfil.cargando">Cargando…</p>
+    </div>
+
+  </main>
+</div>
+
+<script type="module" src="js/perfil.js"></script>
+</body>
+</html>

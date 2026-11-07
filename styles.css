@@ -1,30 +1,30 @@
 /* ═══════════════════════════════════════════════════════════════
    BecasScout — sistema de diseño
    ═══════════════════════════════════════════════════════════════
-   Identidad propia, inspired-by pero no calcada: papel cálido en vez
-   de verde frío, Instrument Serif en vez de Fraunces, y una retícula
+   Identidad propia, inspired-by pero no calcada: papel blanco en vez de
+   verde frío, Instrument Serif en vez de Fraunces, y una retícula
    editorial con filetes en vez de tarjetas sombras sobre fondo gris.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
   /* Tinta sobre papel */
-  --paper:   #FBF8F3;
-  --paper-2: #F4EFE7;
-  --paper-3: #EBE4D8;
-  --rule:    #DED5C6;
-  --rule-2:  #C9BEAB;
+  --paper:   #ffffff;
+  --paper-2: #f7f7f7;
+  --paper-3: #ebebeb;
+  --rule:    #e5e5e5;
+  --rule-2:  #d4d4d4;
 
-  --ink:     #16191B;
-  --ink-2:   #3A4145;
-  --ink-3:   #5E686D;
-  --ink-4:   #8A9499;
-  --ink-5:   #B4BDC1;
+  --ink:     #111111;
+  --ink-2:   #333333;
+  --ink-3:   #666666;
+  --ink-4:   #999999;
+  --ink-5:   #b8b8b8;
 
   /* Marca: verde profundo, distinto del de ProfScout */
   --brand:      #12463A;
   --brand-lit:  #1C6B54;
   --brand-mid:  #2F8A6D;
-  --brand-wash: #E4F0EA;
+  --brand-wash: #eef5f1;
   --brand-line: #BFDCCE;
 
   /* Acento: ámbar, para plazos */
@@ -46,9 +46,9 @@
   --r-lg: 14px;
   --r-pill: 100px;
 
-  --shadow-1: 0 1px 2px rgba(22,25,27,.05);
-  --shadow-2: 0 10px 30px -12px rgba(22,25,27,.18);
-  --shadow-3: 0 30px 70px -20px rgba(22,25,27,.30);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-2: 0 10px 30px -12px rgba(0,0,0,.18);
+  --shadow-3: 0 30px 70px -20px rgba(0,0,0,.30);
 
   --ease: cubic-bezier(.2,.8,.2,1);
   --shell: 1140px;
@@ -66,22 +66,22 @@ body {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Un tramado muy suave, como el de una hoja de papel. Sin imágenes. */
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(169,107,20,.035), transparent 42%),
-    radial-gradient(circle at 88% 8%, rgba(18,70,58,.035), transparent 46%);
-  background-attachment: fixed;
 }
 
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 input, select { font: inherit; color: inherit; }
+input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
 img, svg { display: block; max-width: 100%; }
 
 ::selection { background: var(--brand-wash); color: var(--brand); }
 
 :focus-visible {
-  outline: 2px solid var(--brand-mid);
+  outline: 2px solid var(--brand);
   outline-offset: 3px;
   border-radius: 3px;
 }
@@ -95,8 +95,7 @@ img, svg { display: block; max-width: 100%; }
 /* ── Cabecera ──────────────────────────────────────────────── */
 .top {
   position: sticky; top: 0; z-index: 60;
-  background: rgba(251,248,243,.86);
-  backdrop-filter: saturate(1.4) blur(14px);
+  background: #ffffff;
   border-bottom: 1px solid var(--rule);
 }
 .top-in { display: flex; align-items: center; gap: 28px; height: 64px; }
@@ -117,46 +116,55 @@ img, svg { display: block; max-width: 100%; }
 .top-act { margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0; }
 
 /* ── Botones ───────────────────────────────────────────────── */
+/* Todos los botones son verdes de la web: fondo --brand y texto blanco.
+   No hay botón blanco ni outline: si es botón, es verde. */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 11px 21px; border-radius: var(--r-pill);
   font-size: 14.5px; font-weight: 550; letter-spacing: -.005em;
   white-space: nowrap; transition: all .18s var(--ease);
+  background: var(--brand); color: #ffffff; border: 1px solid var(--brand);
 }
-/* Todos los botones se levantan al pasar por encima. Los primarios ya lo
-   hacían y el resto se quedaba quieto, que se leía como dos gestos
-   distintos para lo mismo. Dos píxeles y una sombra breve: se nota vivo sin
-   que el botón parezca una tarjeta flotando por encima del papel. */
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -14px rgba(22,25,27,.45); }
+/* Todos los botones se levantan al pasar por encima. Dos píxeles y una sombra
+   breve: se nota vivo sin que el botón parezca una tarjeta flotando. */
+.btn:hover {
+  background: #0C362B; border-color: #0C362B;
+  transform: translateY(-2px); box-shadow: 0 10px 20px -14px rgba(18,70,58,.6);
+}
 .btn:active { transform: translateY(0); box-shadow: none; }
-.btn-brand { background: var(--brand); color: #F7F4EC; }
-.btn-brand:hover { background: #0C362B; box-shadow: 0 8px 20px -8px rgba(18,70,58,.6); }
-.btn-ghost { color: var(--ink-2); border: 1px solid var(--rule-2); }
-.btn-ghost:hover { border-color: var(--ink-4); background: var(--paper-2); }
-.btn-quiet { color: var(--ink-3); padding: 11px 15px; }
-.btn-quiet:hover { color: var(--ink); background: var(--paper-2); }
-/* La acción que no tiene vuelta atrás no se viste de primaria: aquí el borde
-   extiende el color de los estados —la misma lógica que «no cumples»—. */
-.btn-rust { color: var(--rust); border: 1px solid var(--rust-line); }
-.btn-rust:hover { border-color: var(--rust); background: var(--rust-wash); color: var(--rust); }
+
+.btn-brand { background: var(--brand); color: #ffffff; border: 1px solid var(--brand); }
+.btn-brand:hover { background: #0C362B; border-color: #0C362B; box-shadow: 0 8px 20px -8px rgba(18,70,58,.6); }
+.btn-ghost { background: var(--brand); color: #ffffff; border: 1px solid var(--brand); }
+.btn-ghost:hover { background: #0C362B; border-color: #0C362B; }
+.btn-quiet { background: var(--brand); color: #ffffff; border: 1px solid var(--brand); padding: 11px 21px; }
+.btn-quiet:hover { background: #0C362B; border-color: #0C362B; }
+/* La acción que no tiene vuelta atrás también va de verde: la diferencia la
+   hace el rótulo y el paso de confirmación, no el color del botón. */
+.btn-rust { background: var(--brand); color: #ffffff; border: 1px solid var(--brand); }
+.btn-rust:hover { background: #0C362B; border-color: #0C362B; }
 .btn:disabled { opacity: .45; pointer-events: none; }
 
 /* ── Portada ───────────────────────────────────────────────── */
-.hero { padding: 96px 0 72px; position: relative; }
-.hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 64px; align-items: center; }
-
-.kicker {
-  display: inline-flex; align-items: center; gap: 9px;
-  font-family: var(--mono); font-size: 11.5px; font-weight: 500;
-  letter-spacing: .1em; text-transform: uppercase; color: var(--brand-mid);
-  margin-bottom: 26px;
+.hero { padding: 88px 0 80px; position: relative; }
+/* El texto manda, pero no flota en mitad de la página. La columna ocupa el
+   ancho del sitio y el ancho de lectura se limita dentro. El `max-width` va
+   en `.hero-main` y no en `.hero-grid`, que también es `.shell`: puesto en
+   la rejilla, el `margin: auto` del shell centraba el bloque entero y el
+   titular dejaba de alinear con las secciones de abajo. */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  align-items: start;
 }
-.kicker::before { content: ''; width: 26px; height: 1px; background: var(--brand-line); }
+.hero-main { max-width: 760px; }
 
 .hero h1 {
   font-family: var(--display); font-weight: 400;
-  font-size: clamp(42px, 5.4vw, 70px); line-height: 1.02;
+  font-size: clamp(40px, 5vw, 66px); line-height: 1.03;
   letter-spacing: -.025em; margin-bottom: 26px;
+  text-wrap: balance;
 }
 .hero h1 em {
   font-style: italic; color: var(--brand);
@@ -166,9 +174,10 @@ img, svg { display: block; max-width: 100%; }
   background-position: 0 .82em;
   background-repeat: no-repeat;
 }
-.hero-lede { font-size: 18px; color: var(--ink-3); max-width: 46ch; margin-bottom: 34px; }
+.hero-lede { font-size: 18.5px; color: var(--ink-3); max-width: 50ch; margin-bottom: 34px; }
 .hero-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.hero-note { font-size: 13.5px; color: var(--ink-4); }
+.hero-note { font-size: 13.5px; color: var(--ink-4); margin-top: 16px; }
+
 
 /* Panel de la portada: muestra el PROBLEMA, no los datos. */
 .panel {
@@ -550,11 +559,19 @@ img, svg { display: block; max-width: 100%; }
 .pill.mono  { font-family: var(--mono); font-size: 11px; font-weight: 500; }
 
 .reqs { display: grid; gap: 9px; }
-.req { display: grid; grid-template-columns: 16px 1fr; gap: 10px; align-items: start; font-size: 13.5px; }
-.req-ico { margin-top: 3px; }
-.req.ok  .req-ico { color: var(--brand-mid); }
-.req.no  .req-ico { color: var(--rust); }
-.req.unk .req-ico { color: var(--ink-5); }
+/* Sin icono: el estado se dice con palabras. La primera columna es ahora
+   del ancho del texto, no del icono: por eso `auto` y no `16px`. */
+.req { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; font-size: 13.5px; }
+.req-estado {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: var(--r-pill);
+  white-space: nowrap; margin-top: 1px;
+  background: var(--paper-2); color: var(--ink-4);
+}
+.req.ok  .req-estado { background: var(--brand-wash); color: var(--brand); }
+.req.no  .req-estado { background: var(--rust-wash); color: var(--rust); }
+.req.unk .req-estado { background: var(--paper-2); color: var(--ink-4); }
 .req-k { font-weight: 600; }
 .req-v { font-family: var(--mono); font-size: 12px; color: var(--brand-lit); }
 .req-why { display: block; font-size: 12.5px; color: var(--ink-4); }
@@ -575,10 +592,23 @@ img, svg { display: block; max-width: 100%; }
 
 /* Anillo de requisitos */
 .ringbox { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: none; width: 92px; }
-.ring { position: relative; width: 76px; height: 76px; }
-.ring svg { width: 76px; height: 76px; transform: rotate(-90deg); }
-.ring-bg { stroke: var(--paper-3); }
-.ring-fg { stroke: var(--brand-mid); stroke-linecap: round; transition: stroke-dashoffset .7s var(--ease); }
+/* El anillo se pinta con `conic-gradient` y no con un SVG: el sitio no lleva
+   iconos, y un círculo de progreso no es un icono sino un gráfico. El ángulo
+   del arco llega en `--pct`, que el JavaScript calcula. */
+.ring {
+  position: relative; width: 76px; height: 76px;
+  border-radius: 50%;
+  background: conic-gradient(var(--brand-mid) var(--pct, 0deg), var(--paper-3) 0);
+}
+/* El hueco del medio: el `conic-gradient` pinta el disco entero y este
+   círculo tapa el centro, dejando solo el arco. */
+.ring::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border-radius: 50%;
+  background: var(--paper);
+}
+.ring-vacio { background: var(--paper-3); }
 .ring-n {
   position: absolute; inset: 0; display: grid; place-items: center;
   font-family: var(--mono); font-size: 19px; font-weight: 500; color: var(--ink);
@@ -614,14 +644,16 @@ img, svg { display: block; max-width: 100%; }
   user-select: none;
   -webkit-user-select: none;
 }
-/* Retícula de píxeles: dos gradientes cruzados forman la cuadrícula. */
+/* Retícula de píxeles: dos gradientes cruzados forman la cuadrícula.
+   El color de las líneas es el del papel —blanco—, para que la retícula se
+   vea como un velo sobre la ficha y no como un trama beige. */
 .lock::after {
   content: ''; position: absolute; inset: -8px;
   pointer-events: none;
   border-radius: var(--r-lg);
   background-image:
-    repeating-linear-gradient(0deg,   rgba(251,248,243,.55) 0 2px, transparent 2px 4px),
-    repeating-linear-gradient(90deg,  rgba(251,248,243,.55) 0 2px, transparent 2px 4px);
+    repeating-linear-gradient(0deg,   rgba(255,255,255,.55) 0 2px, transparent 2px 4px),
+    repeating-linear-gradient(90deg,  rgba(255,255,255,.55) 0 2px, transparent 2px 4px);
   mix-blend-mode: overlay;
   opacity: .5;
 }
@@ -773,7 +805,157 @@ body.con-cartel { padding-bottom: 104px; }
   .cuenta-top-in { padding: 8px 14px; }
   .cuenta-cajon { padding: 30px 20px 40px; }
 }
-.modal-x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-4); }
+
+/* ── La página de perfil (perfil.html) ─────────────────────────
+   Lo que antes era un modal en la cabecera —salir, cerrar las sesiones,
+   borrar la cuenta— es ahora una página con columna lateral. La razón
+   es de espacio: en un modal de 420 px no cabe explicar que la nota
+   media no sale del navegador, y la referencia de la que.this sitio
+   toma el tono (ProfScout) tiene exactamente esta forma: una columna
+   con las secciones y, al lado, el contenido.
+
+   La columna es fija y el contenido se desplaza: es la forma en la que
+   se recorre un «espacio de trabajo», y deja el correo siempre a la
+   vista, que es lo que se necesita cuando hay que cerrar sesiones o
+   borrar la cuenta. */
+.body-perfil { min-height: 100dvh; background: var(--paper); }
+.perfil-shell {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+/* ── La columna lateral ── */
+.perfil-lateral {
+  display: flex; flex-direction: column;
+  padding: 22px 16px 18px;
+  border-right: 1px solid var(--rule);
+  background: var(--paper-2);
+  position: sticky; top: 0; height: 100dvh;
+}
+.perfil-marca { padding: 0 10px 22px; }
+.perfil-menu { display: flex; flex-direction: column; gap: 2px; }
+.perfil-menu-k {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-4);
+  padding: 0 10px 8px;
+}
+.perfil-menu-a {
+  display: block; padding: 9px 12px; border-radius: var(--r-md);
+  font-size: 14px; color: var(--ink-2);
+  transition: background .16s var(--ease), color .16s var(--ease);
+}
+.perfil-menu-a:hover { background: var(--paper-3); color: var(--ink); }
+.perfil-menu-a.activa { background: var(--brand); color: #ffffff; font-weight: 600; }
+.perfil-menu-a.activa:hover { background: #0C362B; color: #ffffff; }
+
+.perfil-lateral-pie { margin-top: auto; padding-top: 20px; }
+.perfil-salir {
+  display: block; padding: 9px 12px; border-radius: var(--r-md);
+  font-size: 13.5px; color: var(--ink-3);
+  transition: background .16s var(--ease), color .16s var(--ease);
+}
+.perfil-salir:hover { background: var(--paper-3); color: var(--ink); }
+.perfil-lateral-cuenta {
+  margin-top: 12px; padding: 14px 12px 0;
+  border-top: 1px solid var(--rule);
+}
+.perfil-lateral-email {
+  font-size: 12.5px; color: var(--ink-3);
+  overflow-wrap: anywhere; margin-bottom: 10px;
+}
+.perfil-salir-sesion { width: 100%; padding: 9px 14px; font-size: 13px; }
+
+/* ── El contenido ── */
+.perfil-main { min-width: 0; }
+.perfil-main-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; padding: 30px 40px 0;
+  max-width: 860px;
+}
+.perfil-main-top h1 {
+  font-family: var(--display); font-weight: 400;
+  font-size: clamp(28px, 4vw, 38px); letter-spacing: -.02em; line-height: 1.1;
+}
+.perfil-cuerpo { max-width: 860px; padding: 26px 40px 80px; }
+
+.perfil-bloque {
+  padding: 26px 0 30px;
+  border-top: 1px solid var(--rule);
+}
+.perfil-bloque:first-child { border-top: 0; padding-top: 0; }
+.perfil-bloque h2 {
+  font-family: var(--display); font-weight: 400; font-size: 22px;
+  letter-spacing: -.015em; margin-bottom: 6px;
+}
+.perfil-bloque-p { font-size: 14.5px; color: var(--ink-3); margin-bottom: 20px; max-width: 62ch; }
+
+.perfil-campos {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px;
+}
+.perfil-campos .f label {
+  display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-4); margin-bottom: 5px;
+}
+.perfil-campos .f input, .perfil-campos .f select {
+  width: 100%; background: var(--paper); border: 1px solid var(--rule);
+  border-radius: var(--r-sm); padding: 9px 11px;
+  font-size: 14.5px; font-weight: 550; outline: none;
+  transition: border-color .16s, background .16s;
+}
+.perfil-campos .f input:focus, .perfil-campos .f select:focus { border-color: var(--brand-mid); background: #fff; }
+
+.perfil-acciones { display: flex; align-items: center; gap: 14px; margin-top: 18px; flex-wrap: wrap; }
+.perfil-guardado { font-size: 13px; color: var(--brand); }
+
+.perfil-correo {
+  padding: 12px 0; margin-bottom: 22px;
+  border-block: 1px solid var(--rule);
+  font-size: 15px; font-weight: 600; overflow-wrap: anywhere;
+}
+.perfil-lista { display: flex; flex-direction: column; }
+.perfil-fila {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--rule);
+}
+.perfil-fila strong { font-size: 15px; font-weight: 600; }
+.perfil-fila p { font-size: 13.5px; color: var(--ink-3); margin-top: 3px; }
+.perfil-fila .btn { flex: none; }
+.perfil-msg { margin-top: 16px; }
+
+.perfil-vacio { text-align: center; padding: 60px 24px; color: var(--ink-3); }
+.perfil-vacio h2 { font-family: var(--display); font-size: 24px; font-weight: 400; margin-bottom: 8px; color: var(--ink); }
+.perfil-vacio p { font-size: 15px; margin-bottom: 22px; }
+
+/* En un móvil la columna lateral no cabe al lado: se convierte en una
+   franja horizontal arriba, con el menú en fila. Es lo mismo que hace la
+   referencia en el móvil, y evita que el contenido quede con 248 px de
+   hueco a la izquierda en una pantalla de 390. */
+@media (max-width: 860px) {
+  .perfil-shell { grid-template-columns: 1fr; }
+  .perfil-lateral {
+    position: static; height: auto; border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 16px 20px;
+  }
+  .perfil-marca { padding: 0 0 14px; }
+  .perfil-menu { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+  .perfil-menu-k { width: 100%; padding: 0 0 4px; }
+  .perfil-menu-a { padding: 7px 12px; font-size: 13.5px; }
+  .perfil-lateral-pie { padding-top: 14px; }
+  .perfil-lateral-cuenta { display: flex; align-items: center; gap: 12px; padding: 12px 0 0; }
+  .perfil-lateral-email { margin-bottom: 0; }
+  .perfil-salir-sesion { width: auto; }
+  .perfil-main-top { padding: 24px 20px 0; }
+  .perfil-cuerpo { padding: 22px 20px 60px; }
+  .perfil-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .perfil-fila { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+@media (max-width: 420px) {
+  .perfil-campos { grid-template-columns: 1fr; }
+}
+
+.modal-x { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-4); font-size: 22px; line-height: 1; }
 .modal-x:hover { background: var(--paper-2); color: var(--ink); }
 .modal-wrap { position: relative; }
 
@@ -917,7 +1099,6 @@ body.con-cartel { padding-bottom: 104px; }
 
 /* ── Móvil ─────────────────────────────────────────────────── */
 @media (max-width: 940px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 44px; }
   .hero { padding: 64px 0 56px; }
   .steps { grid-template-columns: 1fr; }
   .faq-item { grid-template-columns: 1fr; gap: 9px; }
@@ -1004,4 +1185,50 @@ body.con-cartel { padding-bottom: 104px; }
      instantáneo también incomoda a quien pidió menos movimiento. */
   .btn:hover { transform: none; }
   html { scroll-behavior: auto; }
+}
+
+/* ── El dock del buscador (becas.html con sesión) ──────────────────────
+   La misma columna del perfil, reutilizada para que el espacio de trabajo
+   sea uno: marca, menú y cuenta a la izquierda, y la búsqueda a la derecha.
+   Solo aparece con una cuenta de verdad; sin sesión manda la cabecera de
+   siempre. La clase va en el `body` porque el dock tiene que decidir el
+   ancho de toda la página, no solo el suyo. */
+body.con-dock {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  align-items: start;
+}
+body.con-dock > .dock-becas {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  align-self: start;
+}
+body.con-dock > header,
+body.con-dock > main,
+body.con-dock > footer { grid-column: 2; }
+/* Con dock no hay cabecera: el dock ya lleva la marca y el menú. Dejar las
+   dos duplicaría la navegación y le robaría 64 px a la lista. */
+body.con-dock > header.top { display: none; }
+
+/* Sin la clase el dock no se enseña aunque el HTML esté ahí. Se usa
+   `body:not(.con-dock)` y no solo el atributo `hidden` porque
+   `.perfil-lateral` fija `display: flex`, y una regla de autor gana al
+   `[hidden]` del navegador. */
+body:not(.con-dock) .dock-becas { display: none; }
+
+/* El conmutador de idioma que sube al contenido cuando no hay cabecera. */
+.find-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
+.find-lang { display: none; }
+body.con-dock .find-lang { display: flex; padding-top: 6px; }
+
+@media (max-width: 860px) {
+  /* En el móvil el dock se convierte en la franja horizontal que ya usa el
+     perfil: mismo marcado, misma regla, ningún ancho que le robe a la
+     lista. */
+  body.con-dock { grid-template-columns: 1fr; }
+  body.con-dock > .dock-becas { grid-column: 1; grid-row: auto; }
+  body.con-dock > header,
+  body.con-dock > main,
+  body.con-dock > footer { grid-column: 1; }
+  body.con-dock .find-lang { display: flex; }
 }

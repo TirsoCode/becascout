@@ -258,12 +258,16 @@ async function main() {
 <meta name="twitter:title" content="Becas Erasmus Mundus: cuánto dan y qué piden">
 <meta name="twitter:description" content="${euros(importe.valor)} € al mes, título universitario y los ${emjm.length} programas con su ficha oficial.">
 <link rel="alternate" type="application/rss+xml" title="BecasScout — convocatorias" href="${BASE}/feed.xml">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2312463A'/%3E%3Cpath d='M6 3.4h8l4.6 4.6v12.6H6z' fill='%23F7F4EC'/%3E%3Cpath d='M14 3.4v4.6h4.6z' fill='%23D8D0BF'/%3E%3Cpath d='M8.4 10.4h4.4M8.4 13.2h3' stroke='%23C2B9A6' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M18.9 4.6 12 14.2' stroke='%231A2A24' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M12 14.2 9.9 17.2' stroke='%231A2A24' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16.6 7.7 14.6 10.3' stroke='%23A9BFB4' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="lang.css">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <!-- La tabla del catálogo es la única del sitio con cuatro columnas, y a
      390 px no cabe: los nombres de los programas son largos y las dos
@@ -404,7 +408,6 @@ ${filas}
 
 <footer class="foot">
   <div class="shell foot-in">
-    <small data-i18n="pie.independiente">BecasScout · Proyecto independiente. No somos ningún ministerio ni ninguna universidad.</small>
     <div class="foot-links">
       <a href="becas.html" data-i18n="pie.buscar">Buscar becas</a>
       <a href="erasmus-mundus.html" data-i18n="pie.erasmus">Erasmus Mundus</a>

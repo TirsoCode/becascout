@@ -17,12 +17,9 @@
  * los mismos tengas cuenta o no.
  */
 
-import { sesion, sesionFresca, haySesion, perfil, salir, abrirAjustes, revisarEncuesta } from './auth.js';
+import { sesion, sesionFresca, haySesion, perfil, salir, revisarEncuesta } from './auth.js';
 import { CODIGOS, nombreDe } from './paises.js';
 import { t, alCambiarIdioma, idiomaActual } from './i18n.js';
-
-const R = 34;                  // radio del anillo
-const CIRC = 2 * Math.PI * R;
 
 /* El nivel del perfil se guarda con su nombre castellano —es el `value` del
    `<select>` y lo que comparan los datos—, pero se enseña en el idioma que
@@ -222,13 +219,39 @@ function traducirPaises() {
 
 /* ── Cabecera de sesión ─────────────────────────────────────────────────── */
 
+/**
+ * El dock de la izquierda, el mismo del perfil.
+ *
+ * Solo se enciende con una cuenta de verdad. La sesión de juguete vive en
+ * memoria y sus enlaces no sobreviven a un cambio de página, así que con
+ * ella se queda la cabecera de siempre: un dock que lleva a un perfil que
+ * dice «no hay sesión» es peor que no tener dock.
+ *
+ * El `body` manda sobre la retícula (dos columnas o una); el `hidden` del
+ * HTML es la red por si el JavaScript no llega a ejecutarse.
+ */
+function pintarDock(s) {
+  const dock = $('#dock-becas');
+  if (!dock) return;
+
+  const conCuenta = Boolean(s && !s.local);
+  document.body.classList.toggle('con-dock', conCuenta);
+  dock.hidden = !conCuenta;
+  if (!conCuenta) return;
+
+  // El correo lo elige quien se registra: `textContent`, nunca una
+  // plantilla. Es el mismo motivo que en la cabecera.
+  const correo = $('#dock-email');
+  if (correo) correo.textContent = s.email ?? '';
+}
+
 /** La cabecera espera a la respuesta del servidor: la sesión ya no está en
  *  localStorage, y pintar «entrar» antes de saberlo hace parpadear el botón
  *  en cada carga. */
 async function pintarCabecera() {
   const zona = $('#sesion-zona');
-  zona.innerHTML = '<span class="pill mono">…</span>';
   const s = await sesion();
+  pintarDock(s);
   // Lo que esta pintada representa es también el estado que `alVolver`
   // compara (declarado más abajo). Empezar en `null` era una trampa: el
   // primer repinte tras el alta en la otra pestaña ve `null`, no repinta, y
@@ -242,38 +265,33 @@ async function pintarCabecera() {
     // registra. Interpolado en la plantilla, bastaba un correo que empezara por
     // `<` o por `"` para inyectar HTML. Una sola letra en pantalla no
     // justifica el riesgo.
-    const av = document.createElement('span');
-    av.className = 'session-av';
-    av.textContent = (s.email?.[0] ?? '?').toUpperCase();
-
     const nombre = document.createElement('span');
     const b = document.createElement('b');
-    b.textContent = String(s.email ?? '').split('@')[0];
+    const parte = String(s.email ?? '').split('@')[0];
+    b.textContent = parte.charAt(0).toUpperCase() + parte.slice(1);
     nombre.appendChild(b);
     if (s.local) nombre.appendChild(document.createTextNode(t('cab.local')));
 
-    // El perfil abre los ajustes —salir y borrar la cuenta—, salvo en la
-    // sesión de juguete, que no es cuenta y ahí no hay nada que ajustar.
+    // El nombre abre la página de perfil, donde están todas las cosas de la
+    // cuenta: salir, cerrar las sesiones y borrarla. La sesión de juguete no
+    // es cuenta, así que ahí no hay nada que gestionar.
     const d = document.createElement('div');
     d.className = 'session';
 
     if (!s.local) {
-      const pf = document.createElement('button');
+      const pf = document.createElement('a');
       pf.className = 'session-perfil';
+      pf.href = '/perfil.html';
       pf.title = t('cuenta.ajustes.tooltip');
-      pf.append(av, nombre);
-      pf.onclick = abrirAjustes;
+      pf.append(nombre);
       d.append(pf);
     } else {
-      d.append(av, nombre);
+      d.append(nombre);
     }
 
-    const x = document.createElement('button');
-    x.className = 'session-salir';
-    x.textContent = t('cab.salir');
-    x.onclick = salir;
-
-    d.append(x);
+    // Cerrar sesión ya no está aquí: estaba al lado del nombre y se sale sin
+    // querer con el ratón mientras se busca. Ahora vive en perfil.html, con
+    // el sitio que se merece para explicar qué cierra y qué no.
     zona.appendChild(d);
   } else {
     // La puerta es un enlace de verdad, no un botón que monta un modal: el
@@ -782,10 +800,6 @@ function tarjeta(b) {
   return `<article class="beca ${b.cerrada ? 'out' : ''}">
     <div>
       <div class="beca-org">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z" stroke="currentColor" stroke-width="2"/>
-          <circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="2"/>
-        </svg>
         <span>${esc(b.organizador)}</span>
       </div>
       <h2 class="beca-h">${esc(b.titulo)}</h2>
@@ -826,20 +840,12 @@ function tarjeta(b) {
       </span>
       <a class="src" href="${b.url}" target="_blank" rel="noopener">
         ${t(b.id.startsWith('BDNS') ? 'tarjeta.verConv' : 'tarjeta.verBoe')}
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 17L17 7M9 7h8v8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
       </a>
     </div>
   </article>`;
 }
 
 function fila(r) {
-  const ICONO = {
-    ok:  '<path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
-    no:  '<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
-    unk: '<circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 8.6v4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1.1" fill="currentColor"/>',
-  };
   const ok = cumple(r);
   const clase = ok === true ? 'ok' : ok === false ? 'no' : 'unk';
 
@@ -851,8 +857,12 @@ function fila(r) {
   const valor = r.valor != null && r.tipo !== 'fecha_limite'
     ? ` <span class="req-v">${esc(r.tipo === 'importe' || r.tipo === 'presupuesto' ? euros(r.valor) : r.valor)}</span>` : '';
 
+  // Sin icono: el estado se dice con palabras. El texto es lo que sobrevive
+  // a la traducción y a un lector de pantalla; un check verde no.
+  const estado = ok === true ? t('req.ok') : ok === false ? t('req.no') : t('req.unk');
+
   return `<div class="req ${clase}">
-    <svg class="req-ico" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">${ICONO[clase]}</svg>
+    <span class="req-estado">${estado}</span>
     <span>
       <span class="req-k">${esc(etiqueta(r.tipo))}</span>${valor}
       ${motivo(r, ok) ? `<span class="req-why">${esc(motivo(r, ok))}</span>` : ''}
@@ -863,16 +873,14 @@ function fila(r) {
 
 function anillo(ok, total, conPerfil) {
   const pct = total ? ok / total : 0;
-  const off = CIRC * (1 - pct);
   const cap = !total ? t('anillo.sinDatos') : !conPerfil ? t('anillo.anadeNota') : `${pct * 100 | 0}%`;
+  // El anillo se pinta con `conic-gradient` y no con un SVG: el sitio no lleva
+  // iconos, y un círculo de progreso no es un icono sino un gráfico. El
+  // conic va en el `--pct` y el CSS lo lee para el arco.
+  const ang = (pct * 360).toFixed(1);
 
   return `<div class="ringbox">
-    <div class="ring">
-      <svg viewBox="0 0 76 76" aria-hidden="true">
-        <circle class="ring-bg" cx="38" cy="38" r="${R}" fill="none" stroke-width="6"/>
-        <circle class="ring-fg" cx="38" cy="38" r="${R}" fill="none" stroke-width="6"
-                stroke-dasharray="${CIRC.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
-      </svg>
+    <div class="ring" style="--pct:${ang}deg">
       <div class="ring-n">${total ? `${ok}<small>/${total}</small>` : '—'}</div>
     </div>
     <div class="ring-cap">${cap}</div>
@@ -887,10 +895,7 @@ function anillo(ok, total, conPerfil) {
  */
 function anilloOculto() {
   return `<div class="ringbox">
-    <div class="ring">
-      <svg viewBox="0 0 76 76" aria-hidden="true">
-        <circle class="ring-bg" cx="38" cy="38" r="${R}" fill="none" stroke-width="6"/>
-      </svg>
+    <div class="ring ring-vacio">
       <div class="ring-n">—</div>
     </div>
     <div class="ring-cap">${esc(t('anillo.oculto'))}</div>
@@ -974,6 +979,11 @@ function esc(s) {
 /* ── Eventos ────────────────────────────────────────────────────────────── */
 
 $('#buscar').addEventListener('click', comprobar);
+
+// La salida del dock es la misma que la del perfil: cierra la sesión en el
+// servidor y recarga. Al volver sin sesión, `pintarCabecera()` retira el
+// dock y devuelve la cabecera con la puerta del alta.
+$('#dock-salir')?.addEventListener('click', salir);
 
 $('#pais').addEventListener('change', () => $('#buscar').click());
 $('#nivel').addEventListener('change', () => $('#buscar').click());
