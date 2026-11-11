@@ -338,8 +338,82 @@ function notaNum(v) {
   return Number.isFinite(n) ? n : null;
 }
 
+/* ── El nivel, en números ───────────────────────────────────────────────── */
+
+/**
+ * El rango de cada nivel, para poder compararlos.
+ *
+ * El perfil guarda el nivel con su nombre («Grado», «Máster», «Doctorado»),
+ * que es lo que dicen los datos. Para comparar hacen falta números: tener un
+ * máster cumple un requisito de grado, y no al revés.
+ */
+const RANGO_NIVEL = { Grado: 1, 'Máster': 2, Doctorado: 3 };
+
+/**
+ * El nivel que pide un texto de requisito, o `null` si no se sabe.
+ *
+ * Los requisitos de títuloPrevious titular llegan con la palabra del catálogo:
+ * «Grado universitario (o último año de grado)», «Máster», «Doctorado». El
+ * primero es un grado, aunque la frase sea larga.
+ */
+function nivelDeValor(valor) {
+  const v = plano(String(valor ?? ''));
+  if (!v) return null;
+  if (v.includes('doctorado') || v.includes('phd')) return 'Doctorado';
+  if (v.includes('master')) return 'Máster';
+  if (v.includes('grado') || v.includes('bachelor') || v.includes('licenci')) return 'Grado';
+  return null;
+}
+
+/**
+ * Sin tildes y en minúsculas, para comparar textos.
+ *
+ * El buscador escribe «alemania» y los datos dicen «Alemania»: sin esto, la
+ * búsqueda no encuentra ni las becas de Alemania.
+ */
+function plano(s) {
+  return String(s ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+/**
+ * El perfil, leído una sola vez por pintado.
+ *
+ * `perfil.leer()` va al `localStorage` y lo parsea. `cumple()` se llama una
+ * vez por requisito y por ficha, y hay 386 fichas: leer el perfil en cada
+ * llamada son cientos de lecturas del almacenamiento local en cada repintado,
+ * que es lo que hace que a veces la lista tarde en aparecer.
+ */
+let perfilCache = null;
+function perfilActual() {
+  if (!perfilCache) perfilCache = perfil.leer();
+  return perfilCache;
+}
+
+/**
+ * ¿El requisito se cumple con el perfil que hay?
+ *
+ * `true`, `false` o `null` («no lo sabemos»). Lo tercero no es un detalle: es
+ * la diferencia entre «no cumples» y «no hay dato», y confundirlas es la peor
+ * forma de equivocarse aquí (ver `tarjeta`).
+ *
+ * ── Por qué ahora sabe más que antes ──────────────────────────────────────
+ *
+ * Antes solo miraba la nota y la edad, y con eso solo el 8 % de los requisitos
+ * de la base era valorable: los 219 programas de Erasmus Mundus y las 148
+ * becas de DAAD tienen requisitos de **título previo**, y el anillo de
+ * «requisitos cumplidos» no tenía nada que enseñar. El estudiante veía «0 de
+ * 0» en casi todas las fichas y buscaba a ciegas.
+ *
+ * Ahora el título previo se compara con el nivel del perfil: un Erasmus
+ * Mundus pide «grado universitario (o último año de grado)», así que quien
+ * busca un máster o un doctorado ya lo cumple, y una beca de DAAD de
+ * doctorado no la cumple quien busca un grado.
+ */
 function cumple(r) {
-  const p = perfil.leer();
+  const p = perfilActual();
   if (r.tipo === 'nota_minima') {
     const n = notaNum(p.nota);
     if (n === null) return null;
@@ -349,11 +423,27 @@ function cumple(r) {
     if (p.edad === '' || p.edad == null) return null;
     return Number(p.edad) <= Number(r.valor);
   }
+  // El título previo: hay que tener ese título o uno superior.
+  if (r.tipo === 'titulacion') {
+    const mio = RANGO_NIVEL[p.nivel];
+    if (!mio) return null;
+    const pide = nivelDeValor(r.valor);
+    if (!pide) return null;
+    return mio >= RANGO_NIVEL[pide];
+  }
+  // El nivel del programa: tiene que ser el tuyo. Ni mayor ni menor: quien
+  // busca un doctorado no se puede apuntar a una beca de máster.
+  if (r.tipo === 'nivel') {
+    const mio = RANGO_NIVEL[p.nivel];
+    const pide = nivelDeValor(r.valor);
+    if (!mio || !pide) return null;
+    return mio === RANGO_NIVEL[pide];
+  }
   return null;
 }
 
 function motivo(r, ok) {
-  const p = perfil.leer();
+  const p = perfilActual();
   const n = notaNum(p.nota);
   if (r.tipo === 'nota_minima' && n !== null) {
     return ok ? t('motivo.notaOk', { n: num(n), v: r.valor })
@@ -362,6 +452,14 @@ function motivo(r, ok) {
   if (r.tipo === 'edad_max' && p.edad) {
     return ok ? t('motivo.edadOk', { n: p.edad, v: r.valor })
               : t('motivo.edadNo', { v: r.valor, n: p.edad });
+  }
+  if ((r.tipo === 'titulacion' || r.tipo === 'nivel') && p.nivel) {
+    const pide = nivelDeValor(r.valor);
+    if (pide) {
+      return ok
+        ? t('motivo.nivelOk', { n: nivelDe(p.nivel), v: nivelDe(pide) })
+        : t('motivo.nivelNo', { n: nivelDe(p.nivel), v: nivelDe(pide) });
+    }
   }
   return '';
 }
@@ -429,6 +527,10 @@ function cartelBusqueda() {
   const activos = [];
   if (p.nivel) activos.push(nivelDe(p.nivel));
   if (p.pais) activos.push(paisDe(p.pais));
+  // La búsqueda por texto también es un filtro, y si no sale en las píldoras
+  // el estudiante no sabe por qué la lista ha cambiado de golpe.
+  const consulta = ($('#q')?.value ?? '').trim();
+  if (consulta) activos.push(`«${consulta}»`);
   const filtro = `
       <p class="buscando-filtro" aria-hidden="true">${
         (activos.length ? activos : [t('buscando.todaPill')]).map((x) => `<span>${esc(x)}</span>`).join('')
@@ -578,6 +680,26 @@ async function pintar() {
   // servidor, no para regalar lo único que el producto reserva.
   const abierta = await haySesion();
 
+  // El perfil se lee una vez por pintado: `cumple()` lo llama una vez por
+  // requisito y por ficha, y leer el `localStorage` en cada llamada son
+  // cientos de lecturas por repintado.
+  perfilCache = null;
+
+  // ── La misma beca, dos veces ─────────────────────────────────────────────
+  //
+  // La ingesta ya quita las duplicadas, pero el buscador no se fía de que el
+  // fichero venga limpio: si hay dos fichas con el mismo título, se ve una.
+  // Es lo que pidió quien usa la web: «si ya hay una beca igual, que no la
+  // vuelva a poner».
+  const vistas = new Set();
+  const sinRepetir = [];
+  for (const b of becas) {
+    const clave = `${b.id}|${plano(b.titulo ?? '').replace(/\s+/g, ' ').trim()}`;
+    if (vistas.has(clave)) continue;
+    vistas.add(clave);
+    sinRepetir.push(b);
+  }
+
   // El orden importa más de lo que parece. Ordenando solo por fecha, las
   // fichas de Erasmus Mundus —que sí traen requisitos— caen al
   // fondo, porque su plazo es el de cada programa y aquí no lo hay, y arriba
@@ -595,11 +717,29 @@ async function pintar() {
   // está cerrada; simplemente no lo sabemos, que es otra cosa.
   //
   // El filtro de «solo lo que trae ficha BDNS o requisitos» también se quitó, y
-  // por lo mismo: quien busca una beca de investigación o una ayuda a una
+  // por el mismo motivo: quien busca una beca de investigación o una ayuda a una
   // asociación sabe lo que busca, y quitarle la entrada no le ahorra nada, solo
   // le hace perder tiempo. Ordenar sí ayuda; ocultar no.
   const util = (x) => (nReq(x) || x.presupuesto != null || x.boeIdBases ? 0 : 1);
-  const orden = [...becas].sort((a, b) => {
+
+  // ── El encaje: primero las que más cumples ──────────────────────────────
+  //
+  // El buscador ordenaba por fecha, y eso no dice nada de si la beca es para
+  // ti. Con el perfil relleno, lo que ordena es **cuántos requisitos
+  // cumples**: primero las que cumples más, y dentro de ellas las que se
+  // cierran antes.
+  //
+  // Es un orden, no un filtro: una beca que no cumples sigue ahí, debajo. No
+  // se esconde nada —el producto enseña requisitos, no Inner Circle—.
+  const encaje = (x) => {
+    const sab = (x.requisitos ?? []).filter((r) => cumple(r) !== null);
+    if (!sab.length) return -1;
+    return sab.filter((r) => cumple(r) === true).length;
+  };
+
+  const orden = [...sinRepetir].sort((a, b) => {
+    const ea = encaje(a), eb = encaje(b);
+    if (ea !== eb) return eb - ea;
     const ua = util(a), ub = util(b);
     if (ua !== ub) return ua - ub;
     if (a.cerrada !== b.cerrada) return a.cerrada ? 1 : -1;
@@ -627,12 +767,54 @@ async function pintar() {
   const paisElegido = p.pais ?? '';
   const nivelElegido = p.nivel ?? '';
 
+  // ── La búsqueda por texto ────────────────────────────────────────────────
+  //
+  // El buscador solo tenía dos filtros —destino y nivel— y con eso no se
+  // encuentra una beca: la palabra que uno busca («movilidad», «postgrado»,
+  // «emprendimiento») está en el título, en el organizador o en los
+  // requisitos, y no había ningún sitio donde escribirla.
+  //
+  // Se busca en todo lo que la ficha dice de sí misma: el título, quién
+  // convoca, el nivel, los países (con su nombre, no con el código) y las
+  // etiquetas de los requisitos. Sin tildes y sin distinguir mayúsculas,
+  // porque nadie escribe «Alemánía» con el teclado en móvil.
+  //
+  // Con varias palabras, se pide **todas**: «becas germania» no encuentra
+  // nada, pero «movilidad internationally» sí. Y una palabra suelta busca
+  // dentro de la palabra, no al principio: «master» encuentra «Máster».
+  const consulta = plano($('#q')?.value ?? '').trim();
+  const palabras = consulta ? consulta.split(/\s+/).filter(Boolean) : [];
+
+  // El texto de cada ficha se normaliza una vez y se guarda: con 386 fichas
+  // y una búsqueda por pulsación, normalizar en cada filtro son 386
+  // operaciones por tecla.
+  const indice = new Map();
+  const textoDe = (b) => {
+    let txt = indice.get(b.id);
+    if (txt !== undefined) return txt;
+    const partes = [
+      b.titulo ?? '',
+      b.organizador ?? '',
+      b.nivel ?? '',
+      ...(b.paises ?? []).map((c) => nombreDe(c) ?? c),
+      ...(b.requisitos ?? []).map((r) => `${r.etiqueta ?? ''} ${r.tipo ?? ''} ${r.valor ?? ''}`),
+    ];
+    txt = plano(partes.join(' '));
+    indice.set(b.id, txt);
+    return txt;
+  };
+
   const filtradas = orden.filter((b) => {
     const paises = b.paises ?? [];
     // Sin destino conocido, la convocatoria se queda.
     if (paisElegido && paises.length && !paises.includes(paisElegido)) return false;
     // El nivel solo aparta cuando lo sabemos. Si no lo sabemos, se queda.
     if (nivelElegido && b.nivel && b.nivel !== nivelElegido) return false;
+    // La búsqueda por texto: todas las palabras tienen que aparecer.
+    if (palabras.length) {
+      const txt = textoDe(b);
+      if (!palabras.every((w) => txt.includes(w))) return false;
+    }
     return true;
   });
 
@@ -681,15 +863,22 @@ async function pintar() {
     // «no hay nada», y lo que tiene que entender es «no hay nada *para
     // ese filtro*». En el segundo caso, el aviso de las que no dicen
     // dónde dice cuántas se han quedado fuera.
+    //
+    // Y la búsqueda por texto es un filtro más: si no dice nada, el
+    // estudiante tiene que saber si es que no hay nada o es que ha
+    // escrito una palabra que no está.
     const filtrado = paisElegido || nivelElegido;
     const destino = paisDe(paisElegido) || paisElegido || t('vacio.cualquierDestino');
+    const porTexto = palabras.length ? t('vacio.texto.p', { q: `<b>${esc($('#q').value.trim())}</b>` }) : '';
     $('#zona-lista').innerHTML = `
       <div class="empty">
-        <h3>${t(filtrado ? 'vacio.filtro.h' : 'vacio.base.h')}</h3>
-        <p>${filtrado
-          ? `${t('vacio.filtro.p', { p: `<b>${esc(destino)}</b>` })}
-             ${sinPaisConocido ? t('vacio.filtro.sinPais', { n: num(sinPaisConocido) }) : ''}`
-          : t('vacio.base.p')}</p>
+        <h3>${t(filtrado || palabras.length ? 'vacio.filtro.h' : 'vacio.base.h')}</h3>
+        <p>${porTexto
+          ? porTexto
+          : filtrado
+            ? `${t('vacio.filtro.p', { p: `<b>${esc(destino)}</b>` })}
+               ${sinPaisConocido ? t('vacio.filtro.sinPais', { n: num(sinPaisConocido) }) : ''}`
+            : t('vacio.base.p')}</p>
       </div>`;
     $('#zona-lista').style.minHeight = '';
     return;
@@ -763,7 +952,7 @@ function cartelAcceso(abierta) {
 /* ── Tarjeta ────────────────────────────────────────────────────────────── */
 
 function tarjeta(b) {
-  const p = perfil.leer();
+  const p = perfilActual();
   const conPerfil = p.nota !== '' || p.edad !== '';
   // Ficha del catálogo público: tiene lo que se ve a través del velo, pero no
   // los requisitos. No se pinta «sin requisitos» —sería mentira— sino cuántos
@@ -810,6 +999,7 @@ function tarjeta(b) {
 
         ${b.fuente === 'daad' ? '<span class="pill brand">DAAD</span>' : ''}
         ${b.fuente === 'ue' ? `<span class="pill brand">${t('fuente.ue')}</span>` : ''}
+        ${b.fuente === 'erasmus-mundus' ? '<span class="pill brand">Erasmus Mundus</span>' : ''}
         ${b.id.startsWith('BDNS') ? '<span class="pill mono">BDNS</span>' : ''}
         ${b.pagina ? `<span class="pill mono">BOE p. ${b.pagina}</span>` : ''}
         ${pillDestino(b)}
@@ -987,6 +1177,21 @@ $('#dock-salir')?.addEventListener('click', salir);
 
 $('#pais').addEventListener('change', () => $('#buscar').click());
 $('#nivel').addEventListener('change', () => $('#buscar').click());
+
+/* La búsqueda por texto filtra la lista mientras se escribe.
+ *
+ * No pasa por el beat de «Buscando N becas»: ese marco es para comprobar el
+ * perfil —un clic, un cálculo— y una palabra no es un clic. Aquí se repinta
+ * la lista en cuanto se deja de escribir un momento, que es lo que hace que
+ * en un móvil no parezca que la página no responde.
+ */
+let esperaTexto = null;
+$('#q')?.addEventListener('input', () => {
+  clearTimeout(esperaTexto);
+  esperaTexto = setTimeout(() => {
+    if (becas.length) pintar();
+  }, 250);
+});
 
 /* La pestaña, cuando vuelve del alta.
  *

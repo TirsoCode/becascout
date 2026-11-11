@@ -15,6 +15,7 @@ import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { recolectar, textoCompleto } from './boe.mjs';
 import { codigosEn } from '../js/paises.js';
 import { idDesdeBoe, render, aRegistro as aRegistroBdns } from './bdns.mjs';
+import { recolectar as recolectarErasmus } from './erasmus.mjs';
 import { recolectar as recolectarDaad } from './daad.mjs';
 import { recolectar as recolectarUe } from './ue.mjs';
 import { parrafosConOrigen, extrae, buscaNivel } from './extract.mjs';
@@ -373,7 +374,11 @@ async function procesar(f) {
         cierra: ficha.cierra ?? registro.cierra,
         sede: ficha.sede ?? registro.sede,
         boeIdBases: ficha.boeId,
-        titulo: ficha.titulo ?? registro.titulo,
+        // El título es el del BOE, que es la fuente primaria y no lo corta.
+        // El de BDNS llega truncado a unos 140 caracteres y a media palabra
+        // («…de la Presidencia del CD»), y un título cortado se busca mal y
+        // se lee peor. El de BDNS solo se usa si el del BOE no está.
+        titulo: registro.titulo ?? ficha.titulo,
       };
       // Las Bases están en el BOE y el BOE se lee sin navegador: se baja el
       // texto y se extraen los requisitos de ahí, que es donde se pueden
@@ -535,6 +540,23 @@ if (fallidas > fichas.length * 0.1 && fichas.length > 20) {
 // banda a cambio de nada.
 const fuentes = [
   {
+    // Los Joint Masters de Erasmus Mundus. Entran en el buscador **como
+    // becas normales**, con sus requisitos y sus citas: lo que se retiró fue
+    // la página que los listaba aparte, no los programas. Siguen siendo 219
+    // fichas más que sin ellos, así que el Connector no puede perderlos.
+    nombre: 'Erasmus Mundus',
+    flag: '--sin-erasmus',
+    fn: async () => {
+      const r = await recolectarErasmus({
+        alProgresar: ({ pagina, total }) =>
+          process.stdout.write(`\r  Erasmus Mundus · página ${pagina + 1} · ${total} programas   `),
+      });
+      process.stdout.write('\n');
+      return r;
+    },
+    esEstable: true,
+  },
+  {
     nombre: 'DAAD',
     flag: '--sin-daad',
     fn: recolectarDaad,
@@ -576,9 +598,15 @@ for (const fuente of fuentes) {
 // arrastrar, así que cuando se comprobaba si un identificador ya estaba visto
 // todavía no se sabía nada de los 75 de Erasmus. El resultado eran 727 fichas
 // con 75 repetidas dos veces, que en la web son dos tarjetas idénticas seguidas.
-const { publicables, repetidas } = ensambla({ registros, omitidas, cache });
+const { publicables, repetidas, duplicadas, duplicadasBoe } = ensambla({ registros, omitidas, cache });
 if (repetidas) {
   console.log(`  ${repetidas} fichas repetidas, eliminadas al escribir.`);
+}
+if (duplicadas) {
+  // La misma convocatoria, dos veces. El BOE publica la convocatoria y luego
+  // la modifica, o el anuncio y la resolución: en la web eso son dos fichas
+  // de la misma beca. Se queda la que más información tiene.
+  console.log(`  ${duplicadas} duplicadas (la misma convocatoria, dos anuncios), eliminadas al escribir.`);
 }
 
 // ── El invariante ────────────────────────────────────────────────────────
@@ -591,8 +619,13 @@ if (repetidas) {
 //
 // El paso se para con un error y el fichero no se escribe. La web sigue
 // sirviendo el último `becas.json` bueno, que es justo para lo que está.
-const { esperadas, emitidas, faltan: perdidas } = faltan(publicables, { fichas, omitidas });
-if (perdidas) {
+const { esperadas, emitidas, faltan: perdidas } = faltan(publicables, { fichas, omitidas, duplicadas: duplicadasBoe });
+// `perdidas` puede ser negativa —si el fichero tiene más fichas de las que
+// el BOE dio, no se ha perdido nada— y un negativo no es una pérdida. Antes
+// el `if (perdidas)` disparaba con cualquier número distinto de cero, y una
+// pasada con más fichas de las esperadas bloqueaba la escritura del
+// fichero sin motivo: la web se quedaba con la base vieja.
+if (perdidas > 0) {
   console.error(`\n  FALTAN FICHAS: el BOE ha dado ${esperadas} convocatorias en la ventana y en el fichero hay ${emitidas}.`);
   console.error('  No se escribe data/becas.json. Revisa el log antes de fiarte de la pasada.\n');
   process.exit(1);

@@ -122,6 +122,10 @@ export async function regenerarFeed() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const n = await regenerarFeed();
-  console.log(`  feed.xml · ${n} items`);
+  if (process.argv.includes('--solo-feed')) {
+    const n = await regenerarFeed();
+    console.log(`  feed.xml · ${n} items`);
+  } else {
+    await main();
+  }
 }

@@ -107,6 +107,15 @@
       </p>
 
       <div class="profile-bar">
+        <div class="f f-buscar">
+          <!-- La búsqueda por texto. Los otros tres campos (nota, edad y
+               nivel) son el perfil: se guardan y se comprueban. Este es una
+               búsqueda: se escribe lo que sea y la lista se queda con lo
+               que encaja. No se guarda en el perfil porque no es un dato
+               del estudiante, es lo que está buscando ahora mismo. -->
+          <label for="q" data-i18n="becas.buscar">Busca</label>
+          <input id="q" type="search" autocomplete="off" placeholder="movilidad, postgrado…" data-i18n-ph="becas.buscar.ph">
+        </div>
         <div class="f">
           <label for="nota" data-i18n="becas.nota">Nota media</label>
           <!-- type="text" y no "number" a propósito: la coma decimal —que es

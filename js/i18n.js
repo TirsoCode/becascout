@@ -237,16 +237,9 @@ const DICC = {
   'sobre.fuentes.pie': {
     en: 'Every listing links to the original source. We do not republish the full text: we summarise and link.',
   },
-  'sobre.corregir.h2': { en: '5. How to correct a requirement' },
-  'sobre.corregir.p': {
-    en: 'If you see a requirement extracted wrong, a quote that doesn’t match or a deadline that looks off, write to us: <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>. The quote is there so you can catch it. The next step is for us to fix it.',
-  },
-  'sobre.quien.h2': { en: '6. Who is behind this' },
+  'sobre.quien.h2': { en: '5. Who is behind this' },
   'sobre.quien.p1': {
     en: 'BecasScout is an independent project. It is not a public body, it represents no education authority and it has no agreement with the bodies that publish the calls. It reads what others publish and puts it in order.',
-  },
-  'sobre.quien.p2': {
-    en: 'For anything at all, write to <a href="mailto:privacidad@becascout.com">privacidad@becascout.com</a>: a quote that doesn’t match, a deadline that looks wrong, a question about a call. The official rules are the source, and the link to them is on every listing so you can check them without trusting anyone.',
   },
   'sobre.quien.p3': {
     en: 'The <a href="https://www.boe.es/" target="_blank" rel="noopener">Boletín Oficial del Estado</a> and the <a href="https://erasmus-plus.ec.europa.eu/opportunities/opportunities-for-individuals" target="_blank" rel="noopener">Erasmus+ portal</a> are the two sources behind everything shown here. No invented data.',
@@ -258,7 +251,7 @@ const DICC = {
   /* ── Privacidad ──────────────────────────────────────────────────────
      Traducción fiel. No se suaviza ni una obligación: los artículos, los
      plazos y las bases legales van tal cual, solo en inglés. */
-  'priv.meta': { en: 'Last updated: 30 October 2026 · Version 1.4' },
+  'priv.meta': { en: 'Last updated: 11 November 2026 · Version 1.5' },
   'priv.h1': { en: 'Privacy policy' },
   'priv.lede': {
     en: 'This policy explains what data BecasScout stores, why, for how long, and how to get it deleted. It is written to be read, not to cover us.',
@@ -322,27 +315,8 @@ const DICC = {
   'priv.base.f5c': {
     en: 'No legal basis because <strong>we do not process it</strong>: it runs in your browser',
   },
-  'priv.google.h2': { en: '4. Google as a third party' },
-  'priv.google.p0': {
-    en: '<strong>Today the only way to sign up is with an email address and password: Google sign-in is not enabled.</strong> This section describes what will happen if it is enabled; while it is not, no data is sent to Google when you create an account.',
-  },
-  'priv.google.p1': {
-    en: 'If it is enabled, you will be able to create the account with Google. If you do, Google opens its own authorisation window and <strong>Google is an independent controller</strong> of the processing it carries out under its own policies.',
-  },
-  'priv.google.p2': {
-    en: 'We ask for <strong>one permission only: your email address</strong>. Specifically:',
-  },
-  'priv.google.li1': {
-    en: 'We do not ask for your name, your profile, your contacts, your files or your location.',
-  },
-  'priv.google.li2': {
-    en: 'We do not store the Google access token. We use it once to read your email, discard it, and all that remains in your browser is the email and a timestamp. There is no Google credential stored on our disk or on yours.',
-  },
-  'priv.google.li3': {
-    en: 'When you open that window, Google may set its own cookies, which are theirs and not ours: they are described in their <a href="https://policies.google.com/technologies/cookies" target="_blank" rel="noopener">cookie policy</a>.',
-  },
-  'priv.terceros.h2': { en: '5. Other third parties' },
-  'priv.terceros.p': { en: 'Beyond Google (only if Google sign-in is enabled, section 4) and Vercel, which hosts the site and counts page views in aggregate, there are no other third parties. Specifically:' },
+  'priv.terceros.h2': { en: '4. Other third parties' },
+  'priv.terceros.p': { en: 'Beyond Vercel, which hosts the site and counts page views in aggregate, there are no other third parties. Specifically:' },
   'priv.terceros.li1': {
     en: '<strong>Analytics is minimal.</strong> Vercel Analytics counts page views: no cookies, no personal data, no cross-site tracking. No Google Analytics, no Plausible, nothing that profiles you.',
   },
@@ -353,7 +327,7 @@ const DICC = {
   'priv.terceros.li4': {
     en: 'The data in the listings (grades, amounts, deadlines) comes from official public sources and is not yours.',
   },
-  'priv.conservacion.h2': { en: '6. How long we keep it' },
+  'priv.conservacion.h2': { en: '5. How long we keep it' },
   'priv.conservacion.th1': { en: 'What' },
   'priv.conservacion.th2': { en: 'How long' },
   'priv.conservacion.f1a': {
@@ -368,7 +342,7 @@ const DICC = {
   'priv.conservacion.f4b': {
     en: 'Whatever the hosting provider sets, usually between 30 and 90 days',
   },
-  'priv.derechos.h2': { en: '7. Your rights' },
+  'priv.derechos.h2': { en: '6. Your rights' },
   'priv.derechos.p1': {
     en: 'You can ask us at any time, and we will answer within a month:',
   },
@@ -397,18 +371,18 @@ const DICC = {
   'priv.derechos.p3': {
     en: 'If you think we have not dealt with your request, you can complain to the <a href="https://www.aepd.es" target="_blank" rel="noopener">Spanish Data Protection Agency</a>.',
   },
-  'priv.menores.h2': { en: '8. Under 14' },
+  'priv.menores.h2': { en: '7. Under 14' },
   'priv.menores.p': {
     en: 'BecasScout is aimed at people aged 14 and over. If you are younger, you need the permission of whoever has parental responsibility in order to create the account. We do not process data from anyone under that age without that consent.',
   },
-  'priv.seguridad.h2': { en: '9. Security' },
+  'priv.seguridad.h2': { en: '8. Security' },
   'priv.seguridad.p1': {
     en: 'The password is never stored in the clear. The session travels in an <code>HttpOnly</code> cookie, so page JavaScript cannot read it, and <code>SameSite=Lax</code>, which stops it being sent from other sites. In production it carries the <code>__Host-</code> prefix and <code>Secure</code>, which stop another subdomain overwriting it. The site is served over HTTPS in production, and the session expires after 7 days.',
   },
   'priv.seguridad.p2': {
     en: 'No measure is absolute. If a breach affects your data, we will report it to the supervisory authority within 72 hours and warn you by email.',
   },
-  'priv.cambios.h2': { en: '10. Changes to this policy' },
+  'priv.cambios.h2': { en: '9. Changes to this policy' },
   'priv.cambios.p': {
     en: 'If we change anything that affects your rights, we publish it here with the date at the top updated and, if the change matters, we tell you by email.',
   },
@@ -687,6 +661,11 @@ const DICC = {
   /* Estas cinco llevan también el castellano: `js/perfil.js` las usa para
      pintar su formulario, y ahí no hay HTML del que tirar. */
   'becas.nota': { es: 'Nota media', en: 'Average grade' },
+  /* La búsqueda por texto. Es una búsqueda, no un dato del perfil: se escribe
+     lo que sea y la lista se queda con lo que encaja. La etiqueta es corta
+     porque en móvil la barra de filtros ya va justa. */
+  'becas.buscar': { es: 'Busca', en: 'Search' },
+  'becas.buscar.ph': { en: 'mobility, postgraduate…' },
   /* La coma decimal es de la nota castellana. En inglés el ejemplo va con
      punto, que es como se escribe allí; el campo acepta las dos. */
   'becas.nota.ph': { en: '7.5' },
@@ -757,6 +736,10 @@ const DICC = {
     en: '{n} of them don’t say where they take place and can’t be filtered by country.',
   },
   'vacio.cualquierDestino': { es: 'cualquier destino', en: 'any destination' },
+  'vacio.texto.p': {
+    es: 'No hay ninguna convocatoria con «{q}». Prueba con menos palabras o quítalo.',
+    en: 'No call matches “{q}”. Try fewer words or clear it.',
+  },
   'vacio.base.h': { es: 'Todavía no hay convocatorias', en: 'No calls yet' },
   'vacio.base.p': {
     es: 'La base se llena con <code>node ingest/run.mjs</code>, que lee el sumario del BOE y descarga las Bases completas de las que hay que leer.',
@@ -793,6 +776,10 @@ const DICC = {
   'motivo.notaOk': { es: 'Tu nota es {n} y piden {v}', en: 'Your grade is {n} and they ask for {v}' },
   'motivo.notaNo': { es: 'Piden {v} y tu nota es {n}', en: 'They ask for {v} and your grade is {n}' },
   'motivo.edadOk': { es: 'Tienes {n} y el máximo es {v}', en: 'You are {n} and the maximum is {v}' },
+  /* El motivo del título previo y del nivel del programa. Se comparan con
+     el nivel del perfil, que es lo único que se sabe del estudiante. */
+  'motivo.nivelOk': { es: 'Buscas {n} y el título que piden ya lo tienes', en: 'You are looking for {n} and you already have the degree they ask for' },
+  'motivo.nivelNo': { es: 'Piden {v} y tú buscas {n}', en: 'They ask for {v} and you are looking for {n}' },
   'motivo.edadNo': { es: 'El máximo es {v} y tienes {n}', en: 'The maximum is {v} and you are {n}' },
 
   'tarjeta.plazoNo': { es: 'Plazo no extraído', en: 'Deadline not extracted' },

@@ -332,6 +332,14 @@ img, svg { display: block; max-width: 100%; }
   background: var(--paper-2); border: 1px solid var(--rule);
   border-radius: var(--r-lg); padding: 18px 20px; margin-bottom: 26px;
 }
+/* El campo de búsqueda va en su propia fila, encima de los filtros.
+ *
+ * La barra es de cuatro campos y un botón, y el buscador de texto necesita
+ * más sitio del que da una columna: a 390 px un campo estrecho no cabe ni
+ * «movilidad». Ocupa la fila entera y deja los filtros debajo, que es
+ * además el orden en el que se usan: primero qué buscas, después con qué
+ * lo compruebas. */
+.f-buscar { grid-column: 1 / -1; }
 .f label {
   display: block; font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
   text-transform: uppercase; color: var(--ink-4); margin-bottom: 5px;
@@ -1104,6 +1112,7 @@ body.con-cartel { padding-bottom: 104px; }
   .faq-item { grid-template-columns: 1fr; gap: 9px; }
   .profile-bar { grid-template-columns: repeat(2, 1fr); }
   .profile-bar .btn { grid-column: 1 / -1; }
+  .f-buscar { grid-column: 1 / -1; }
 }
 
 /* La navegación de la cabecera aparece cuando hay sitio de sobra.

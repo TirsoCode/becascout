@@ -26,6 +26,45 @@ const TEXTO = 'https://www.boe.es/diario_boe/xml.php';
 
 const UA = 'becascout/0.1 (+https://github.com/becascout)';
 
+/**
+ * Quita tildes y pasa a minúsculas.
+ *
+ * ── Por qué hace falta ─────────────────────────────────────────────────────
+ *
+ * Los patrones de este fichero se escriben sin tilde —`calificacion`,
+ * `retribucion`— porque en un archivo de código la tilde dentro de una
+ * expresión regular es un`的` que se lee regular y se escribe regular. El BOE,
+ * en cambio, escribe «calificación», «retribución» y «expediente».
+ *
+ * El resultado era un filtro con agujeros: la lista de ruido apartaba
+ * «calificación» con la patrón `calificacion`… que no matchea con la tilde, y
+ * por eso una resolución de un recurso contra la nota de calificación entró en
+ * la base como si fuera una beca. El 11 de noviembre de 2026 lo Complainió
+ * quien usa la web: «en vez de becas hay leyes».
+ *
+ * Normalizar **las dos partes** —el título y el patrón— resuelve el problema
+ * sin tener que escribir cada patrón con su `[óo]`: `[óo]` se convierte en
+ * `[oo]`, que sigue funcionando, y `calificacion` pasa a comparar con
+ * `calificacion`.
+ */
+function plano(s) {
+  return String(s ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+/**
+ * Precompila una lista de expresiones regulares contra el texto normalizado.
+ *
+ * Se hace una vez al cargar el módulo: si no, cada anuncio normalizaría los
+ * mismos patrones, y una pasada de tres semanas son miles de anuncios.
+ */
+function planas(lista) {
+  return lista.map((re) => new RegExp(plano(re.source), re.flags.replace(/g/g, '')));
+}
+
+
 /** Materias del BOE que Concentran becas y ayudas al estudio. */
 const MATERIAS_EDUCACION = [
   'educación', 'educacion', 'enseñanza universitaria', 'enseñanza no universitaria',
@@ -89,7 +128,37 @@ const PALABRAS_BECA = [
  * de dinero**. «Se convocan ayudas» ✓. «Convocatoria de Junta» ✗.
  */
 const DINERO = 'becas?|becarios?|becarias?|bolsas? de (?:estudio|investigaci[óo]n)|ayudas?|subvenciones?|premios?|dotaciones?';
-const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convocan|se abre el plazo|plazo de presentaci[óo]n|presentar solicitudes?|bases reguladoras';
+
+/**
+ * Las palabras de llamada, y lo que **ya no** está aquí.
+ *
+ * ── Por qué «bases reguladoras» salió ──────────────────────────────────────
+ *
+ * Estaba, y metía en la base las normas que no convocan a nadie. El caso que
+ * más se complained: «Orden JUI/1097/2026 … por la que se establecen las bases
+ * reguladoras para la concesión de subvenciones para el mantenimiento de
+ * asociaciones juveniles». Eso es una norma: la convocatoria sale otro día, en
+ * otro documento. Y como el epígrafe del BOE es «Subvenciones», entraba como
+ * si fuera una convocatoria. Lo mismo con «Orden DCA/1079/2026 … bases
+ * reguladoras para la concesión de subvenciones a entidades locales» y con
+ * «Orden APA/1111/2026 … por la que se modifica la Orden AAA/839/2015 … por la
+ * que se establecen las bases reguladoras de la concesión de Premios de
+ * Excelencia a la Innovación para Mujeres Rurales»: tres normas, cero
+ * convocatorias.
+ *
+ * «Bases reguladoras» es la forma que tiene una convocatoria **de nombrar las
+ * bases**, no la de **convocar**. Con ella sola no se llama a nadie. Para que
+ * un documento sea una convocatoria hace falta que el título diga que convoca:
+ * «convocatoria», «se convocan», «plazo de presentación».
+ *
+ * La norma que sí es convocatoria —«se aprueban las bases reguladoras **y la
+ * convocatoria**»— entra por la palabra «convocatoria», que sigue aquí.
+ *
+ * Lo que se conserva es la excepción de `motivoDescarte`: una norma con
+ * epígrafe «Becas» o «Ayudas» y con «beca» o «bolsa de estudio» en el título
+ * se queda, porque ahí la norma y la convocatoria son la misma frase.
+ */
+const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convocan|se abre el plazo|plazo de presentaci[óo]n|presentar solicitudes?';
 
 /**
  * Las mismas palabras de llamada, sin exigir que haya dinero cerca.
@@ -99,7 +168,7 @@ const LLAMADA = 'se convocan?|se procede a la convocatoria|convocatorias?|convoc
  * falta que la palabra de dinero esté al lado: con que aparezca una llamada
  * en el título, el documento está llamando a alguien.
  */
-const LLAMADA_SOLA = new RegExp(LLAMADA, 'i');
+const LLAMADA_SOLA = planas([new RegExp(LLAMADA, 'i')])[0];
 
 /**
  * El verbo de la decisión ya tomada.
@@ -116,7 +185,7 @@ const LLAMADA_SOLA = new RegExp(LLAMADA, 'i');
  * que ya hace el veto de los nombramientos y las ceses. La diferencia entre
  * un premio y una beca nunca se juzga: lo que se mira es el verbo.
  */
-const DECIDE = /\bse (concede|conceden|otorgan|otorgan|concedido|otorgado)\b/i;
+const DECIDE = planas([/\bse (concede|conceden|otorgan|otorgan|concedido|otorgado|adjudica|adjudican|adjudicado)\b/i])[0];
 
 /**
  * La forma que tiene una convocatoria de dinero en el título del BOE.
@@ -129,11 +198,34 @@ const DECIDE = /\bse (concede|conceden|otorgan|otorgan|concedido|otorgado)\b/i;
  * del BOE. Se cruzan los puntos, no las frases: la llamada y el dinero tienen
  * que estar en la misma proposición, no en el mismo documento.
  */
-const CONVOCA = new RegExp(
+const CONVOCA = planas([new RegExp(
   `(?:${LLAMADA})(?=.{0,110}?(?:${DINERO}))` +
   `|(?:${DINERO})(?=.{0,110}?(?:${LLAMADA}))`,
   'is',
-);
+)])[0];
+
+/**
+ * Los epígrafes del BOE que son una convocatoria de dinero para estudiantes.
+ *
+ * Son los dos que el propio boletín usa para las becas y las ayudas al
+ * estudio. Sirven para la excepción del veto de las normas: si el BOE dice que
+ * esto es una beca y el título lo nombra, es una beca aunque el verbo sea
+ * «se establecen las bases reguladoras».
+ */
+const EPIGRAFES_BECA = planas([/^(becas?|ayudas?|bolsas?)\b/i])[0];
+
+/**
+ * Las palabras del título que hablan de una beca de estudiante.
+ *
+ * Van aparte de `PALABRAS_BECA` porque estas son las que, junto con el
+ * epígrafe, salvan una norma de una beca real. «Subvención» no entra: hay
+ * demasiadas subvenciones que no son de estudio.
+ */
+const PALABRAS_BECA_ESTUDIANTE = [
+  'beca', 'becas', 'becario', 'becaria', 'bolsa de', 'bolsas de',
+  'ayuda al estudio', 'ayudas al estudio', 'ayudas para estudiar',
+  'ayuda para estudiar', 'erasmus',
+];
 
 /**
  * Epígrafes con los que el propio BOE clasifica una convocatoria de dinero.
@@ -150,7 +242,7 @@ const CONVOCA = new RegExp(
  * señal más fiable que da el sumario y la única que no depende de interpretar
  * un título.
  */
-const EPIGRAFES_CONVOCATORIA = /^(becas?|ayudas?|subvenciones?|premios?|dotaciones?|estancias?|movilidad|pr[aá]cticas?)\b/i;
+const EPIGRAFES_CONVOCATORIA = planas([/^(becas?|ayudas?|subvenciones?|premios?|dotaciones?|estancias?|movilidad|pr[aá]cticas?)\b/i])[0];
 
 async function pedir(url, { timeout = 30_000 } = {}) {
   const ctrl = new AbortController();
@@ -282,7 +374,7 @@ export async function sumario(dia) {
  * Se aplica ANTES de bajar el texto, que es una petición por anuncio: descartar
  * aquí es lo que hace que una pasada de seis meses quepa en el job.
  */
-const RUIDO = [
+const RUIDO = planas([
   // Personal y carrera: el documento da fe de un nombramiento, un cese o un
   // destino, no convoca a nadie.
   /jubilaci[óo]n/i,
@@ -297,7 +389,7 @@ const RUIDO = [
 
   // Anuncios y avisos que no convocan: notificaciones, licitaciones, subastas,
   // información pública, expropiaciones.
-  /notificaci|emplazamiento|citaci[óo]n|requerimiento|subsanaci|edicto|extrav[ií]o/i,
+  /notificaci|notifica(r|ndo|do)?\b|emplazamiento|citaci[óo]n|requerimiento|subsanaci|edicto|extrav[ií]o/i,
   /subasta|licitaci|formalizaci[óo]n|adjudicaci[óo]n (del contrato|definitiva)|contrato de|concesi[óo]n (administrativa|de obra|dem)/i,
   /informaci[óo]n p[uú]blica|declaraci[óo]n de (impacto|utilidad|inter[eé]s)|expropiaci[óo]n/i,
 
@@ -347,7 +439,35 @@ const RUIDO = [
   /desiert[oa]/i,
   // El otorgamiento de una concesión, que es un acto administrativo ya hecho.
   /otorgamiento/i,
-];
+
+  // ── Lo que se complained el 11 de noviembre de 2026: «leyes» en vez de becas ──
+  //
+  // Los cuatro casos que se vieron en la base y que son normas o resultados,
+  // no convocatorias. Salieron con epígrafe «Subvenciones» o «Premios», que
+  // es la clasificación del tema, no de la clase de documento.
+  //
+  // 1. «Resolución … por la que se publican las subvenciones estatales anuales
+  //    para atender los gastos de funcionamiento ordinario a las diferentes
+  //    formaciones políticas…». Se publica lo que ya se ha repartido: no hay
+  //    a quién presentarse.
+  /\bse publica(n|dos|das)\b/i,
+  // 2. «Orden HAC/1062/2026 … por la que se fijan las cantidades de las
+  //    subvenciones a los gastos originados por actividades electorales…». Se
+  //    fija una cantidad, no se llama a nadie. La ventanilla de dinero en la
+  //    misma frase es la que hace la diferencia con una convocatoria que
+  //    también habla de cantidades.
+  /\bse (fijan|determinan|distribuyen|asignan|consignan|reparten)\b(?=.{0,90}?(cantidades|cuotas|importes?|presupuestos?|subvenciones?))/i,
+  // 3. «Resolución … en el recurso interpuesto contra la nota de calificación
+  //    emitida por el registrador… no procede …». Es una sentencia: el
+  //    «calificación» no se leía antes porque el patrón no llevaba tilde.
+  /\brecurso (interpuesto|contra)\b/i,
+  /\bimpugna/i,
+  /\bno procede\b/i,
+  // 4. «Orden … por la que se deroga la Orden …». Derogar no es convocar.
+  /\bse deroga(n)?\b/i,
+  // Crear un plan o un programa es legislar, no convocar.
+  /\bse crea(n)?\b(?=.{0,60}?\b(plan|programa)\b)/i,
+]);
 
 /**
  * Documentos que fijan una norma en vez de convocar a alguien.
@@ -356,8 +476,22 @@ const RUIDO = [
  * modifica la convocatoria de ayudas» es una convocatoria modificada, y vetarla
  * sería tirar una beca de verdad. En cuanto el título dice que convoca, deja
  * de ser una norma.
+ *
+ * ── Y lo que sí se veta, desde el 11 de noviembre de 2026 ─────────────────
+ *
+ * Antes, una norma pasaba siempre que el título tuviera «bases reguladoras»
+ * al lado de una palabra de dinero. Eso metía en la base tres normas seguidas
+ * («Orden JUI/1097/2026», «Orden DCA/1079/2026» y «Orden APA/1111/2026»):
+ * las tres son «se establecen las bases reguladoras para la concesión de
+ * subvenciones…» y ninguna convoca a nadie.
+ *
+ * Ahora una norma solo pasa si el título dice que convoca de verdad —«se
+ * convocan», «convocatoria», «plazo de presentación»— o si el BOE la clasifica
+ * como beca o ayuda y el título nombra la beca. Ese es el criterio: una norma
+ * que además es convocatoria es una convocatoria; una norma que solo es norma,
+ * no.
  */
-const REGULA = /\bse (regula|regulan|modifica|modifican|establece|establecen|inscribe|inscriben)\b/i;
+const REGULA = planas([/\bse (regula|regulan|modifica|modifican|establece|establecen|inscribe|inscriben|aprueba|aprueban)\b/i])[0];
 
 /**
  * ¿Es este anuncio una convocatoria de becas, ayudas o subvenciones?
@@ -405,8 +539,8 @@ const REGULA = /\bse (regula|regulan|modifica|modifican|establece|establecen|ins
  *     es. Aquí el filtro está opinando, y es donde hay que mirar.
  */
 export function motivoDescarte(anuncio) {
-  const t = String(anuncio?.titulo ?? '').toLowerCase();
-  const ep = String(anuncio?.epigrafe ?? '');
+  const t = plano(anuncio?.titulo ?? '');
+  const ep = plano(anuncio?.epigrafe ?? '');
 
   // ── 1. El veto, PRIMERO ────────────────────────────────────────────────
   //
@@ -428,7 +562,25 @@ export function motivoDescarte(anuncio) {
   if (RUIDO.some((r) => r.test(t))) return 'ruido';
 
   // Norma y no convocatoria, salvo que el título diga que convoca.
-  if (REGULA.test(t) && !CONVOCA.test(t)) return 'ruido';
+  //
+  // Aquí lo que cuenta es la **llamada**, no la cercanía con una palabra de
+  // dinero: «Resolución … por la que se aprueba la convocatoria para el año
+  // 2026 del Programa …» es una convocatoria aunque la palabra «subvención» no
+  // aparezca en los 110 caracteres siguientes. Y «Orden … por la que se
+  // aprueban las bases reguladoras y la convocatoria para la selección de
+  // operaciones …» también.
+  //
+  // Y con una excepción más, que es la que hace falta para no perder becas de
+  // verdad: si el BOE clasifica el documento como «Becas» o «Ayudas» —su
+  // epígrafe, que es dato de la fuente— y el título nombra la beca, es una
+  // convocatoria aunque el verbo sea «se establecen las bases reguladoras».
+  // Las bases de las becas de estudio son una norma y una convocatoria en la
+  // misma frase, y sin esta excepción se perdían.
+  if (REGULA.test(t) && !LLAMADA_SOLA.test(t)) {
+    const esBecaDeEstudiante = EPIGRAFES_BECA.test(ep)
+      && PALABRAS_BECA_ESTUDIANTE.some((p) => t.includes(p));
+    if (!esBecaDeEstudiante) return 'ruido';
+  }
 
   // Decisión ya tomada y no convocatoria, salvo que el título diga que convoca.
   // «Se conceden los Premios Nacionales de Investigación» da fe de un premio

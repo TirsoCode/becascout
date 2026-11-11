@@ -62,14 +62,13 @@ index.html            portada. No enseña ni una beca
 becas.html            buscador. Contenido pixelado hasta tener cuenta
 cuenta.html           la página del alta. A pantalla entera, abierta en otra pestaña
 sobre.html            qué es esto, cómo se extrae y con qué reglas. Indexable
-erasmus-mundus.html   las becas Erasmus Mundus. Indexable. La genera paginas.mjs
 privacidad.html       política de privacidad
 cookies.html          política de cookies
 404.html              cuando la URL no existe. Vercel la sirve con estado 404
 styles.css            sistema de diseño
 lang.css              el chip de idioma. Aparte porque lo cargan todas las páginas
 robots.txt            quién puede rastrear. Los bots de IA, permitidos a propósito
-sitemap.xml           las páginas indexables (portada, sobre.html y erasmus-mundus)
+sitemap.xml           las páginas indexables (portada y sobre.html)
 llms.txt              resumen del sitio para modelos, formato de llmstxt.org
 llms-full.txt         el texto de las páginas, sin repetir lo que ya dice llms.txt
 feed.xml              las convocatorias en RSS. Lo genera paginas.mjs
@@ -109,7 +108,7 @@ ingest/
   ue.mjs              convocatorias de la Comisión (SEDIA), en nombre propio
   erasmus.mjs         catálogo de Erasmus Mundus. También refresca sus hechos
   erasmus-paises.mjs  los países de cada programa. A mano, no en cada pasada
-  paginas.mjs         genera erasmus-mundus.html, feed.xml y llms-full.txt
+  paginas.mjs         genera feed.xml y llms-full.txt
 supabase/migrations/  SQL de las tablas
 test/
   store.mjs           el almacén contra un Supabase de mentira
@@ -121,7 +120,12 @@ test/
   idioma.mjs          el cambio castellano/inglés, de punta a punta
   sin-avisos.mjs      que la retirada de los avisos se queda retirada
   e2e/                el sitio entero, con Playwright y el Chrome del sistema
-data/becas.json       salida de la ingesta
+data/becas.json       salida de la ingesta. Es un enlace a api/_becas.json
+data/becas-catalogo.json  la lista pública: lo que se ve sin cuenta. La pinta
+                       el buscador y la genera `ingest/catalogo.mjs`. **El
+                       workflow tiene que subirla** (el 11 de noviembre de
+                       2026 se olvidaba, y la web seguía enseñando el
+                       catálogo viejo mientras la base ya tenía 386 fichas)
 auditor-diario/       el auditor con IA: Playwright + informe .md en reports/.
                       No se despliega (.vercelignore). Corre en GitHub Actions
                       cada 3 días, o a mano con `node auditor.mjs`
@@ -226,7 +230,7 @@ Lo que conviene no deshacer:
 
 - **El `?desde` viaja en la URL y se valida contra una lista cerrada**
   (`DESTINOS` en `js/cuenta.js`: `/`, `/becas.html`,
-  `/erasmus-mundus.html`). Un `?desde` inventado no lleva a un 404 ni a un
+  `/becas.html`). Un `?desde` inventado no lleva a un 404 ni a un
   sitio ajeno: cae al buscador. La puerta de la portada vendió «esta
   página»; la del buscador, el buscador.
 - **Al terminar el alta, la pestaña vuelve sola** (`location.replace` al
@@ -365,6 +369,49 @@ convienen no deshacer:
   (ver «El otro límite»). Lo que sí se copia es la forma —titular grande,
   píldoras del filtro y fichas de esqueleto debajo—, que no afirma nada. El
   momento acaba en requisitos y citas, no en un número de suerte.
+
+### El buscador: buscar y ordenar (11 de noviembre de 2026)
+
+El buscador tenía dos filtros —destino y nivel— y con eso no se encuentra una
+beca: la palabra que uno busca («movilidad», «postgrado», «emprendimiento»)
+está en el título, en el organizador o en los requisitos, y no había ningún
+sitio donde escribirla. Ahora hay un **campo de texto** (`#q`) que va en su
+propia fila encima de los filtros, y dos reglas:
+
+- **Se busca en todo lo que la ficha dice de sí misma**: el título, quién
+  convoca, el nivel, los países (con su nombre, no con el código ISO) y las
+  etiquetas de los requisitos. Sin tildes y sin distinguir mayúsculas, porque
+  nadie escribe «Alemánía» con el teclado en el móvil.
+- **Con varias palabras se piden todas**: «becas germania» no encuentra nada,
+  pero «movilidad internacional» sí.
+
+El campo filtra la lista **mientras se escribe**, con 250 ms de espera, y sin
+pasar por el beat de «Buscando N becas»: ese marco es para comprobar el
+perfil, que es un clic; una palabra no es un clic.
+
+Y el **orden** dejó de ser solo por fecha. Con el perfil relleno, lo que
+ordena es **cuántos requisitos cumples**: primero las que cumples más, y
+dentro de ellas las que se cierran antes. Es un orden, no un filtro: la que no
+cumples sigue ahí, debajo. No se esconde nada.
+
+Para que eso sea posible, `cumple()` en `js/becas.js` tuvo que aprender a
+valorar el **título previo** y el **nivel del programa**:
+
+| Requisito | Qué compara |
+| --- | --- |
+| `titulacion` | Tu nivel contra el título que piden. Tener un máster cumple un requisito de grado. |
+| `nivel` | Tu nivel contra el nivel del programa. Tiene que ser el tuyo: quien busca un doctorado no se apunta a una beca de máster. |
+
+Antes solo se valoraban la nota y la edad, y con eso el anillo de «requisitos
+cumplidos» no tenía nada que enseñar en el 92 % de la base: los 219 programas
+de Erasmus Mundus y las 148 becas de DAAD piden un título previo, y ese dato
+no se comparaba con nada. Ahora se compara, y el anillo dice «1 de 1» con el
+motivo al lado («Buscas Máster y el título que piden ya lo tienes»).
+
+**Erasmus Mundus ya no tiene página propia.** Los 219 programas son fichas
+normales del buscador, con sus requisitos y sus citas, y con la píldora que
+dice de dónde viene. Lo que se retiró fue la página que los listaba aparte
+(`erasmus-mundus.html`, el 11 de noviembre de 2026), no los programas.
 
 ## Fuentes de datos
 
@@ -546,8 +593,8 @@ Tres reglas, y **en este orden**:
 2. **La señal del BOE.** El sumario agrupa cada anuncio bajo un `epígrafe`
    («Becas», «Ayudas», «Subvenciones», «Premios»). Es la clasificación del
    propio boletín, y manda.
-3. **La señal del título.** «se convocan», «convocatoria», «bases reguladoras»
-   —pero solo si van **cerca de una palabra de dinero**.
+3. **La señal del título.** «se convocan», «convocatoria» —pero solo si van
+   **cerca de una palabra de dinero**.
 
 Tres cosas que no hay que deshacer:
 
@@ -572,6 +619,85 @@ Tres cosas que no hay que deshacer:
 **Las leyes también se descartan**, y con un patrón anclado: `^ley`, no
 `ley`. Una convocatoria de verdad puede citar la ley que la habilita («ayudas
 al amparo de la Ley 8/2025»), y vetar eso sería tirar una beca.
+
+### La norma y «bases reguladoras» (11 de noviembre de 2026)
+
+El 11 de noviembre de 2026 se complained de que «en vez de becas hay leyes», y
+la razón eran cuatro documentos que la base arrastraba desde octubre:
+
+- «Orden JUI/1097/2026 … por la que se establecen las bases reguladoras para la
+  concesión de subvenciones para el mantenimiento de asociaciones juveniles».
+- «Orden DCA/1079/2026 … por la que se establecen las bases reguladoras para la
+  concesión de subvenciones a entidades locales…».
+- «Orden APA/1111/2026 … por la que se modifica la Orden AAA/839/2015 … por la
+  que se establecen las bases reguladoras de la concesión de Premios de
+  Excelencia…».
+- «Resolución … por la que se publican las subvenciones estatales anuales para
+  atender los gastos de funcionamiento ordinario a las formaciones políticas».
+
+Ninguno convoca a nadie: son normas y son resultados. Y entraban porque
+«bases reguladoras» estaba en la lista de **llamadas**: con ella al lado de
+una palabra de dinero, la señal de convocatoria era positiva.
+
+**«Bases reguladoras» ya no es una llamada.** Es la forma que tiene una
+convocatoria de *nombrar las bases*, no de *convocar*. Para que un documento
+sea una convocatoria hace falta que el título diga que convoca: «convocatoria»,
+«se convocan», «plazo de presentación», «presentar solicitudes». La norma que
+también es convocatoria —«se aprueban las bases reguladoras **y la
+convocatoria**»— entra por la palabra «convocatoria», que sigue ahí.
+
+Lo que se conserva es una **excepción**, para no perder becas de verdad: si el
+epígrafe del BOE es «Becas» o «Ayudas» —dato de la fuente— y el título nombra
+la beca, la norma se queda. Las bases de las becas de estudio son una norma y
+una convocatoria en la misma frase.
+
+Y hay un **fallo de tildes** que era la causa de fondo de la queja: los
+patrones se escriben sin tilde (`calificacion`, `retribucion`) y el BOE
+escribe «calificación», «retribución». Una resolución de un recurso contra la
+nota de calificación se colaba porque `calificacion` no matchea con
+`calificación`. Ahora **el título y los patrones se normalizan** (sin tildes y
+en minúsculas) antes de comparar: `plano()` en `ingest/boe.mjs`.
+
+### Los vetos que se añadieron el 11 de noviembre de 2026
+
+Todos son de la misma familia: el documento **da fe de algo ya hecho** o
+**fija una cantidad**, no llama a nadie.
+
+| Patrón | Lo que aparta |
+| --- | --- |
+| `se publica(n\|dos\|das)` | «…por la que se publican las subvenciones estatales anuales…» |
+| `se fijan\|determinan\|distribuyen…` + dinero | «…por la que se fijan las cantidades de las subvenciones a los gastos…» |
+| `recurso (interpuesto\|contra)`, `impugna`, `no procede` | Sentencias y recursos contra la nota de calificación |
+| `se deroga(n)` | «…por la que se deroga la Orden…» |
+| `se crea(n)` + plan/programa | Planes y programas, que se legisla |
+| `se adjudica(n)` (en `DECIDE`) | «…por la que se adjudican los Premios…» |
+
+### La misma convocatoria, dos veces
+
+El BOE publica la misma convocatoria más de una vez: la que convoca y la que la
+modifica, o el anuncio y la resolución. En la web eso son dos fichas de la
+misma beca, y la segunda suele traer menos datos.
+
+La deduplicación vive en `ingest/ensamblar.mjs` (`claveDuplicado`), antes de
+escribir el fichero, porque el feed y el catálogo público salen de ahí:
+
+1. **El mismo documento de Bases.** `boeIdBases` es el id del BOE-A-… con las
+   bases. Dos anuncios que remiten a las mismas bases son la misma
+   convocatoria. Es la señal más fiable: no depende del texto.
+2. **El mismo título**, sin tildes, sin números y sin las palabras que no
+   distinguen nada («de», «por la que», «correspondientes al año»).
+
+Cuando dos son la misma, **se queda la que más sabe**: la que tiene requisitos
+con cita, la que tiene fecha de cierre y la que tiene presupuesto.
+
+El invariante de «ni una ficha menos» tiene que contar con esto: una
+duplicada del BOE se resta de las esperadas, porque quedarse con una no es
+perder nada. Y `perdidas > 0`, no `perdidas`: un negativo significa que hay
+más fichas de las esperadas, y con el `if (perdidas)` de antes eso bloqueaba
+la escritura del fichero sin motivo.
+
+La web repite la deduplicación como red de seguridad (`js/becas.js`), por si
+el fichero llegara sucio desde fuera.
 
 Cada descarte se cuenta **con su motivo** en el log de la pasada (`[ruido: N]`,
 `[sin señal de convocatoria: N]`). Un descarte con volumen raro se ve ahí y se
@@ -684,7 +810,7 @@ almacén no exporta sus funciones, el diccionario no conserva sus claves y la
 infraestructura no deja puerta abierta. Y la otra cara de la misma jornada: la
 etiqueta de Vercel Analytics tiene que seguir en las ocho páginas públicas y
 en la plantilla de `ingest/paginas.mjs` — llegó el mismo día que la retirada,
-y una regeneración de `erasmus-mundus.html` no puede perderla.
+y una regeneración de `feed.xml` no puede perderla.
 
 Lo que **no** hay todavía es un test del **filtro** (`motivoDescarte` en
 `ingest/boe.mjs`). Hoy se comprueba a mano, mirando el log de la pasada y
@@ -777,7 +903,7 @@ Y dos cosas de mecanismo:
   tal cual.
 
 Lo vigila `test/idioma.mjs`, que además barre los anchos de las seis
-páginas. Y `erasmus-mundus.html`, que la genera `ingest/paginas.mjs`, no es
+páginas. Y `feed.xml`, que lo genera `ingest/paginas.mjs`, no es
 una excepción: su plantilla lleva los mismos `data-i18n` que las demás.
 
 ## SEO: lo que se decidió y por qué
@@ -834,7 +960,7 @@ de la portada no las calcula nadie: no hay build. Al tocar la portada o
 **Vercel Analytics lleva una etiqueta propia.** Desde el 29 de octubre de 2026
 las páginas públicas llevan `<script defer src="/_vercel/insights/script.js">` —
 mismo origen, así que la CSP no se toca. La plantilla de `ingest/paginas.mjs`
-también la lleva: si `erasmus-mundus.html` se regenera, sale sola. El interruptor
+también la lleva: si `feed.xml` se regenera, sale sola. El interruptor
 para contar está en el panel de Vercel (Analytics → Enable), la CLI no lo tiene.
 Y las políticas se reescribieron el mismo día para seguir diciendo la verdad:
 la analítica es agregada y sin cookies, y «no hay analítica» ya no se dice en

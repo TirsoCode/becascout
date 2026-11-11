@@ -170,13 +170,20 @@ jobs:
           git config user.name  'BecasScout'
           git config user.email '284927969+TirsoCode@users.noreply.github.com'
 
-          # Cuatro ficheros: la base y las tres páginas que `paginas.mjs`
-          # regenera a partir de ella. Van en la misma línea a mano y no
-          # `git add .` porque en esta carpeta también vive el almacén de
-          # respaldo con correos y sesiones, y aunque `.gitignore` lo tapa,
-          # `.gitignore` no es lo que decide qué se sube. Ese fichero es
-          # `.vercelignore`.
-          git add data/becas.json feed.xml llms-full.txt
+          # Cinco ficheros: la base, el catálogo público que pinta la lista y
+          # las dos páginas que `paginas.mjs` regenera a partir de ella. El
+          # catálogo va aquí porque **la lista del buscador sale de él**, no
+          # de la base: sin él, la web seguía enseñando el catálogo viejo
+          # (236 fichas, sin DAAD) mientras la base ya tenía 386. Pasó el 28
+          # de octubre de 2026 y no se vio en ningún error: el workflow
+          # subía la base y las páginas, y se olvidaba del fichero del que
+          # se pinta la lista.
+          #
+          # Van en la misma línea a mano y no `git add .` porque en esta
+          # carpeta también vive el almacén de respaldo con correos y
+          # sesiones, y aunque `.gitignore` lo tapa, `.gitignore` no es lo que
+          # decide qué se sube. Ese fichero es `.vercelignore`.
+          git add data/becas.json data/becas-catalogo.json feed.xml llms-full.txt
 
           # Un fichero sin fichas no es un resultado: es un fallo con forma de
           # fichero. No se publica, y el paso falla para que se vea.
@@ -218,8 +225,8 @@ jobs:
             # es la que acaba de leer el BOE y la que cumple el invariante de
             # `ingest/run.mjs`; las páginas se regeneran a partir de ella, así
             # que la recuperación basta con volver a añadirlas.
-            git checkout --theirs -- data/becas.json || true
-            git add data/becas.json feed.xml llms-full.txt 2>/dev/null || true
+            git checkout --theirs -- data/becas.json data/becas-catalogo.json || true
+            git add data/becas.json data/becas-catalogo.json feed.xml llms-full.txt 2>/dev/null || true
             GIT_EDITOR=true git rebase --continue || true
           }
 
@@ -233,8 +240,8 @@ jobs:
             echo "El push se ha rechazado (intento $intento). Se reintenta."
             git fetch origin main
             git rebase origin/main || {
-              git checkout --theirs -- data/becas.json || true
-              git add data/becas.json
+              git checkout --theirs -- data/becas.json data/becas-catalogo.json || true
+              git add data/becas.json data/becas-catalogo.json
               GIT_EDITOR=true git rebase --continue || true
             }
           done

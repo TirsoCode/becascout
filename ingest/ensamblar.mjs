@@ -38,6 +38,75 @@ export function idAnuncio(b) {
 }
 
 /**
+ * La clave con la que se reconoce que dos fichas son la misma convocatoria.
+ *
+ * ── Por qué hace falta ─────────────────────────────────────────────────────
+ *
+ * El BOE publica la misma convocatoria más de una vez, y en la web eso son
+ * dos fichas de la misma beca: la que convo-ca y la que la modifica, o la
+ * resolución y el anuncio que la publica. Quien busca una beca no quiere ver
+ * la misma dos veces, y encima la segunda suele traer menos datos.
+ *
+ * Hay dos formas de reconocerlas:
+ *
+ * 1. **El mismo documento de Bases.** `boeIdBases` es el id del BOE-A-… que
+ *    contiene las bases. Dos anuncios que remiten a las mismas bases son la
+ *    misma convocatoria, y es la señal más fiable: no depende del texto.
+ *
+ * 2. **El mismo título.** Cuando no hay Bases —la mayoría de las fichas del
+ *    BOE— el título es lo único que hay. Se comparan los títulos **sin
+ *    tildes, sin números y sin las palabras que no distinguen nada** («de»,
+ *    «por la que», «correspondientes al año»), porque dos anuncios de la
+ *    misma convocatoria suelen diferir en la fecha o en el número de plazas.
+ *
+ * Lo que se hace es quedarse con la ficha que más información tiene, que es
+ * la que tiene requisitos con cita y fecha de cierre.
+ */
+function claveDuplicado(b) {
+  if (b.boeIdBases) return `bases:${b.boeIdBases}`;
+  const palabras = plano(b.titulo ?? '')
+    .replace(/[0-9]+/g, ' ')
+    .replace(/[^a-z ]+/g, ' ')
+    .split(/\s+/)
+    .filter((p) => p.length > 3 && !VACIAS.has(p));
+  if (!palabras.length) return null;
+  return `titulo:${palabras.join(' ')}`;
+}
+
+/** Palabras que no distinguen una convocatoria de otra. */
+const VACIAS = new Set([
+  'para', 'por', 'que', 'las', 'los', 'del', 'con', 'una', 'uno', 'unos',
+  'unas', 'correspondientes', 'correspondiente', 'relativa', 'relativo',
+  'mediante', 'sobre', 'segun', 'según', 'entre', 'este', 'esta', 'estos',
+  'estas', 'aquel', 'aquella', 'siguiente', 'anual', 'anuales',
+]);
+
+/** Sin tildes y en minúsculas, para comparar dos textos. */
+function plano(s) {
+  return String(s ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+/**
+ * Qué ficha se queda cuando dos son la misma convocatoria.
+ *
+ * Se queda la que más sabe: la que tiene requisitos con cita, la que tiene
+ * fecha de cierre y la que tiene presupuesto. Y a igualdad, la más reciente,
+ * que es la que trae el estado del plazo al día.
+ */
+function mejorFicha(a, b) {
+  const puntos = (x) => [
+    (x.requisitos ?? []).length,
+    x.cierra ? 1 : 0,
+    x.presupuesto != null ? 1 : 0,
+    x.publicada ?? '',
+  ].join('|');
+  return puntos(b) > puntos(a) ? b : a;
+}
+
+/**
  * Junta lo recién bajado con lo que la caché perdonó y deja la lista final.
  *
  * `registros` son las fichas procesadas en esta pasada, más las de Erasmus
@@ -95,7 +164,33 @@ export function ensambla({ registros = [], omitidas = [], cache = new Map(), aho
     return String(a.id).localeCompare(String(b.id));
   });
 
-  return { publicables, repetidas };
+  // ── La misma convocatoria, dos veces ──────────────────────────────────────
+  //
+  // Se quita antes de escribir, no en la web: es un dato del fichero, y el
+  // feed y el catálogo público salen de aquí. La web lo repite como red de
+  // seguridad, pero el sitio del problema es la ingesta.
+  const unicas = [];
+  const vistas = new Map();
+  let duplicadas = 0;
+  let duplicadasBoe = 0;
+  for (const b of publicables) {
+    const clave = claveDuplicado(b);
+    if (!clave) { unicas.push(b); continue; }
+    const anterior = vistas.get(clave);
+    if (!anterior) {
+      vistas.set(clave, b);
+      unicas.push(b);
+      continue;
+    }
+    duplicadas++;
+    if (!FUENTES_EXTERNAS.has(b.fuente)) duplicadasBoe++;
+    const buena = mejorFicha(anterior, b);
+    // Se sustituye en el sitio donde estaba, para no mover el orden.
+    unicas[unicas.indexOf(anterior)] = buena;
+    vistas.set(clave, buena);
+  }
+
+  return { publicables: unicas, repetidas, duplicadas, duplicadasBoe };
 }
 
 /**
@@ -121,15 +216,20 @@ export function ensambla({ registros = [], omitidas = [], cache = new Map(), aho
  * y a **no disparar nunca**: el fallo que este invariante existe para
  * cazar quedaba libre otra vez.
  */
-export const FUENTES_EXTERNAS = new Set(['daad', 'ue']);
+export const FUENTES_EXTERNAS = new Set(['erasmus-mundus', 'daad', 'ue']);
 
-export function faltan(publicables, { fichas = [], omitidas = [] } = {}) {
+export function faltan(publicables, { fichas = [], omitidas = [], duplicadas = 0 } = {}) {
   // `omitidas` llega como `Set` desde el conector, y un `Set` no tiene
   // `length`: tiene `size`. Con `.length` a secas salía `undefined`, la suma
   // daba `NaN`, y `NaN` es *falsy* —así que el invariante no disparaba nunca.
   // El fallo que este invariante existe para cazar estaba, justamente, en
   // este contador.
-  const esperadas = fichas.length + (omitidas.size ?? omitidas.length ?? 0);
+  //
+  // Las duplicadas del BOE se restan porque no son una ficha perdida: son dos
+  // anuncios de la misma convocatoria, y quedarse con una no es perder nada.
+  // Sin esta resta, el invariante dispararía en cada pasada que duplicara
+  // algo —que es lo normal— y bloquearía la escritura del fichero.
+  const esperadas = fichas.length + (omitidas.size ?? omitidas.length ?? 0) - duplicadas;
   // Las de fuera del BOE no cuentan: el invariante vigila al BOE.
   const emitidas = publicables.filter((r) => !FUENTES_EXTERNAS.has(r.fuente)).length;
   return { esperadas, emitidas, faltan: esperadas - emitidas };

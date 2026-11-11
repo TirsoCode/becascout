@@ -406,6 +406,13 @@ export async function recolectar({ paginas = 12, alProgresar } = {}) {
       // Los países del consorcio. Un programa de Erasmus son tres o más, y
       // por eso el filtro de destino los enseña todos y no solo el primero.
       paises,
+      // El nivel de estudios, para el filtro. Son programs de máster: el
+      // catálogo de la EACEA los llama «Joint Master» y la Comisión dice que
+      // son de 1 a 2 años académicos con 60, 90 o 120 ECTS —el mismo dato
+      // que está en la nota de «Tipo de programa», con su cita. Sin este
+      // campo, el filtro de nivel los apartaba de todos: el estudiante
+      // pedía «Máster» y los 219 programas no aparecían.
+      nivel: 'Máster',
       // El importe es el de la beca, no el presupuesto total de la convocatoria,
       // que es un orden de magnitud mayor. No se mezclan.
       presupuesto: null,
