@@ -15,7 +15,6 @@ import { writeFile, mkdir, readFile } from 'node:fs/promises';
 import { recolectar, textoCompleto } from './boe.mjs';
 import { codigosEn } from '../js/paises.js';
 import { idDesdeBoe, render, aRegistro as aRegistroBdns } from './bdns.mjs';
-import { recolectar as recolectarErasmus } from './erasmus.mjs';
 import { recolectar as recolectarDaad } from './daad.mjs';
 import { recolectar as recolectarUe } from './ue.mjs';
 import { parrafosConOrigen, extrae, buscaNivel } from './extract.mjs';
@@ -515,19 +514,6 @@ if (fallidas > fichas.length * 0.1 && fichas.length > 20) {
   console.warn('  revisa el log antes de fiarte de este becas.json.\n');
 }
 
-
-// Erasmus Mundus se suma al final. Es una fuente independiente y sin WAF,
-// así que aunque el BOE o el BDNS fallen, el resultado no se queda a cero.
-if (!process.argv.includes('--sin-erasmus')) {
-  try {
-    const em = await recolectarErasmus({ alProgresar: ({ pagina, total }) =>
-      process.stdout.write(`\r  Erasmus Mundus · página ${pagina + 1} · ${total} programas   `) });
-    process.stdout.write('\n');
-    registros.push(...em);
-  } catch (err) {
-    console.warn(`  Erasmus Mundus falló (${err.message}); se sigue sin él.`);
-  }
-}
 
 // ── Las fuentes de fuera de España ───────────────────────────────────────
 //

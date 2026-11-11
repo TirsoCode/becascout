@@ -71,7 +71,6 @@ const DICC = {
   /* ── Cabecera y pie: comunes a todas las páginas ─────────────────────── */
   'nav.como': { en: 'How it works' },
   'nav.metodo': { en: 'The method' },
-  'nav.erasmus': { en: 'Erasmus Mundus' },
   'nav.sobre': { en: 'About' },
   'nav.fuentes': { en: 'Sources' },
   /* `nav.buscar` lleva el `es` escrito y no confiado al HTML de cada página:
@@ -83,7 +82,6 @@ const DICC = {
   'nav.crear': { en: 'Create account' },
   'nav.portada': { en: 'Home' },
   'pie.buscar': { en: 'Find scholarships' },
-  'pie.erasmus': { en: 'Erasmus Mundus' },
   'pie.sobre': { en: 'About' },
   'pie.privacidad': { en: 'Privacy' },
   'pie.cookies': { en: 'Cookies' },
@@ -164,11 +162,11 @@ const DICC = {
 
   'inicio.cifras.p1.h': { en: '217 programmes' },
   'inicio.cifras.p1.p': {
-    en: 'from the official <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a> catalogue, with the countries of each consortium. <a href="erasmus-mundus.html">All of them are here, with their page.</a>',
+    en: 'from the official <a href="https://www.eacea.ec.europa.eu/scholarships/erasmus-mundus-catalogue_es" target="_blank" rel="noopener">Erasmus Mundus</a> catalogue, with the countries of each consortium.',
   },
   'inicio.cifras.p2.h': { en: '€1,400 a month' },
   'inicio.cifras.p2.p': {
-    en: 'for up to 24 months, with a university degree. The same figure for all 217 programmes, which is why it can be quoted once. <a href="erasmus-mundus.html#cuanto">The full quote.</a>',
+    en: 'for up to 24 months, with a university degree. The same figure for all 217 programmes, which is why it can be quoted once.',
   },
 
   'inicio.faq.h2': { en: 'Questions we get a lot' },
@@ -633,7 +631,6 @@ const DICC = {
   'perfil.menu.k': { es: 'Tu espacio', en: 'Your space' },
   'perfil.menu.perfil': { es: 'Perfil', en: 'Profile' },
   'perfil.menu.becas': { es: 'Becas', en: 'Scholarships' },
-  'perfil.menu.erasmus': { es: 'Erasmus Mundus', en: 'Erasmus Mundus' },
   'perfil.menu.sobre': { es: 'Sobre', en: 'About' },
   'perfil.menu.buscar': { es: 'Volver al buscador', en: 'Back to search' },
   'perfil.salir': { es: 'Cerrar sesión', en: 'Sign out' },

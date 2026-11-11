@@ -62,7 +62,7 @@ const MARCA_GOOGLE = '436706781551-o1nquf0ib9lp1p1vs1st0g08bs2a4k8m.apps.googleu
 const ENCUESTA = 'bs.encuesta';
 
 /** Las páginas del sitio a las que tiene sentido volver tras el alta. */
-const DESTINOS = ['/', '/becas.html', '/erasmus-mundus.html'];
+const DESTINOS = ['/', '/becas.html',];
 const DESTINO_DEFECTO = '/becas.html';
 
 const $ = (s) => document.querySelector(s);

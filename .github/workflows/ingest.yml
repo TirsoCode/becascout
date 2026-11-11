@@ -176,7 +176,7 @@ jobs:
           # respaldo con correos y sesiones, y aunque `.gitignore` lo tapa,
           # `.gitignore` no es lo que decide qué se sube. Ese fichero es
           # `.vercelignore`.
-          git add data/becas.json erasmus-mundus.html feed.xml llms-full.txt
+          git add data/becas.json feed.xml llms-full.txt
 
           # Un fichero sin fichas no es un resultado: es un fallo con forma de
           # fichero. No se publica, y el paso falla para que se vea.
@@ -219,7 +219,7 @@ jobs:
             # `ingest/run.mjs`; las páginas se regeneran a partir de ella, así
             # que la recuperación basta con volver a añadirlas.
             git checkout --theirs -- data/becas.json || true
-            git add data/becas.json erasmus-mundus.html feed.xml llms-full.txt 2>/dev/null || true
+            git add data/becas.json feed.xml llms-full.txt 2>/dev/null || true
             GIT_EDITOR=true git rebase --continue || true
           }
 

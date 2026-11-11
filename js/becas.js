@@ -807,7 +807,7 @@ function tarjeta(b) {
       <div class="beca-meta">
         ${b.cierra ? pillPlazo(b.cierra) : `<span class="pill">${t('tarjeta.plazoNo')}</span>`}
         ${b.presupuesto ? `<span class="pill brand mono">${euros(b.presupuesto)}</span>` : ''}
-        ${b.fuente === 'erasmus-mundus' ? '<span class="pill brand">Erasmus Mundus</span>' : ''}
+
         ${b.fuente === 'daad' ? '<span class="pill brand">DAAD</span>' : ''}
         ${b.fuente === 'ue' ? `<span class="pill brand">${t('fuente.ue')}</span>` : ''}
         ${b.id.startsWith('BDNS') ? '<span class="pill mono">BDNS</span>' : ''}

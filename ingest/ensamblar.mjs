@@ -121,7 +121,7 @@ export function ensambla({ registros = [], omitidas = [], cache = new Map(), aho
  * y a **no disparar nunca**: el fallo que este invariante existe para
  * cazar quedaba libre otra vez.
  */
-export const FUENTES_EXTERNAS = new Set(['erasmus-mundus', 'daad', 'ue']);
+export const FUENTES_EXTERNAS = new Set(['daad', 'ue']);
 
 export function faltan(publicables, { fichas = [], omitidas = [] } = {}) {
   // `omitidas` llega como `Set` desde el conector, y un `Set` no tiene
